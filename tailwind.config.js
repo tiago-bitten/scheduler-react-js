@@ -10,6 +10,7 @@ export default {
         'secondary': "#718FE9",
         'tertiary': "#A0B4F0",
         'quaternary': "#ffffff",
+        'quinary': "#454545",
       }
     },
   },

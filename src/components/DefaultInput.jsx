@@ -1,10 +1,10 @@
 import React from 'react';
 import '../styles/DefaultInput.css';
 
-const DefaultInput = ({ label, id }) => {
+const DefaultInput = ({ label, id, type }) => {
     return (
         <div className="group">
-            <input type="text" id={id} className="input" required />
+            <input type={type} id={id} className="input" required />
             <span className="highlight"></span>
             <span className="bar"></span>
             <label htmlFor={id}>{label}</label>
