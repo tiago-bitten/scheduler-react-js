@@ -1,11 +1,12 @@
 import React from 'react'
 import './App.css'
+import RoundButton from './components/RoundButton';
 
 function App() {
 
   return (
     <>
-      <div className="text-primary">ola mundo</div>
+      <RoundButton value="ADICIONAR" />
     </>
   )
 }
