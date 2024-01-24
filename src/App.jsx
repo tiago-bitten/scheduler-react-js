@@ -1,12 +1,15 @@
 import React from 'react'
 import './App.css'
 import RoundButton from './components/RoundButton';
+import DefaultInput from './components/DefaultInput';
 
 function App() {
 
   return (
     <>
-      <RoundButton value="ADICIONAR" />
+      <div className="flex justify-center items-center h-screen">
+        <DefaultInput label="Nome" />
+      </div>
     </>
   )
 }
