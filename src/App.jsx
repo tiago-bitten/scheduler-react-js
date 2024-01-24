@@ -1,14 +1,13 @@
 import React from 'react'
 import './App.css'
-import './tailwind.css'
 
 function App() {
 
   return (
     <>
-    <div>ola mundo</div>
+      <div className="text-primary">ola mundo</div>
     </>
   )
 }
 
-export default App
+export default App;
