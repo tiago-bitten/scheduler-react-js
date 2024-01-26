@@ -8,13 +8,7 @@ function App() {
 
   return (
     <>
-        <Input
-            type="text"
-            color="lightBlue"
-            size="regular"
-            outline={true}
-            placeholder="Digite algo..."
-        />
+      <Login />
     </>
   )
 }
