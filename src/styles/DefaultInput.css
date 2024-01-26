@@ -2,13 +2,6 @@
     position: relative;
 }
 
-.group:focus-within label {
-    top: -20px;
-    font-size: 14px;
-    color: #5264AE;
-}
-
-
 .input {
     font-size: 16px;
     padding: 10px 10px 10px 5px;
