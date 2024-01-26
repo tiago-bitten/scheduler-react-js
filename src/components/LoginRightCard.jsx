@@ -6,6 +6,9 @@ import CreateAccount from './CreateAccount';
 import OrBar from './OrBar';
 
 const LoginRightCard = () => {
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+
     return (
         <div className="flex flex-col justify-center items-center w-full">
             <h1 className="text-4xl text-center mb-10 text-quinary">Bem-vindo</h1>
