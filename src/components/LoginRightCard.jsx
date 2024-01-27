@@ -3,6 +3,7 @@ import React from 'react';
 import instance from '../config/axiosConfig';
 
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from '../components/SnackBarProvider';
 
 import DefaultInput from '../components/DefaultInput';
 import RoundButton from '../components/RoundButton';
@@ -10,14 +11,12 @@ import ForgotPassword from './ForgotPassword';
 import CreateAccountLink from './CreateAccountLink';
 import OrBar from './OrBar';
 
-import { Snackbar } from '@mui/material';
 
 const LoginRightCard = () => {
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
-    const [notification, setNotification] = React.useState(false);
-    const [notificationMessage, setNotificationMessage] = React.useState('');
 
+    const enqueueSnackbar = useSnackbar();
     const navigate = useNavigate();
 
     const handleLogin = async () => {
@@ -31,13 +30,13 @@ const LoginRightCard = () => {
 
             if (response.status === 200) {
                 sessionStorage.setItem('token', JSON.stringify(data.token));
+                enqueueSnackbar('Login efetuado com sucesso!');
                 navigate('/');
             }
 
         } catch (error) {
             if (error.response.status === 401) {
-                setNotificationMessage(error.response.data.message);
-                setNotification(true);
+                enqueueSnackbar(error.response.data.message);
             }
         }
     };
@@ -48,13 +47,6 @@ const LoginRightCard = () => {
 
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
-    };
-
-    const handleCloseNotification = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setNotification(false);
     };
 
     return (
@@ -78,12 +70,6 @@ const LoginRightCard = () => {
             <div className="mt-8">
                 <CreateAccountLink />
             </div>
-            <Snackbar
-                open={notification}
-                autoHideDuration={4000}
-                onClose={() => handleCloseNotification()}
-                message={notificationMessage}
-            />
         </div>
     );
 };

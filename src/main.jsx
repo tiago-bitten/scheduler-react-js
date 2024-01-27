@@ -16,19 +16,19 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: "/",
+        path: "/volunatrios",
         element: <Volunteer />
       },
       {
-        path: "login",
+        path: "entrar",
         element: <Login />
       },
       {
-        path: "signup",
+        path: "criar-conta",
         element: <CreateAccount />
       },
       {
-        path: "analysis",
+        path: "analise",
         element: <Analysis />
       }
     ]

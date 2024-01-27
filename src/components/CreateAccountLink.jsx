@@ -5,7 +5,7 @@ const CreateAccountLink = () => {
     const navigate = useNavigate();
 
     const handleCreateAccount = () => {
-        navigate('/signup');
+        navigate('/criar-conta');
     }
 
     return (
