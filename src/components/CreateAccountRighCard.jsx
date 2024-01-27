@@ -1,53 +1,40 @@
 import React from 'react';
-
 import RoundButton from './RoundButton';
 import CheckboxMinistry from './CheckboxMinistry';
-import BackButton from './BackButton';
-
-import { Snackbar } from '@mui/material';
-
+import { useSnackbar } from '../components/SnackBarProvider';
+import { useNavigate } from 'react-router-dom';
 import instance from '../config/axiosConfig';
 
-const ministriesMock = [
-    'ESTACIONAMENTO',
-    'RECEPÇÃO',
-    'AÇÃO SOCIAL',
-    'DISCIPULADO',
-    'ESCOLA BÍBLICA',
-    'LOUVOR',
-    'COMUNICAÇÃO',
-    'CRIANÇAS',
-    'ADOLESCENTES',
-    'JOVENS',
-    'ADULTOS',
-    'INTERCESSÃO',
-];
-
 const CreateAccountRightCard = ({ name, email, password }) => {
-    const [ministries, setMinistries] = React.useState([]); // { id: 1, name: 'ESTACIONAMENTO' }
+    const [ministries, setMinistries] = React.useState([]);
     const [selectedMinistries, setSelectedMinistries] = React.useState([]);
-    const [notification, setNotification] = React.useState(false);
-    const [notificationMessage, setNotificationMessage] = React.useState('');
+    const navigate = useNavigate();
+    const enqueueSnackbar = useSnackbar();
 
     React.useEffect(() => {
-        getMinistries();
-    }, [])
-
-    const getMinistries = async () => {
-        try {
-            const response = await instance.get('/ministries')
-
-            if (response.status === 200) {
-                const data = response.data;
-
-                setMinistries(data.ministries);
+        const getMinistries = async () => {
+            try {
+                const response = await instance.get('/ministries/signup');
+                if (response.status === 200) {
+                    setMinistries(response.data.ministries);
+                }
+            } catch (err) {
+                enqueueSnackbar(err.response.data.message);
             }
+        };
 
-        } catch (err) {
-            setNotificationMessage(err.response.data.message);
-            setNotification(true);
-        }
-    }
+        getMinistries();
+    }, []);
+
+    const handleToggle = (ministry) => {
+        setSelectedMinistries((prevSelected) => {
+            const isAlreadySelected = prevSelected.some((m) => m.id === ministry.id);
+            if (isAlreadySelected) {
+                return prevSelected.filter((m) => m.id !== ministry.id);
+            }
+            return [...prevSelected, ministry];
+        });
+    };
 
     const handleCreateAccount = async () => {
         try {
@@ -55,35 +42,16 @@ const CreateAccountRightCard = ({ name, email, password }) => {
                 name,
                 email,
                 password,
-                ministries: selectedMinistries.map(m => m.id)
-            })
+                ministries: selectedMinistries.map((m) => m.id),
+            });
 
             if (response.status === 201) {
-                setNotificationMessage('Análise de conta solicitada!');
-                setNotification(true);
+                enqueueSnackbar('Sua conta foi enviada para análise!');
+                navigate('/analysis');
             }
-
         } catch (err) {
-            setNotificationMessage(err.response.data.message);
-            setNotification(true);
+            enqueueSnackbar(err.response.data.message);
         }
-    };
-
-    const handleCloseNotification = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setNotification(false);
-    };
-
-    const handleToggle = (ministry) => {
-        setSelectedMinistries((prevSelected) => {
-            const isAlreadySelected = prevSelected.some(m => m.id === ministry.id);
-            if (isAlreadySelected) {
-                return prevSelected.filter(m => m.id !== ministry.id);
-            }
-            return [...prevSelected, ministry];
-        });
     };
 
     return (
@@ -105,12 +73,6 @@ const CreateAccountRightCard = ({ name, email, password }) => {
                 <p className="text-xs text-center text-quinary" style={{ fontStyle: 'italic' }}>Selecione os ministérios que você gostaria de participar.</p>
             </div>
             <RoundButton value="ENVIAR PARA ANÁLISE" onClick={() => handleCreateAccount()} />
-            <Snackbar
-                open={notification}
-                autoHideDuration={4000}
-                onClose={() => handleCloseNotification()}
-                message={notificationMessage}
-            />
         </div>
     );
 };

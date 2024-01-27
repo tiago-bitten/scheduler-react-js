@@ -8,6 +8,7 @@ import App from './App.jsx'
 import Login from './pages/Login.jsx';
 import CreateAccount from './pages/CreateAccount.jsx';
 import Volunteer from './pages/Volunteer.jsx';
+import Analysis from './pages/Analysis.jsx';
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: "signup",
         element: <CreateAccount />
+      },
+      {
+        path: "analysis",
+        element: <Analysis />
       }
     ]
   }
