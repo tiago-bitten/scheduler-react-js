@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import DefaultInput from '../components/DefaultInput';
 import RoundButton from '../components/RoundButton';
 import ForgotPassword from './ForgotPassword';
-import CreateAccount from './CreateAccount';
+import CreateAccountLink from './CreateAccountLink';
 import OrBar from './OrBar';
 
 import { Snackbar } from '@mui/material';
@@ -50,6 +50,13 @@ const LoginRightCard = () => {
         setPassword(event.target.value);
     };
 
+    const handleCloseNotification = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setNotification(false);
+    };
+
     return (
         <div className="flex flex-col justify-center items-center w-full">
             <h1 className="text-4xl text-center mb-10 text-quinary">Bem-vindo</h1>
@@ -69,12 +76,12 @@ const LoginRightCard = () => {
                 <OrBar />
             </div>
             <div className="mt-8">
-                <CreateAccount />
+                <CreateAccountLink />
             </div>
             <Snackbar
                 open={notification}
                 autoHideDuration={4000}
-                onClose={() => setNotification(false)}
+                onClose={() => handleCloseNotification()}
                 message={notificationMessage}
             />
         </div>

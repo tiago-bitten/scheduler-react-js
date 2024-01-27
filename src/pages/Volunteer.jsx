@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Snackbar, Button } from '@mui/material';
 
 const Volunteer = () => {
     const navigate = useNavigate();
-    const [token] = useState(sessionStorage.getItem('token'));
-    const [notification, setNotification] = useState(false);
+    const [token] = React.useState(sessionStorage.getItem('token'));
+    const [notification, setNotification] = React.useState(false);
+    const [notificationMessage, setNotificationMessage] = React.useState('');
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (!token) {
             navigate('/login');
         }
@@ -18,19 +19,12 @@ const Volunteer = () => {
             return;
         }
         setNotification(false);
+        setNotificationMessage('');
     };
 
     return (
-        <div className="flex flex-col justify-center items-center w-full">
-            <Button variant="contained" onClick={() => setNotification(true)}>
-                Mostrar Notificação
-            </Button>
-            <Snackbar
-                open={notification}
-                autoHideDuration={6000}
-                onClose={handleClose}
-                message="Notificação do voluntário"
-            />
+        <div>
+            <h1>Volunteer</h1>
         </div>
     );
 };
