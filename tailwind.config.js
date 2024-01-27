@@ -12,6 +12,7 @@ export default {
         'quaternary': "#ffffff",
         'quinary': "#454545",
         'senary': "#D9D9D9",
+        'septenary': "#F3F3F3",
       }
     },
   },

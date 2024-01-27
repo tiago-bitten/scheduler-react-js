@@ -1,0 +1,14 @@
+.ministry-list {
+    border: 1px solid #D9D9D9;
+    border-top: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ministry-list::-webkit-scrollbar {
+    width: 12px;
+}
+
+.ministry-list::-webkit-scrollbar-thumb {
+    background-color: #D9D9D9;
+    border-radius: 6px;
+}

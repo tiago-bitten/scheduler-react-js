@@ -2,6 +2,7 @@ import React from 'react';
 
 import CreateAccountHeaderCard from '../components/CreateAccountHeaderCard';
 import CreateAccountLeftCard from '../components/CreateAccountLeftCard';
+import CreateAccountRightCard from '../components/CreateAccountRighCard';
 import CreateAccountRightCardWait from '../components/CreateAccountRightCardWait';
 
 const CreateAccount = () => {
@@ -15,7 +16,7 @@ const CreateAccount = () => {
                     <CreateAccountLeftCard />
                 </div>
                 <div className="bg-white" style={{ width: '450px', height: '450px' }}>
-                    <CreateAccountRightCardWait />
+                    <CreateAccountRightCard />
                 </div>
             </div>
         </div>
