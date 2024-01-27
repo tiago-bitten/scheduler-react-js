@@ -1,10 +1,16 @@
 import React from 'react';
 
+import CreateAccountLeftCard from '../components/CreateAccountLeftCard';
+
 const CreateAccount = () => {
-    const [name, setName] = React.useState(null);
-    const [email, setEmail] = React.useState(null);
-    const [password, setPassword] = React.useState(null);
-    const [ministriesId, setMinistriesId] = React.useState([]);
+
+    return (
+        <div className="bg-primary w-full h-screen flex justify-center items-center shadow">
+            <div className="bg-white flex items-center justify-center" style={{ width: '450px', height: '450px' }}>
+                <CreateAccountLeftCard />
+            </div>
+        </div>
+    );
 };
 
 export default CreateAccount;
