@@ -16,5 +16,5 @@ const CreateAccountRightCardWait = () => {
         </div>
     );
 };
-// A0B4F0
+
 export default CreateAccountRightCardWait;

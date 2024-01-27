@@ -3,7 +3,7 @@ import React from 'react';
 import DefaultInput from './DefaultInput';
 import RoundButton from './RoundButton';
 
-const CreateAccountLeftCard = () => {
+const CreateAccountLeftCard = ({ nextStep, setNextStep }) => {
     const [name, setName] = React.useState(null);
     const [email, setEmail] = React.useState(null);
     const [password, setPassword] = React.useState(null);
@@ -20,6 +20,10 @@ const CreateAccountLeftCard = () => {
         setPassword(event.target.value);
     };
 
+    const handleClick = () => {
+        setNextStep(nextStep + 1);
+    };
+
     return (
         <div className="flex flex-col justify-center items-center w-full">
             <div className="border-t-4 border-tertiary" style={{ width: '100%' }}> {/* Linha na cor tertiary */}
@@ -34,7 +38,7 @@ const CreateAccountLeftCard = () => {
             <div className="mb-8">
                 <DefaultInput label="Senha" id="password" type="password" onChange={handlePasswordChange} />
             </div>
-            <RoundButton value="PRÓXIMO" />
+            <RoundButton value="PRÓXIMO" onClick={() => handleClick()} />
         </div>
     );
 };
