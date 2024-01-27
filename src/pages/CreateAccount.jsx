@@ -7,19 +7,40 @@ import CreateAccountRightCardWait from '../components/CreateAccountRightCardWait
 import CreateAccountLeftCardFinished from '../components/CreateAccountLeftCardFinished';
 
 const CreateAccount = () => {
+    const [name, setName] = useState(null);
+    const [email, setEmail] = useState(null);
+    const [password, setPassword] = useState(null);
     const [nextStep, setNextStep] = useState(1);
+    const [fade, setFade] = useState('fade-enter');
+
+    React.useEffect(() => {
+        setFade('fade-enter-active');
+    }, [nextStep]);
+
 
     let leftCardComponent;
     let rightCardComponent;
 
     switch (nextStep) {
         case 1:
-            leftCardComponent = <CreateAccountLeftCard nextStep={nextStep} setNextStep={setNextStep} />;
+            leftCardComponent = <CreateAccountLeftCard
+                nextStep={nextStep}
+                setNextStep={setNextStep}
+                setName={setName}
+                setEmail={setEmail}
+                setPassword={setPassword}
+            />;
             rightCardComponent = <CreateAccountRightCardWait />;
             break;
         case 2:
             leftCardComponent = <CreateAccountLeftCardFinished />;
-            rightCardComponent = <CreateAccountRightCard nextStep={nextStep} setNextStep={setNextStep} />;
+            rightCardComponent = <CreateAccountRightCard
+                nextStep={nextStep}
+                setNextStep={setNextStep}
+                name={name}
+                email={email}
+                password={password}
+            />;
             break;
         default:
             leftCardComponent = <CreateAccountLeftCard />;
@@ -32,7 +53,7 @@ const CreateAccount = () => {
             <div className="bg-white flex justify-center items-center" style={{ width: '900px', height: '70px' }}>
                 <CreateAccountHeaderCard />
             </div>
-            <div className="flex justify-center w-full">
+            <div className={`flex justify-center w-full transition-all ${fade}`}>
                 <div className="bg-white" style={{ width: '450px', height: '450px', borderRight: '3px solid #D9D9D9' }}>
                     {leftCardComponent}
                 </div>

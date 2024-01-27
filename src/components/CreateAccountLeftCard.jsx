@@ -3,10 +3,7 @@ import React from 'react';
 import DefaultInput from './DefaultInput';
 import RoundButton from './RoundButton';
 
-const CreateAccountLeftCard = ({ nextStep, setNextStep }) => {
-    const [name, setName] = React.useState(null);
-    const [email, setEmail] = React.useState(null);
-    const [password, setPassword] = React.useState(null);
+const CreateAccountLeftCard = ({ nextStep, setNextStep, setName, setEmail, setPassword }) => {
 
     const handleNameChange = (event) => {
         setName(event.target.value);
