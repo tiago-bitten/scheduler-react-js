@@ -3,23 +3,30 @@ import RoundButton from './RoundButton';
 import CheckboxMinistry from './CheckboxMinistry';
 import { useSnackbar } from '../components/SnackBarProvider';
 import { useNavigate } from 'react-router-dom';
+import { Skeleton } from '@mui/material';
 import instance from '../config/axiosConfig';
 
 const CreateAccountRightCard = ({ name, email, password }) => {
     const [ministries, setMinistries] = React.useState([]);
     const [selectedMinistries, setSelectedMinistries] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
     const navigate = useNavigate();
     const enqueueSnackbar = useSnackbar();
 
     React.useEffect(() => {
         const getMinistries = async () => {
             try {
-                const response = await instance.get('/ministries/signup');
-                if (response.status === 200) {
-                    setMinistries(response.data.ministries);
-                }
+                setTimeout(async () => {
+                    const response = await instance.get('/ministries/signup');
+                    if (response.status === 200) {
+                        setMinistries(response.data.ministries);
+                        setLoading(false);
+                    }
+                }, 3000);
+
             } catch (err) {
                 enqueueSnackbar(err.response.data.message);
+                setLoading(false);
             }
         };
 
@@ -66,8 +73,12 @@ const CreateAccountRightCard = ({ name, email, password }) => {
                         ministry={ministry.name}
                         checked={selectedMinistries.some(m => m.id === ministry.id)}
                         onToggle={() => handleToggle(ministry)}
+                        loading={loading}
                     />
                 ))}
+                {loading && (
+                    <Skeleton variant="rectangular" width={210} height={36} animation="wave" />
+                )}
             </div>
             <div className="mb-8">
                 <p className="text-xs text-center text-quinary" style={{ fontStyle: 'italic' }}>Selecione os ministérios que você gostaria de participar.</p>
