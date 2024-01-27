@@ -1,14 +1,13 @@
 import React from 'react'
 import './App.css'
-import Login from './pages/Login';
 
-import { Input } from '@material-tailwind/react';
+import { Outlet } from 'react-router-dom';
 
 function App() {
 
   return (
     <>
-      <Login />
+      <Outlet />
     </>
   )
 }
