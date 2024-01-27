@@ -11,6 +11,7 @@ export default {
         'tertiary': "#A0B4F0",
         'quaternary': "#ffffff",
         'quinary': "#454545",
+        'senary': "#D9D9D9",
       }
     },
   },

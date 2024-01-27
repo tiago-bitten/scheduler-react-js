@@ -22,7 +22,9 @@ const CreateAccountLeftCard = () => {
 
     return (
         <div className="flex flex-col justify-center items-center w-full">
-            <h1 className="text-4xl mb-16 text-center text-quinary">Dados cadastrais</h1>
+            <div className="border-t-4 border-tertiary" style={{ width: '100%' }}> {/* Linha na cor tertiary */}
+                <h1 className="text-3xl mt-4 mb-16 text-center text-quinary">Dados cadastrais</h1>
+            </div>
             <div className="mb-8">
                 <DefaultInput label="Nome" id="name" type="text" onChange={handleNameChange} />
             </div>
