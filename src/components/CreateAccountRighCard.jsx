@@ -52,7 +52,7 @@ const CreateAccountRightCard = ({ name, email, password }) => {
 
             if (response.status === 201) {
                 enqueueSnackbar('Sua conta foi enviada para análise!');
-                navigate('/analysis');
+                navigate('/analise');
             }
         } catch (err) {
             enqueueSnackbar(err.response.data.message);
@@ -78,8 +78,8 @@ const CreateAccountRightCard = ({ name, email, password }) => {
                     unmountOnExit
                 >
                     <>
-                        <div className="ministry-list-container w-5/6" style={{ maxHeight: '300px', marginBottom: '16px' }}>
-                            <div className="ministry-list overflow-auto bg-septenary" style={{ maxHeight: '230px' }}>
+                        <div className="w-5/6" style={{ maxHeight: '300px', marginBottom: '16px' }}>
+                            <div className="overflow-auto bg-septenary" style={{ maxHeight: '230px' }}>
                                 {ministries.map((ministry) => (
                                     <CheckboxMinistry
                                         key={ministry.id}
