@@ -7,7 +7,7 @@ const CreateAccountRightCardWait = () => {
     return (
         <div>
             <div className="border-t-4 border-senary" style={{ width: '100%' }}>
-                <h1 className="text-3xl mt-4 text-center text-senary">Perfil de acesso</h1>
+                <h1 className="text-3xl mt-4 text-center text-senary">Ministérios</h1>
             </div>
             <div className="flex flex-col mt-20 items-center w-full">
                 <LockOutlined sx={{ fontSize: 100, color: '#A0B4F0' }} />

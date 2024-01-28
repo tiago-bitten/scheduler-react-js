@@ -11,12 +11,6 @@ const CreateAccount = () => {
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
     const [nextStep, setNextStep] = useState(1);
-    const [fade, setFade] = useState('fade-enter');
-
-    React.useEffect(() => {
-        setFade('fade-enter-active');
-    }, [nextStep]);
-
 
     let leftCardComponent;
     let rightCardComponent;
@@ -53,7 +47,7 @@ const CreateAccount = () => {
             <div className="bg-white flex justify-center items-center" style={{ width: '900px', height: '70px' }}>
                 <CreateAccountHeaderCard />
             </div>
-            <div className={`flex justify-center w-full transition-all ${fade}`}>
+            <div className="flex justify-center w-full">
                 <div className="bg-white" style={{ width: '450px', height: '450px', borderRight: '3px solid #D9D9D9' }}>
                     {leftCardComponent}
                 </div>

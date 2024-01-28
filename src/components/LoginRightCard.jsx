@@ -29,9 +29,9 @@ const LoginRightCard = () => {
             const data = response.data;
 
             if (response.status === 200) {
-                sessionStorage.setItem('token', JSON.stringify(data.token));
+                sessionStorage.setItem('token', data.token);
                 enqueueSnackbar('Login efetuado com sucesso!');
-                navigate('/');
+                navigate('/voluntarios');
             }
 
         } catch (error) {

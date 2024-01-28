@@ -34,8 +34,8 @@ const Header = () => {
                 </nav>
             </div>
             <div className="flex items-center">
-                <Notifications className="text-white mr-8" />
-                <Person className="text-white mr-8" />
+                <Notifications className="text-white mr-12" />
+                <Person className="text-white mr-12" />
             </div>
         </div>
     );

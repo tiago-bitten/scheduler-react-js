@@ -1,29 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import RoundButton from './RoundButton';
 import CheckboxMinistry from './CheckboxMinistry';
 import { useSnackbar } from '../components/SnackBarProvider';
 import { useNavigate } from 'react-router-dom';
-import { Skeleton } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import instance from '../config/axiosConfig';
+import { CSSTransition } from 'react-transition-group';
 
 const CreateAccountRightCard = ({ name, email, password }) => {
-    const [ministries, setMinistries] = React.useState([]);
-    const [selectedMinistries, setSelectedMinistries] = React.useState([]);
-    const [loading, setLoading] = React.useState(true);
+    const [ministries, setMinistries] = useState([]);
+    const [selectedMinistries, setSelectedMinistries] = useState([]);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const enqueueSnackbar = useSnackbar();
 
-    React.useEffect(() => {
+    useEffect(() => {
         const getMinistries = async () => {
             try {
-                setTimeout(async () => {
-                    const response = await instance.get('/ministries/signup');
-                    if (response.status === 200) {
-                        setMinistries(response.data.ministries);
-                        setLoading(false);
-                    }
-                }, 3000);
-
+                const response = await instance.get('/ministries/signup');
+                if (response.status === 200) {
+                    setMinistries(response.data.ministries);
+                    setLoading(false);
+                }
             } catch (err) {
                 enqueueSnackbar(err.response.data.message);
                 setLoading(false);
@@ -66,24 +64,41 @@ const CreateAccountRightCard = ({ name, email, password }) => {
             <div className="border-t-4 border-tertiary" style={{ width: '100%' }}>
                 <h1 className="text-3xl mt-4 mb-4 text-center text-quinary">Ministérios</h1>
             </div>
-            <div className="ministry-list mb-2 overflow-auto bg-septenary w-5/6" style={{ maxHeight: '230px' }}>
-                {ministries.map((ministry) => (
-                    <CheckboxMinistry
-                        key={ministry.id}
-                        ministry={ministry.name}
-                        checked={selectedMinistries.some(m => m.id === ministry.id)}
-                        onToggle={() => handleToggle(ministry)}
-                        loading={loading}
-                    />
-                ))}
-                {loading && (
-                    <Skeleton variant="rectangular" width={210} height={36} animation="wave" />
-                )}
-            </div>
-            <div className="mb-8">
-                <p className="text-xs text-center text-quinary" style={{ fontStyle: 'italic' }}>Selecione os ministérios que você gostaria de participar.</p>
-            </div>
-            <RoundButton value="ENVIAR PARA ANÁLISE" onClick={() => handleCreateAccount()} />
+            {loading ? (
+                <CircularProgress
+                    color="inherit"
+                    style={{ margin: '110px auto', color: '#A0B4F0' }}
+                    size={70}
+                />
+            ) : (
+                <CSSTransition
+                    in={!loading}
+                    timeout={300}
+                    classNames="fade"
+                    unmountOnExit
+                >
+                    <>
+                        <div className="ministry-list-container w-5/6" style={{ maxHeight: '300px', marginBottom: '16px' }}>
+                            <div className="ministry-list overflow-auto bg-septenary" style={{ maxHeight: '230px' }}>
+                                {ministries.map((ministry) => (
+                                    <CheckboxMinistry
+                                        key={ministry.id}
+                                        ministry={ministry.name}
+                                        checked={selectedMinistries.some(m => m.id === ministry.id)}
+                                        onToggle={() => handleToggle(ministry)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                        <div className="mb-8 w-5/6">
+                            <p className="text-xs text-center text-quinary" style={{ fontStyle: 'italic' }}>
+                                Selecione os ministérios que você gostaria de participar.
+                            </p>
+                        </div>
+                        <RoundButton value="ENVIAR PARA ANÁLISE" onClick={handleCreateAccount} />
+                    </>
+                </CSSTransition>
+            )}
         </div>
     );
 };
