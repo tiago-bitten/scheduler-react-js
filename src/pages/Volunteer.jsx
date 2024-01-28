@@ -78,11 +78,9 @@ const Volunteer = () => {
         <>
             <Header />
             <div className="flex justify-between items-center mt-16 mx-12">
-                <div className="flex flex-col gap-4 w-full max-w-md">
-                    <div className="flex gap-4">
-                        <DefaultInput label="Voluntários" id="voluntarios" />
-                        <DefaultInput label="Ministérios" id="ministerios" />
-                    </div>
+                <div className="flex flex-1 gap-4">
+                    <DefaultInput label="Voluntários" id="voluntarios" />
+                    <DefaultInput label="Ministérios" id="ministerios" />
                 </div>
                 <div>
                     <RoundButton value="CADASTRAR VOLUNTÁRIO" onClick={handleClick} />

@@ -77,99 +77,88 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
         headers: {
           Authorization: `Bearer ${token}`
         }
+      });
+
+      if (response.status === 201)
+        console.log('volunteerministry ok');
+
+    } catch (err) {
+      enqueueSnackbar(err.response.data.message);
+    }
+  };
+
+  const handleClick = async () => {
+    setIsSubmitting(true);
+
+    try {
+      const newVolunteerId = await handleCreateVolunteer();
+
+      if (newVolunteerId) {
+        const ministryPromises = selectedMinistries.map((ministry) =>
+          handleCreateVolunteerMinistry(newVolunteerId, ministry.id)
+        );
+
+        await Promise.all(ministryPromises);
+        getVolunteers();
+        enqueueSnackbar('Voluntário cadastrado com sucesso!');
+
+        handleClose();
+      }
+    } catch (err) {
+      enqueueSnackbar(err.response.data.message);
+    } finally {
+      setIsSubmitting(false);
+      resetFields();
+    }
+  };
+
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+  };
+
+  const handleLastNameChange = (event) => {
+    setLastName(event.target.value);
+  };
+
+  const handleWhatsappChange = (event) => {
+    setWhatsapp(event.target.value);
+  };
+
+  const handleBirthDateChange = (event) => {
+    setBirthDate(event.target.value);
+  };
+
+  const resetFields = () => {
+    setName('');
+    setLastName('');
+    setWhatsapp('');
+    setBirthDate('');
+    setSelectedMinistries([]);
+  };
+
+  const handleToggle = (ministry) => {
+    setSelectedMinistries((prevSelected) => {
+      const isAlreadySelected = prevSelected.some((m) => m.id === ministry.id);
+      if (isAlreadySelected) {
+        return prevSelected.filter((m) => m.id !== ministry.id);
+      }
+      return [...prevSelected, ministry];
     });
+  };
 
-    if (response.status === 201)
-      console.log('volunteerministry ok');
-
-  } catch (err) {
-    enqueueSnackbar(err.response.data.message);
-  }
-};
-
-const handleClick = async () => {
-  setIsSubmitting(true);
-
-  try {
-    const newVolunteerId = await handleCreateVolunteer();
-
-    if (newVolunteerId) {
-      const ministryPromises = selectedMinistries.map((ministry) =>
-        handleCreateVolunteerMinistry(newVolunteerId, ministry.id)
-      );
-
-      await Promise.all(ministryPromises);
-      getVolunteers();
-      enqueueSnackbar('Voluntário cadastrado com sucesso!');
-
-      handleClose();
-
-    }
-  } catch (err) {
-    enqueueSnackbar(err.response.data.message);
-  } finally {
-    setIsSubmitting(false);
-    resetFields();
-  }
-};
-
-const handleNameChange = (event) => {
-  setName(event.target.value);
-};
-
-const handleLastNameChange = (event) => {
-  setLastName(event.target.value);
-};
-
-const handleWhatsappChange = (event) => {
-  setWhatsapp(event.target.value);
-};
-
-const handleBirthDateChange = (event) => {
-  setBirthDate(event.target.value);
-};
-
-const resetFields = () => {
-  setName('');
-  setLastName('');
-  setWhatsapp('');
-  setBirthDate('');
-  setSelectedMinistries([]);
-};
-
-const handleToggle = (ministry) => {
-  setSelectedMinistries((prevSelected) => {
-    const isAlreadySelected = prevSelected.some((m) => m.id === ministry.id);
-    if (isAlreadySelected) {
-      return prevSelected.filter((m) => m.id !== ministry.id);
-    }
-    return [...prevSelected, ministry];
-  });
-};
-
-return (
-  <Modal
-    open={open}
-    onClose={handleClose}
-    aria-labelledby="modal-modal-title"
-    aria-describedby="modal-modal-description"
-  >
-    <Box sx={style}>
-      {isSubmitting ? (
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        }}>
-          <CircularProgress size={80} />
-        </div>
-      ) : (
+  return (
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style}>
+        {isSubmitting && (
+          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-white bg-opacity-80">
+            <CircularProgress size={80} />
+          </div>
+        )}
         <>
           <IconButton
             onClick={handleClose}
@@ -223,10 +212,9 @@ return (
             <RoundButton value="CADASTRAR" onClick={handleClick} />
           </div>
         </>
-      )}
-    </Box>
-  </Modal>
-);
+      </Box>
+    </Modal>
+  );
 };
 
 export default CreateVolunteerModal;

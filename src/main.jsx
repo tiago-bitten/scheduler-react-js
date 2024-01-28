@@ -9,6 +9,7 @@ import Login from './pages/Login.jsx';
 import CreateAccount from './pages/CreateAccount.jsx';
 import Volunteer from './pages/Volunteer.jsx';
 import Analysis from './pages/Analysis.jsx';
+import Ministries from './pages/Ministries.jsx';
 
 const router = createBrowserRouter([
   {
@@ -20,15 +21,19 @@ const router = createBrowserRouter([
         element: <Volunteer />
       },
       {
-        path: "entrar",
+        path: "/ministerios",
+        element: <Ministries />
+      },
+      {
+        path: "/entrar",
         element: <Login />
       },
       {
-        path: "criar-conta",
+        path: "/criar-conta",
         element: <CreateAccount />
       },
       {
-        path: "analise",
+        path: "/criar-conta/analise",
         element: <Analysis />
       }
     ]

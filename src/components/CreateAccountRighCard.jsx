@@ -52,7 +52,7 @@ const CreateAccountRightCard = ({ name, email, password }) => {
 
             if (response.status === 201) {
                 enqueueSnackbar('Sua conta foi enviada para análise!');
-                navigate('/analise');
+                navigate('/criar-conta/analise');
             }
         } catch (err) {
             enqueueSnackbar(err.response.data.message);
