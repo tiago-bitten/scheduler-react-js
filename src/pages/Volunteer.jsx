@@ -5,6 +5,7 @@ import DefaultInput from '../components/DefaultInput';
 import RoundButton from '../components/RoundButton';
 import Switch from '@mui/material/Switch';
 import { SearchOff } from '@mui/icons-material';
+import { Progress } from '@material-tailwind/react';
 
 import instance from '../config/axiosConfig';
 import { useSnackbar } from '../components/SnackBarProvider';
@@ -15,6 +16,7 @@ import CreateVolunteerModal from '../components/CreateVolunteerModal';
 const Volunteer = () => {
     const navigate = useNavigate();
     const [token] = React.useState(sessionStorage.getItem('token'));
+    const [loadingToken, setLoadingToken] = React.useState(true);
     const [checked, setChecked] = React.useState(false);
     const [volunteers, setVolunteers] = React.useState([]);
     const [open, setOpen] = React.useState(false);
@@ -30,6 +32,7 @@ const Volunteer = () => {
 
     React.useEffect(() => {
         if (token) {
+            setLoadingToken(false);
             getVolunteers();
         }
     }, [token, navigate, enqueueSnackbar]);
@@ -61,6 +64,14 @@ const Volunteer = () => {
 
     const handleClose = () => {
         setOpen(false);
+    }
+
+    if (loadingToken) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Progress size="xl" color="blue" />
+            </div>
+        );
     }
 
     return (

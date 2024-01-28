@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Box, Typography, TextField, Checkbox, FormControlLabel, Button, IconButton } from '@mui/material';
+import { Modal, Box, CircularProgress, IconButton } from '@mui/material';
 import { AddAPhoto, Close } from '@mui/icons-material';
 import { useSnackbar } from './SnackBarProvider';
 
@@ -30,6 +30,7 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
   const [lastName, setLastName] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [birthDate, setBirthDate] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const enqueueSnackbar = useSnackbar();
 
   React.useEffect(() => {
@@ -43,10 +44,10 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
       } catch (err) {
         enqueueSnackbar(err.response.data.message);
       }
-    }
+    };
 
     getMinistries();
-  }, [])
+  }, []);
 
   const handleCreateVolunteer = async () => {
     try {
@@ -60,11 +61,11 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
           Authorization: `Bearer ${token}`
         }
       });
-  
+
       if (response.status === 201) {
         return response.data.volunteer.id;
       }
-  
+
     } catch (err) {
       enqueueSnackbar(err.response.data.message);
     }
@@ -76,98 +77,156 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
         headers: {
           Authorization: `Bearer ${token}`
         }
-      });
-
-    } catch (err) {
-      enqueueSnackbar(err.response.data.message);
-    }
-  };
-
-  const handleClick = async () => {
-    const newVolunteerId = await handleCreateVolunteer(); 
-    if (newVolunteerId) {
-      for (const ministry of selectedMinistries) {
-        await handleCreateVolunteerMinistry(newVolunteerId, ministry.id); 
-      }
-      getVolunteers();
-      handleClose();
-      setSelectedMinistries([]);
-      enqueueSnackbar('Voluntário cadastrado com sucesso!');
-    } else enqueueSnackbar('Algo inesperado aconteceu.');
-  };
-
-  const handleNameChange = (event) => {
-    setName(event.target.value);
-  };
-
-  const handleLastNameChange = (event) => {
-    setLastName(event.target.value);
-  };
-
-  const handleWhatsappChange = (event) => {
-    setWhatsapp(event.target.value);
-  };
-
-  const handleBirthDateChange = (event) => {
-    setBirthDate(event.target.value);
-  };
-
-  const handleToggle = (ministry) => {
-    setSelectedMinistries((prevSelected) => {
-      const isAlreadySelected = prevSelected.some((m) => m.id === ministry.id);
-      if (isAlreadySelected) {
-        return prevSelected.filter((m) => m.id !== ministry.id);
-      }
-      return [...prevSelected, ministry];
     });
-  };
 
-  return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <Box sx={style}>
-        <div className="w-full">
-          <h1 className="text-3xl text-quinary text-center mb-10">Dados do voluntário</h1>
-          <div className="flex flex-col items-center mb-10">
-            <AddAPhoto className="text-tertiary mb-2" sx={{ fontSize: 60 }} />
-            <small className="text-tertiary" style={{ fontStyle: 'italic' }}>Adicionar foto</small>
-          </div>
-          <div className="mb-8">
-            <DefaultInput label="Nome" id="nome" onChange={handleNameChange} />
-          </div>
-          <div className="mb-8">
-            <DefaultInput label="Sobrenome" id="sobrenome" onChange={handleLastNameChange} />
-          </div>
-          <div className="mb-8">
-            <DefaultInput label="WhatsApp" id="whatsapp" onChange={handleWhatsappChange} />
-          </div>
-          <div className="mb-8">
-            <DefaultInput label="Data de nascimento" id="datanascimento" onChange={handleBirthDateChange} />
-          </div>
+    if (response.status === 201)
+      console.log('volunteerministry ok');
+
+  } catch (err) {
+    enqueueSnackbar(err.response.data.message);
+  }
+};
+
+const handleClick = async () => {
+  setIsSubmitting(true);
+
+  try {
+    const newVolunteerId = await handleCreateVolunteer();
+
+    if (newVolunteerId) {
+      const ministryPromises = selectedMinistries.map((ministry) =>
+        handleCreateVolunteerMinistry(newVolunteerId, ministry.id)
+      );
+
+      await Promise.all(ministryPromises);
+      getVolunteers();
+      enqueueSnackbar('Voluntário cadastrado com sucesso!');
+
+      handleClose();
+
+    }
+  } catch (err) {
+    enqueueSnackbar(err.response.data.message);
+  } finally {
+    setIsSubmitting(false);
+    resetFields();
+  }
+};
+
+const handleNameChange = (event) => {
+  setName(event.target.value);
+};
+
+const handleLastNameChange = (event) => {
+  setLastName(event.target.value);
+};
+
+const handleWhatsappChange = (event) => {
+  setWhatsapp(event.target.value);
+};
+
+const handleBirthDateChange = (event) => {
+  setBirthDate(event.target.value);
+};
+
+const resetFields = () => {
+  setName('');
+  setLastName('');
+  setWhatsapp('');
+  setBirthDate('');
+  setSelectedMinistries([]);
+};
+
+const handleToggle = (ministry) => {
+  setSelectedMinistries((prevSelected) => {
+    const isAlreadySelected = prevSelected.some((m) => m.id === ministry.id);
+    if (isAlreadySelected) {
+      return prevSelected.filter((m) => m.id !== ministry.id);
+    }
+    return [...prevSelected, ministry];
+  });
+};
+
+return (
+  <Modal
+    open={open}
+    onClose={handleClose}
+    aria-labelledby="modal-modal-title"
+    aria-describedby="modal-modal-description"
+  >
+    <Box sx={style}>
+      {isSubmitting ? (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        }}>
+          <CircularProgress size={80} />
         </div>
-        <div className="flex flex-col items-center w-full">
-          <h1 className="text-3xl text-quinary text-center mb-10">Ministérios</h1>
-          <div className="w-5/6" style={{ maxHeight: '350px', marginBottom: '16px' }}>
-            <div className="overflow-auto bg-septenary mb-4" style={{ maxHeight: '340px' }}>
-              {ministries.map((ministry) => (
-                <CheckboxMinistry
-                  key={ministry.id}
-                  ministry={ministry.name}
-                  checked={selectedMinistries.some(m => m.id === ministry.id)}
-                  onToggle={() => handleToggle(ministry)}
-                />
-              ))}
+      ) : (
+        <>
+          <IconButton
+            onClick={handleClose}
+            style={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              color: 'grey'
+            }}
+          >
+            <Close />
+          </IconButton>
+          <div className="w-full border-r-2 border-senary">
+            <h1 className="text-3xl text-quinary text-center mb-10">Dados do voluntário</h1>
+            <div className="flex flex-col items-center mb-10">
+              <AddAPhoto className="text-tertiary mb-2" sx={{ fontSize: 60 }} />
+              <small className="text-tertiary" style={{ fontStyle: 'italic' }}>Adicionar foto</small>
+            </div>
+            <div className="mb-8">
+              <DefaultInput label="Nome" id="nome" onChange={handleNameChange} />
+            </div>
+            <div className="mb-8">
+              <DefaultInput label="Sobrenome" id="sobrenome" onChange={handleLastNameChange} />
+            </div>
+            <div className="mb-8">
+              <DefaultInput label="WhatsApp" id="whatsapp" onChange={handleWhatsappChange} />
+            </div>
+            <div className="mb-8">
+              <DefaultInput label="Data de nascimento" id="datanascimento" onChange={handleBirthDateChange} />
             </div>
           </div>
-          <RoundButton value="CADASTRAR" onClick={handleClick} />
-        </div>
-      </Box>
-    </Modal>
-  );
+          <div className="flex flex-col items-center w-full">
+            <h1 className="text-3xl text-quinary text-center mb-10">Ministérios</h1>
+            <div className="w-5/6" style={{ maxHeight: '350px', marginBottom: '16px' }}>
+              <div className="overflow-auto bg-septenary" style={{ maxHeight: '340px' }}>
+                {ministries.map((ministry) => (
+                  <CheckboxMinistry
+                    key={ministry.id}
+                    ministry={ministry.name}
+                    checked={selectedMinistries.some(m => m.id === ministry.id)}
+                    onToggle={() => handleToggle(ministry)}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="mb-6 w-5/6">
+              <p className="text-xs text-center text-quinary" style={{ fontStyle: 'italic' }}>
+                Não é obrigatório selecionar os ministérios agora, você pode fazer isso depois.
+              </p>
+            </div>
+            <RoundButton value="CADASTRAR" onClick={handleClick} />
+          </div>
+        </>
+      )}
+    </Box>
+  </Modal>
+);
 };
 
 export default CreateVolunteerModal;
