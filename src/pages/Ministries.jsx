@@ -8,6 +8,7 @@ import DefaultInput from '../components/DefaultInput';
 import RoundButton from '../components/RoundButton';
 import MinistryBox from '../components/MinistryBox';
 import MinistryLine from '../components/MinistryLine';
+import CreateMinistryModal from '../components/CreateMinistryModal';
 
 import Header from '../components/Header';
 import SearchOff from '@mui/icons-material/SearchOff';
@@ -56,6 +57,10 @@ const Ministries = () => {
         setOpen(true);
     };
 
+    const handleClose = () => {
+        setOpen(false);
+    }
+
     return (
         <>
             <Header />
@@ -93,6 +98,7 @@ const Ministries = () => {
                     </tbody>
                 </table>
             </div>
+            <CreateMinistryModal open={open} handleClose={handleClose} getMinistries={getMinistries} />
         </>
     );
 };
