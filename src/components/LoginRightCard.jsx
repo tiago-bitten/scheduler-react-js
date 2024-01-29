@@ -30,6 +30,7 @@ const LoginRightCard = () => {
 
             if (response.status === 200) {
                 sessionStorage.setItem('token', data.token);
+                sessionStorage.setItem('user', JSON.stringify(data.user));
                 enqueueSnackbar('Login efetuado com sucesso!');
                 navigate('/voluntarios');
             }

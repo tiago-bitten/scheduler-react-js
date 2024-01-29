@@ -36,7 +36,11 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
   React.useEffect(() => {
     const getMinistries = async () => {
       try {
-        const response = await instance.get('/ministries/signup');
+        const response = await instance.get('/users/ministries', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         if (response.status === 200) {
           setMinistries(response.data.ministries);
         }
