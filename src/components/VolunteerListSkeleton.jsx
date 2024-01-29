@@ -45,7 +45,7 @@ const VolunteerListSkeleton = () => {
                 />
                 <span className="text-quinary">Apenas voluntários com ministérios</span>
             </div>
-            <div className="bg-septenary p-4 mx-12 mt-12">
+            <div className="bg-septenary p-4 mx-12 mt-12 animate-pulse">
                 {Array.from(new Array(5)).map((_, index) => (
                     <VolunteerSkeleton key={index} />
                 ))}

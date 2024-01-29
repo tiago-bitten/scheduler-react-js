@@ -5,7 +5,6 @@ import DefaultInput from '../components/DefaultInput';
 import RoundButton from '../components/RoundButton';
 import Switch from '@mui/material/Switch';
 import { SearchOff } from '@mui/icons-material';
-import { Progress } from '@material-tailwind/react';
 
 import instance from '../config/axiosConfig';
 import { useSnackbar } from '../components/SnackBarProvider';

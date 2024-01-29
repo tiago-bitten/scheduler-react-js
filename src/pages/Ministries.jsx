@@ -6,18 +6,19 @@ import { useNavigate } from 'react-router-dom';
 
 import DefaultInput from '../components/DefaultInput';
 import RoundButton from '../components/RoundButton';
-import MinistryBox from '../components/MinistryBox';
 import MinistryLine from '../components/MinistryLine';
 import CreateMinistryModal from '../components/CreateMinistryModal';
+import MinistriesSkeleton from '../components/MinistriesSkeleton';
 
 import Header from '../components/Header';
 import SearchOff from '@mui/icons-material/SearchOff';
 
 const Ministries = () => {
     const [token] = React.useState(sessionStorage.getItem('token'));
-    const [loadingToken, setLoadingToken] = React.useState(true);
+    const [loading, setLoading] = React.useState(true);
     const [ministries, setMinistries] = React.useState([]);
     const [open, setOpen] = React.useState(false);
+    const [requestCompleted, setRequestCompleted] = React.useState(false);
 
     const enqueueSnackbar = useSnackbar();
     const navigate = useNavigate();
@@ -26,14 +27,24 @@ const Ministries = () => {
         if (!token) {
             navigate('/entrar');
             enqueueSnackbar('Você precisa estar logado para acessar essa página!');
+            return;
         }
-    }, [token, navigate]);
 
-    React.useEffect(() => {
-        if (token) {
-            setLoadingToken(false);
-            getMinistries();
-        }
+        const fetchMinistries = async () => {
+            try {
+                const response = await instance.get('/ministries', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setMinistries(response.data.ministries);
+            } catch (err) {
+                enqueueSnackbar(err.response?.data?.message || 'Erro ao buscar ministérios', { variant: 'error' });
+            } finally {
+                setLoading(false);
+                setRequestCompleted(true);
+            }
+        };
+
+        fetchMinistries();
     }, [token, navigate, enqueueSnackbar]);
 
     const getMinistries = async () => {
@@ -61,6 +72,10 @@ const Ministries = () => {
         setOpen(false);
     }
 
+    if (loading) {
+        return <MinistriesSkeleton />;
+    }
+
     return (
         <>
             <Header />
@@ -83,7 +98,7 @@ const Ministries = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {ministries.length > 0 ? (
+                        {requestCompleted && ministries.length > 0 ? (
                             ministries.map((ministry) => (
                                 <MinistryLine key={ministry.id} ministry={ministry} />
                             ))
