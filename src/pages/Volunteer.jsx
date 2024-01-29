@@ -12,14 +12,16 @@ import { useSnackbar } from '../components/SnackBarProvider';
 
 import VolunteerBox from '../components/VolunteerBox';
 import CreateVolunteerModal from '../components/CreateVolunteerModal';
+import VolunteerListSkeleton from '../components/VolunteerListSkeleton';
 
 const Volunteer = () => {
     const navigate = useNavigate();
     const [token] = React.useState(sessionStorage.getItem('token'));
-    const [loadingToken, setLoadingToken] = React.useState(true);
+    const [loading, setLoading] = React.useState(true);
     const [checked, setChecked] = React.useState(false);
     const [volunteers, setVolunteers] = React.useState([]);
     const [open, setOpen] = React.useState(false);
+    const [requestCompleted, setRequestCompleted] = React.useState(false);
 
     const enqueueSnackbar = useSnackbar();
 
@@ -27,14 +29,24 @@ const Volunteer = () => {
         if (!token) {
             navigate('/entrar');
             enqueueSnackbar('Você precisa estar logado para acessar essa página!');
+            return;
         }
-    }, [token, navigate]);
 
-    React.useEffect(() => {
-        if (token) {
-            setLoadingToken(false);
-            getVolunteers();
-        }
+        const fetchVolunteers = async () => {
+            try {
+                const response = await instance.get('/volunteers', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setVolunteers(response.data.volunteers);
+            } catch (err) {
+                enqueueSnackbar(err.response?.data?.message || 'Erro ao buscar voluntários', { variant: 'error' });
+            } finally {
+                setLoading(false);
+                setRequestCompleted(true);
+            }
+        };
+
+        fetchVolunteers();
     }, [token, navigate, enqueueSnackbar]);
 
     const getVolunteers = async () => {
@@ -66,12 +78,8 @@ const Volunteer = () => {
         setOpen(false);
     }
 
-    if (loadingToken) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <Progress size="xl" color="blue" />
-            </div>
-        );
+    if (loading) {
+        return <VolunteerListSkeleton />
     }
 
     return (
@@ -95,16 +103,16 @@ const Volunteer = () => {
                 />
                 <span className="text-quinary">Apenas voluntários com ministérios</span>
             </div>
-            {volunteers.length > 0 ? (
+            {requestCompleted && volunteers.length === 0 ? (
+                <div className="flex flex-col items-center justify-center mt-16">
+                    <SearchOff style={{ fontSize: 76, color: '#A0B4F0' }} />
+                    <p className="text-tertiary text-lg mt-2">Não existem voluntários cadastrados</p>
+                </div>
+            ) : (
                 <div className="bg-septenary p-4 mx-12 mt-12">
                     {volunteers.map((volunteer) => (
                         <VolunteerBox key={volunteer.id} name={volunteer.name} lastName={volunteer.lastName} ministries={volunteer.ministries} />
                     ))}
-                </div>
-            ) : (
-                <div className="flex flex-col items-center justify-center mt-16">
-                    <SearchOff style={{ fontSize: 76, color: '#A0B4F0' }} />
-                    <p className="text-tertiary text-lg mt-2">Não existem volutários cadatrados</p>
                 </div>
             )}
             <CreateVolunteerModal open={open} setOpen={setOpen} handleClose={handleClose} getVolunteers={getVolunteers} />
