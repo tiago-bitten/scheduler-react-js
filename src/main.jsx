@@ -10,6 +10,7 @@ import CreateAccount from './pages/CreateAccount.jsx';
 import Volunteer from './pages/Volunteer.jsx';
 import Analysis from './pages/Analysis.jsx';
 import Ministries from './pages/Ministries.jsx';
+import ApproveUser from './pages/ApproveUser.jsx';
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "/criar-conta/analise",
         element: <Analysis />
+      },
+      {
+        path: "/aprovar-contas",
+        element: <ApproveUser />
       }
     ]
   }
