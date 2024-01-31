@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Modal, Box, CircularProgress, IconButton } from '@mui/material';
+import { Modal, Box, CircularProgress, IconButton, TextField } from '@mui/material';
+import { DatePicker } from '@mui/lab';
 import { AddAPhoto, Close } from '@mui/icons-material';
 import { useSnackbar } from './SnackBarProvider';
 
@@ -191,7 +192,14 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
               <DefaultInput label="WhatsApp" id="whatsapp" onChange={handleWhatsappChange} />
             </div>
             <div className="mb-8">
-              <DefaultInput label="Data de nascimento" id="datanascimento" onChange={handleBirthDateChange} />
+              <DatePicker
+                label="Data de nascimento"
+                value={birthDate}
+                onChange={(newValue) => {
+                  setBirthDate(newValue);
+                }}
+                renderInput={(params) => <TextField {...params} />}
+              />
             </div>
           </div>
           <div className="flex flex-col items-center w-full">
