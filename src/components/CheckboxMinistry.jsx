@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox, Skeleton } from '@mui/material';
+import { Checkbox } from '@mui/material';
 
 const CheckboxMinistry = ({ ministry, checked, onToggle }) => {
     return (

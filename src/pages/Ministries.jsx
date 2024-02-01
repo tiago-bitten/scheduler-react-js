@@ -8,6 +8,7 @@ import DefaultInput from '../components/DefaultInput';
 import RoundButton from '../components/RoundButton';
 import MinistryLine from '../components/MinistryLine';
 import CreateMinistryModal from '../components/CreateMinistryModal';
+import VolunteerMinistryModal from '../components/VolunteerMinistryModal';
 import MinistriesSkeleton from '../components/MinistriesSkeleton';
 
 import Header from '../components/Header';
@@ -18,10 +19,21 @@ const Ministries = () => {
     const [loading, setLoading] = React.useState(true);
     const [ministries, setMinistries] = React.useState([]);
     const [open, setOpen] = React.useState(false);
+    const [openVolunteerMinistryModal, setVolunteerMinistryModal] = React.useState(false);
     const [requestCompleted, setRequestCompleted] = React.useState(false);
+    const [volunteerRequestCompleted, setVolunteerRequestCompleted] = React.useState(false);
+    const [volunteers, setVolunteers] = React.useState([]);
+    const [action, setAction] = React.useState('ADICIONAR');
+    const [title, setTitle] = React.useState('Voluntários vinculados');
+    const [ministryId, setMinistryId] = React.useState(null);
 
     const enqueueSnackbar = useSnackbar();
     const navigate = useNavigate();
+
+    React.useEffect(() => {
+        setAction('ADICIONAR');
+        setTitle('Voluntários vinculados');
+    }, [ministryId]);
 
     React.useEffect(() => {
         if (!token) {
@@ -64,12 +76,110 @@ const Ministries = () => {
         }
     };
 
+    const fetchVolunteerMinistry = async (ministryId) => {
+        setVolunteerRequestCompleted(false);
+        try {
+            const response = await instance.get(`volunteer-ministries/ministry/${ministryId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 200) {
+                setVolunteers(response.data.volunteers);
+                setVolunteerRequestCompleted(true);
+            }
+
+        } catch (err) {
+            enqueueSnackbar(err.response.data.message || "Erro ao buscar voluntários", { variant: "error" });
+        }
+    }
+
+    const fetchVolunteerNotInMinistry = async (ministryId) => {
+        setVolunteerRequestCompleted(false);
+        try {
+            const response = await instance.get(`/volunteers/not-in-ministry/${ministryId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.status === 200) {
+                setVolunteers(response.data.volunteers);
+                setVolunteerRequestCompleted(true);
+            }
+
+        } catch (err) {
+            enqueueSnackbar(err.response?.data?.message || "Erro ao buscar voluntários", { variant: "error" });
+        }
+    }
+
+    const handleAssociateVolunteer = async (volunteerId) => {
+        try {
+            const response = await instance.post(`/volunteer-ministries/associate?volunteerId=${volunteerId}&ministryId=${ministryId}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.status === 204) {
+                fetchVolunteerNotInMinistry(ministryId);
+                enqueueSnackbar("Voluntário associado com sucesso ao ministério", { variant: "success" });
+            }
+
+        } catch (err) {
+            enqueueSnackbar(err.response.data.message, { variant: "error" });
+        }
+    }
+
+    const handleDisassociateVolunteer = async (volunteerId) => {
+        try {
+            const response = await instance.put(`/volunteer-ministries/disassociate?volunteerId=${volunteerId}&ministryId=${ministryId}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.status === 204) {
+                fetchVolunteerMinistry(ministryId);
+                enqueueSnackbar("Voluntário desassociado com sucesso do ministério", { variant: "success" });
+            }
+
+        } catch (err) {
+            enqueueSnackbar(err.response.data.message, { variant: "error" });
+        }
+    }
+
     const handleClick = () => {
         setOpen(true);
     };
 
     const handleClose = () => {
         setOpen(false);
+    }
+
+    const handleVolunteerMinistryModal = (ministryId) => {
+        setVolunteerMinistryModal(true);
+        fetchVolunteerMinistry(ministryId);
+        setMinistryId(ministryId);
+    }
+
+    const handleCloseVolunteerMinistryModal = () => {
+        setVolunteerMinistryModal(false);
+    }
+
+    const handleAction = () => {
+        if (action === 'ADICIONAR') {
+            setAction('LISTAR');
+            setTitle('Voluntários não vinculados');
+            setVolunteerRequestCompleted(false);
+            fetchVolunteerNotInMinistry(ministryId);
+        } else {
+            setAction('ADICIONAR');
+            setTitle('Voluntários vinculados');
+            setVolunteerRequestCompleted(false);
+            fetchVolunteerMinistry(ministryId);
+        }
     }
 
     if (loading) {
@@ -100,7 +210,7 @@ const Ministries = () => {
                     <tbody>
                         {requestCompleted && ministries.length > 0 ? (
                             ministries.map((ministry) => (
-                                <MinistryLine key={ministry.id} ministry={ministry} />
+                                <MinistryLine key={ministry.id} ministry={ministry} onMinistryNameClick={() => handleVolunteerMinistryModal(ministry.id)} />
                             ))
                         ) : (
                             <tr>
@@ -113,7 +223,22 @@ const Ministries = () => {
                     </tbody>
                 </table>
             </div>
-            <CreateMinistryModal open={open} handleClose={handleClose} getMinistries={getMinistries} />
+            <CreateMinistryModal
+                open={open}
+                handleClose={handleClose}
+                getMinistries={getMinistries}
+            />
+            <VolunteerMinistryModal
+                open={openVolunteerMinistryModal}
+                handleClose={handleCloseVolunteerMinistryModal}
+                volunteers={volunteers}
+                changeAction={handleAction}
+                action={action}
+                title={title}
+                handleAssociateVolunteer={handleAssociateVolunteer}
+                handleDisassociateVolunteer={handleDisassociateVolunteer}
+                volunteerRequestCompleted={volunteerRequestCompleted}
+            />
         </>
     );
 };
