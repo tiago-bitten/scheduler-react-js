@@ -31,8 +31,7 @@ const Ministries = () => {
     const navigate = useNavigate();
 
     React.useEffect(() => {
-        setAction('ADICIONAR');
-        setTitle('Voluntários vinculados');
+        resetAction(ministryId);
     }, [ministryId]);
 
     React.useEffect(() => {
@@ -158,10 +157,10 @@ const Ministries = () => {
         setOpen(false);
     }
 
-    const handleVolunteerMinistryModal = (ministryId) => {
+    const handleVolunteerMinistryModal = (_ministryId) => {
         setVolunteerMinistryModal(true);
-        fetchVolunteerMinistry(ministryId);
-        setMinistryId(ministryId);
+        setMinistryId(_ministryId);
+        resetAction(_ministryId);
     }
 
     const handleCloseVolunteerMinistryModal = () => {
@@ -180,6 +179,12 @@ const Ministries = () => {
             setVolunteerRequestCompleted(false);
             fetchVolunteerMinistry(ministryId);
         }
+    }
+
+    const resetAction = () => {
+        setAction('ADICIONAR');
+        setTitle('Voluntários vinculados');
+        fetchVolunteerMinistry(ministryId);
     }
 
     if (loading) {
