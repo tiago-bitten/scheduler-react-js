@@ -31,7 +31,7 @@ const Ministries = () => {
     const navigate = useNavigate();
 
     React.useEffect(() => {
-        resetAction(ministryId);
+        resetAction();
     }, [ministryId]);
 
     React.useEffect(() => {
@@ -160,7 +160,8 @@ const Ministries = () => {
     const handleVolunteerMinistryModal = (_ministryId) => {
         setVolunteerMinistryModal(true);
         setMinistryId(_ministryId);
-        resetAction(_ministryId);
+        resetAction();
+        fetchVolunteerMinistry(_ministryId);
     }
 
     const handleCloseVolunteerMinistryModal = () => {
@@ -184,7 +185,6 @@ const Ministries = () => {
     const resetAction = () => {
         setAction('ADICIONAR');
         setTitle('Voluntários vinculados');
-        fetchVolunteerMinistry(ministryId);
     }
 
     if (loading) {

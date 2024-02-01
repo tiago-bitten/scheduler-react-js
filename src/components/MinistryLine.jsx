@@ -10,7 +10,7 @@ const MinistryLine = ({ ministry, onMinistryNameClick }) => {
                 <MinistryBox name={ministry.name} color={ministry.color} onClick={onMinistryNameClick} />
             </td>
             <td className="text-left p-10">{ministry.description}</td>
-            <td className="text-center font-bold text-quinary p-10">{ministry.totalVolunteers}</td>
+            <td className="text-center font-bold text-quinary p-10 hover:underline cursor-pointer" onClick={onMinistryNameClick}>{ministry.totalVolunteers}</td>
             <td className="text-right p-10">
                 <Edit className="text-quinary cursor-pointer mx-2" />
                 <Delete className="text-quinary cursor-pointer mx-2" />
