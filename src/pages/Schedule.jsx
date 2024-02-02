@@ -1,0 +1,66 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from '../components/SnackbarProvider';
+import MyCalendar from '../components/MyCalender';
+
+import instance from '../config/axiosConfig';
+import Header from '../components/Header';
+
+const Schedule = () => {
+    const [token] = useState(sessionStorage.getItem('token'));
+    const [schedules, setSchedules] = useState([]);
+    const [month, setMonth] = useState(new Date().getMonth() + 1);
+    const [year, setYear] = useState(new Date().getFullYear());
+
+    const enqueueSnackbar = useSnackbar();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!token) {
+            navigate('/login');
+            enqueueSnackbar('Você precisa estar logado para acessar essa página');
+            return;
+        }
+
+        const fetchSchedules = async () => {
+            try {
+                const response = await instance.get(`/schedules?month=${month}&year=${year}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (response.status === 200) {
+                    console.log(response.data);
+                    const schedulesData = response.data.schedules.map(schedule => ({
+                        title: schedule.name,
+                        start: new Date(schedule.startDate),
+                        end: new Date(schedule.endDate),
+                        allDay: false,
+                    }));
+                    setSchedules(schedulesData);
+                }
+
+            } catch (err) {
+                enqueueSnackbar('Não foi possível buscar as agendas');
+            }
+        }
+
+        fetchSchedules();
+    }, [token, month, year, navigate, enqueueSnackbar]);
+
+    const handleSelect = ({ start }) => {
+        console.log(start);
+    };
+
+    return (
+        <>
+            <Header />
+            <div className="mx-12 mt-14">
+                <MyCalendar events={schedules} onSelectSlot={handleSelect} />
+            </div>
+        </>
+    );
+};
+
+export default Schedule;

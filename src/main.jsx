@@ -1,6 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import moment from 'moment';
+import 'moment/locale/pt-br';
 import './index.css'
+
+moment.locale('pt-br');
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -11,6 +15,8 @@ import Volunteer from './pages/Volunteer.jsx';
 import Analysis from './pages/Analysis.jsx';
 import Ministries from './pages/Ministries.jsx';
 import ApproveUser from './pages/ApproveUser.jsx';
+import Schedule from './pages/Schedule.jsx';
+
 
 const router = createBrowserRouter([
   {
@@ -40,6 +46,10 @@ const router = createBrowserRouter([
       {
         path: "/aprovar-contas",
         element: <ApproveUser />
+      },
+      {
+        path: "/agendas",
+        element: <Schedule />
       }
     ]
   }

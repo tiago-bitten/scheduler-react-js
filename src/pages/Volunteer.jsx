@@ -27,7 +27,7 @@ const Volunteer = () => {
     React.useEffect(() => {
         if (!token) {
             navigate('/entrar');
-            enqueueSnackbar('Você precisa estar logado para acessar essa página!');
+            enqueueSnackbar('Você precisa estar logado para acessar essa página.');
             return;
         }
 
