@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Box, CircularProgress, IconButton, TextField } from '@mui/material';
 import { DatePicker } from '@mui/lab';
 import { AddAPhoto, Close } from '@mui/icons-material';
-import { useSnackbar } from './SnackBarProvider';
+import { useSnackbar } from '../components/SnackbarProvider';
 
 import DefaultInput from './DefaultInput';
 import CheckboxMinistry from './CheckboxMinistry';

@@ -5,12 +5,15 @@ import MyCalendar from '../components/MyCalender';
 
 import instance from '../config/axiosConfig';
 import Header from '../components/Header';
+import OpenScheduleModal from '../components/OpenScheduleModal';
 
 const Schedule = () => {
     const [token] = useState(sessionStorage.getItem('token'));
     const [schedules, setSchedules] = useState([]);
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
+    const [showOpenScheduleModal, setOpenScheduleModal] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(null);
 
     const enqueueSnackbar = useSnackbar();
     const navigate = useNavigate();
@@ -50,7 +53,8 @@ const Schedule = () => {
     }, [token, month, year, navigate, enqueueSnackbar]);
 
     const handleSelect = ({ start }) => {
-        console.log(start);
+        setOpenScheduleModal(true);
+        setSelectedDate(start);
     };
 
     return (
@@ -59,6 +63,11 @@ const Schedule = () => {
             <div className="mx-12 mt-14">
                 <MyCalendar events={schedules} onSelectSlot={handleSelect} />
             </div>
+            <OpenScheduleModal
+                open={showOpenScheduleModal}
+                onClose={() => setOpenScheduleModal(false)}
+                selectedDate={selectedDate}
+            />
         </>
     );
 };
