@@ -6,6 +6,7 @@ import MyCalendar from '../components/MyCalender';
 import instance from '../config/axiosConfig';
 import Header from '../components/Header';
 import OpenScheduleModal from '../components/OpenScheduleModal';
+import RoundButton from '../components/RoundButton';
 
 const Schedule = () => {
     const [token] = useState(sessionStorage.getItem('token'));
@@ -25,30 +26,6 @@ const Schedule = () => {
             return;
         }
 
-        const fetchSchedules = async () => {
-            try {
-                const response = await instance.get(`/schedules?month=${month}&year=${year}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (response.status === 200) {
-                    console.log(response.data);
-                    const schedulesData = response.data.schedules.map(schedule => ({
-                        title: schedule.name,
-                        start: new Date(schedule.startDate),
-                        end: new Date(schedule.endDate),
-                        allDay: false,
-                    }));
-                    setSchedules(schedulesData);
-                }
-
-            } catch (err) {
-                enqueueSnackbar('Não foi possível buscar as agendas');
-            }
-        }
-
         fetchSchedules();
     }, [token, month, year, navigate, enqueueSnackbar]);
 
@@ -57,16 +34,44 @@ const Schedule = () => {
         setSelectedDate(start);
     };
 
+    const fetchSchedules = async () => {
+        try {
+            const response = await instance.get(`/schedules?month=${month}&year=${year}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.status === 200) {
+                console.log(response.data);
+                const schedulesData = response.data.schedules.map(schedule => ({
+                    title: schedule.name,
+                    start: new Date(schedule.startDate),
+                    end: new Date(schedule.endDate),
+                    allDay: false,
+                }));
+                setSchedules(schedulesData);
+            }
+
+        } catch (err) {
+            enqueueSnackbar('Não foi possível buscar as agendas');
+        }
+    }
+
     return (
         <>
             <Header />
-            <div className="mx-12 mt-14">
+            <div className="mx-12 mt-6 text-right">
+                <RoundButton value="ABRIR AGENDA" onClick={() => setOpenScheduleModal(true)} />
+            </div>
+            <div className="mx-12 mt-6">
                 <MyCalendar events={schedules} onSelectSlot={handleSelect} />
             </div>
             <OpenScheduleModal
                 open={showOpenScheduleModal}
                 onClose={() => setOpenScheduleModal(false)}
                 selectedDate={selectedDate}
+                fetchSchedules={fetchSchedules}
             />
         </>
     );
