@@ -1,12 +1,13 @@
 import React from "react";
 
-import { Modal, Box, Chip, Typography, IconButton } from "@mui/material";
+import { Modal, Box, Chip, Typography, IconButton, Grid } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from "notistack";
 import AppointmentLine from "./AppointmentLine";
 import AppointVolunteer from "./AppointVolunteer";
 import NotFoundItem from "./NotFoundItem";
 import instance from "../config/axiosConfig";
+import moment from "moment";
 
 const style = {
     position: 'absolute',
@@ -72,6 +73,14 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
     }
 
     const handleAppointment = (ministry) => {
+        const today = moment();
+        const endDate = moment(schedule.end);
+
+        if (endDate.isBefore(today)) {
+            enqueueSnackbar('Não é possível agendar voluntários para eventos passados', { variant: 'error' });
+            return;
+        }
+
         setShowAppointVolunteerModal(true);
         setSelectedMinistry(ministry);
     }
@@ -83,11 +92,28 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                     <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
                         <CloseIcon />
                     </IconButton>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
                         <Typography variant="h6" component="h2" sx={{ my: 2 }}>
                             {schedule?.title}
                         </Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <Grid container spacing={2} justifyContent="center">
+                            <Grid item xs={6}>
+                                <Typography variant="body1">
+                                    Início: {moment(schedule?.start).format('DD/MM/YYYY HH:mm')}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography variant="body1">
+                                    Término: {moment(schedule?.end).format('DD/MM/YYYY HH:mm')}
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                        {schedule?.description && (
+                            <Typography variant="body1" sx={{ my: 1 }}>
+                                Descrição: {schedule.description}
+                            </Typography>
+                        )}
+                        <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', mb: 2 }}>
                             {ministries.map(ministry => (
                                 <Chip
                                     key={ministry.id}
@@ -98,7 +124,7 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                             ))}
                         </Box>
                     </Box>
-                    <Box sx={{ mt: 2, overflow: 'auto', maxHeight: '500px', mx: 4 }}>
+                    <Box sx={{ overflow: 'auto', maxHeight: '500px', mx: 4 }}>
                         {appointments.length > 0 ? (
                             appointments.map(appointment => (
                                 <AppointmentLine

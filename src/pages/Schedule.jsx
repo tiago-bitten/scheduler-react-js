@@ -42,6 +42,12 @@ const Schedule = () => {
         setShowEventModal(true);
     }
 
+    const handleNavigate = (date) => {
+        setMonth(date.getMonth() + 1);
+        setYear(date.getFullYear());
+        fetchSchedules(date.getMonth() + 1, date.getFullYear());
+    };
+
     const fetchSchedules = async () => {
         try {
             const response = await instance.get(`/schedules?month=${month}&year=${year}`, {
@@ -58,6 +64,7 @@ const Schedule = () => {
                     end: new Date(schedule.endDate),
                     allDay: false,
                     id: schedule.id,
+                    description: schedule.description
                 }));
                 setSchedules(schedulesData);
             }
@@ -81,6 +88,7 @@ const Schedule = () => {
                     events={schedules}
                     onSelectSlot={handleSelectDate}
                     onSelectEvent={handleSelectEvent}
+                    onNavigate={handleNavigate}
                 />
             </div>
             <OpenScheduleModal
