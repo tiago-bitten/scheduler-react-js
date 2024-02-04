@@ -1,8 +1,9 @@
 import React from "react";
 
-import { Modal, Box } from "@mui/material";
+import { Modal, Box, Chip, Typography } from "@mui/material";
 import { useSnackbar } from "./SnackbarProvider";
 import AppointmentLine from "./AppointmentLine";
+import AppointVolunteer from "./AppointVolunteer";
 import instance from "../config/axiosConfig";
 
 const style = {
@@ -19,15 +20,16 @@ const style = {
 
 const AppointmentModal = ({ open, onClose, schedule }) => {
     const [token] = React.useState(sessionStorage.getItem('token'));
-    const [appoinments, setAppointments] = React.useState([]);
+    const [appointments, setAppointments] = React.useState([]);
     const [ministries, setMinistries] = React.useState([]);
+    const [showAppointVolunteerModal, setShowAppointVolunteerModal] = React.useState(false);
+    const [selectedMinistry, setSelectedMinistry] = React.useState(null);
 
     const enqueueSnackbar = useSnackbar();
 
     React.useEffect(() => {
         const fetchAppointments = async () => {
-            if (!schedule.id) {
-                onClose();
+            if (!schedule) {
                 return;
             }
 
@@ -68,22 +70,44 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
         fetchUserMinistries();
     }, [schedule]);
 
+    const handleAppointment = (ministry) => {
+        setShowAppointVolunteerModal(true);
+        setSelectedMinistry(ministry);
+    }
+
     return (
-        <Modal open={open} onClose={onClose}>
-            <Box sx={style}>
-                <Box>
-                    <h1 className="text-center">{schedule.title}</h1>
-                    {ministries.map(ministry => (
-                        <p key={ministry.id}>{ministry.name}</p>
-                    ))}
+        <>
+            <Modal open={open} onClose={onClose}>
+                <Box sx={style}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <Typography variant="h6" component="h2" sx={{ my: 2 }}>
+                            {schedule?.title}
+                        </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
+                            {ministries.map(ministry => (
+                                <Chip
+                                    key={ministry.id}
+                                    label={ministry.name}
+                                    onClick={() => handleAppointment(ministry)}
+                                    style={{ backgroundColor: ministry.color, color: 'white', margin: '0.5rem' }}
+                                />
+                            ))}
+                        </Box>
+                    </Box>
+                    <Box sx={{ mt: 2 }}>
+                        {appointments.map(appointment => (
+                            <AppointmentLine key={appointment.id} appointment={appointment} />
+                        ))}
+                    </Box>
                 </Box>
-                <Box>
-                    {appoinments.map(appointment => (
-                        <AppointmentLine key={appointment.id} appointment={appointment} />
-                    ))}
-                </Box>
-            </Box>
-        </Modal>
+            </Modal>
+            <AppointVolunteer
+                open={showAppointVolunteerModal}
+                onClose={() => setShowAppointVolunteerModal(false)}
+                schedule={schedule}
+                ministry={selectedMinistry}
+            />
+        </>
     );
 };
 
