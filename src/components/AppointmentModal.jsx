@@ -27,10 +27,16 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
     const [ministries, setMinistries] = React.useState([]);
     const [showAppointVolunteerModal, setShowAppointVolunteerModal] = React.useState(false);
     const [selectedMinistry, setSelectedMinistry] = React.useState(null);
+    const [isSchedulePast, setIsSchedulePast] = React.useState(null);
 
     const { enqueueSnackbar } = useSnackbar();
 
     React.useEffect(() => {
+        if (schedule) {
+            const endDate = moment(schedule.end);
+            setIsSchedulePast(endDate.isBefore(moment()));
+        }
+
         fetchAppointments();
         fetchUserMinistries();
     }, [schedule]);
@@ -72,11 +78,9 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
         }
     }
 
-    const handleAppointment = (ministry) => {
-        const today = moment();
-        const endDate = moment(schedule.end);
 
-        if (endDate.isBefore(today)) {
+    const handleAppointment = (ministry) => {
+        if (isSchedulePast) {
             enqueueSnackbar('Não é possível agendar voluntários para eventos passados', { variant: 'error' });
             return;
         }
@@ -132,6 +136,7 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                                     appointment={appointment}
                                     userMinistries={ministries}
                                     fetchAppointments={fetchAppointments}
+                                    isSchedulePast={isSchedulePast}
                                 />
                             ))
                         ) : (

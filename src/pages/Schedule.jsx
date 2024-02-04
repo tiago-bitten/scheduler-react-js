@@ -45,7 +45,6 @@ const Schedule = () => {
     const handleNavigate = (date) => {
         setMonth(date.getMonth() + 1);
         setYear(date.getFullYear());
-        fetchSchedules(date.getMonth() + 1, date.getFullYear());
     };
 
     const fetchSchedules = async () => {

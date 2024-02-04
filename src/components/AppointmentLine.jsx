@@ -6,7 +6,7 @@ import { IconButton, Tooltip, Box, Typography } from "@mui/material";
 
 import { useSnackbar } from "notistack";
 
-const AppointmentLine = ({ appointment, userMinistries, fetchAppointments }) => {
+const AppointmentLine = ({ appointment, userMinistries, fetchAppointments, isSchedulePast }) => {
     const [token] = React.useState(sessionStorage.getItem('token'));
     const { enqueueSnackbar } = useSnackbar();
 
@@ -55,13 +55,13 @@ const AppointmentLine = ({ appointment, userMinistries, fetchAppointments }) => 
                 </Box>
             </Tooltip>
             <Box>
-                {isUserAllowedInMinistry && (
+                {isUserAllowedInMinistry && !isSchedulePast ? (
                     <IconButton
                         onClick={() => handleDelete(appointment.id)}
                     >
                         <CloseIcon fontSize="large" />
                     </IconButton>
-                )}
+                ) : null}
             </Box>
         </Box>
     );
