@@ -28,47 +28,47 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
     const enqueueSnackbar = useSnackbar();
 
     React.useEffect(() => {
-        const fetchAppointments = async () => {
-            if (!schedule) {
-                return;
-            }
-
-            try {
-                const response = await instance.get(`/schedules/appointments?scheduleId=${schedule.id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (response.status === 200) {
-                    setAppointments(response.data.schedule.appointments);
-                    console.log(response.data.schedule.appointments);
-                }
-
-            } catch (err) {
-                enqueueSnackbar(err.response.data.message || 'Erro ao buscar agendamentos', { variant: 'error' })
-            }
-        }
-
-        const fetchUserMinistries = async () => {
-            try {
-                const response = await instance.get('/users/ministries', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (response.status === 200) {
-                    setMinistries(response.data.ministries);
-                }
-            } catch (err) {
-                enqueueSnackbar(err.response.data.message || 'Erro ao buscar ministérios', { variant: 'error' });
-            }
-        }
-
         fetchAppointments();
         fetchUserMinistries();
     }, [schedule]);
+
+    const fetchAppointments = async () => {
+        if (!schedule) {
+            return;
+        }
+
+        try {
+            const response = await instance.get(`/schedules/appointments?scheduleId=${schedule.id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.status === 200) {
+                setAppointments(response.data.schedule.appointments);
+                console.log(response.data.schedule.appointments);
+            }
+
+        } catch (err) {
+            enqueueSnackbar(err.response.data.message || 'Erro ao buscar agendamentos', { variant: 'error' })
+        }
+    }
+
+    const fetchUserMinistries = async () => {
+        try {
+            const response = await instance.get('/users/ministries', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.status === 200) {
+                setMinistries(response.data.ministries);
+            }
+        } catch (err) {
+            enqueueSnackbar(err.response.data.message || 'Erro ao buscar ministérios', { variant: 'error' });
+        }
+    }
 
     const handleAppointment = (ministry) => {
         setShowAppointVolunteerModal(true);
@@ -106,6 +106,7 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                 onClose={() => setShowAppointVolunteerModal(false)}
                 schedule={schedule}
                 ministry={selectedMinistry}
+                fetchAppointments={fetchAppointments}
             />
         </>
     );

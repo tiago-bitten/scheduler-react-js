@@ -30,7 +30,7 @@ const Schedule = () => {
         }
 
         fetchSchedules();
-    }, [token, month, year, navigate, enqueueSnackbar]);
+    }, [token, month, year, navigate]);
 
     const handleSelectDate = ({ start }) => {
         setOpenScheduleModal(true);
@@ -63,7 +63,10 @@ const Schedule = () => {
             }
 
         } catch (err) {
-            enqueueSnackbar('Não foi possível buscar as agendas');
+            if (err.response.status === 401) {
+                navigate('/entrar');
+                enqueueSnackbar('Sessão expirada, faça login novamente');
+            }
         }
     }
 
