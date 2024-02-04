@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Modal, Box, IconButton, Grid, Typography, TextField, List, ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
+import DoneIcon from '@mui/icons-material/Done';
 import instance from "../config/axiosConfig";
-import { useSnackbar } from "./SnackbarProvider";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import { Modal, Box, IconButton, Grid, Typography, TextField } from "@mui/material";
+import { useSnackbar } from "notistack";
 
 const style = {
     position: 'absolute',
@@ -14,24 +14,20 @@ const style = {
     boxShadow: 24,
     p: 4,
     borderRadius: 1,
+    overflow: 'hidden',
 };
 
 const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments }) => {
-    const [token] = React.useState(sessionStorage.getItem('token'));
-    const [volunteers, setVolunteers] = React.useState([]);
+    const [token] = useState(sessionStorage.getItem('token'));
+    const [volunteers, setVolunteers] = useState([]);
+    const { enqueueSnackbar } = useSnackbar();
 
-    const enqueueSnackbar = useSnackbar();
-
-    React.useEffect(() => {
-
+    useEffect(() => {
+        if (!ministry || !open) return;
         fetchVolunteers();
-    }, [ministry, token]);
+    }, [ministry, token, open]);
 
     const fetchVolunteers = async () => {
-        if (!ministry) {
-            return;
-        }
-
         try {
             const response = await instance.get(`/volunteers/not-in-schedule/${schedule.id}/ministry/${ministry.id}`, {
                 headers: {
@@ -43,7 +39,7 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                 setVolunteers(response.data.volunteers);
             }
         } catch (err) {
-            enqueueSnackbar(err.response.data.message || 'Erro ao buscar voluntários');
+            enqueueSnackbar(err.response.data.message || 'Erro ao buscar voluntários', { variant: 'error' });
         }
     }
 
@@ -56,21 +52,18 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
             });
 
             if (response.status === 204) {
-                enqueueSnackbar('Voluntário agendado com sucesso');
+                enqueueSnackbar('Voluntário agendado com sucesso', { variant: 'success' });
                 fetchAppointments();
                 fetchVolunteers();
             }
 
         } catch (err) {
-            enqueueSnackbar(err.response.data.message || 'Erro ao agendar voluntário');
+            enqueueSnackbar(err.response.data.message || 'Erro ao agendar voluntário', { variant: 'error' });
         }
     }
 
     return (
-        <Modal
-            open={open}
-            onClose={onClose}
-        >
+        <Modal open={open} onClose={onClose}>
             <Box sx={style}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -81,32 +74,29 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                     <Grid item xs={6}>
                         <Typography variant="subtitle1" gutterBottom>Voluntários</Typography>
                         <TextField
-                            label="Buscar voluntário"
+                            label="Buscar"
                             variant="standard"
                             size="small"
                             fullWidth
+                            autoComplete="off"
                             sx={{ mb: 2 }}
                         />
-                        <Box sx={{ maxHeight: '400px', overflowY: 'auto' }}>
+                        <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
                             {volunteers.map(volunteer => (
-                                <div key={volunteer.id} className="flex items-center justify-between p-4 border-b border-gray-200">
-                                    <div className="flex items-center">
-                                        <img
-                                            src="https://thispersondoesnotexist.com/"
-                                            alt="thispersondoesnotexists"
-                                            className="rounded-full w-14 h-14 mr-4" />
-                                        <div>
-                                            <p className="text-xl text-quinary">{volunteer.name} {volunteer.lastName}</p>
-                                        </div>
-                                    </div>
+                                <ListItem key={volunteer.id} divider>
+                                    <ListItemAvatar>
+                                        <Avatar src="https://thispersondoesnotexist.com/" alt="thispersondoesnotexists" />
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={volunteer.name + ' ' + volunteer.lastName}
+                                    />
                                     <IconButton
-                                        color="primary"
                                         onClick={() => handleAppointment(volunteer.id)}>
-                                        <CheckCircleOutlineIcon />
+                                        <DoneIcon fontSize="medium" />
                                     </IconButton>
-                                </div>
+                                </ListItem>
                             ))}
-                        </Box>
+                        </List>
                     </Grid>
                     <Grid item xs={6}>
                         <Typography variant="subtitle1" gutterBottom>Grupos</Typography>

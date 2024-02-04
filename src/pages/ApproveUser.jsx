@@ -1,15 +1,14 @@
-// ApproveUser.jsx
 import React, { useEffect, useState } from 'react';
 import instance from '../config/axiosConfig';
 import Header from '../components/Header';
-import { useSnackbar } from '../components/SnackBarProvider';
+import { useSnackbar } from 'notistack';
 import ApproveUserCard from '../components/ApproveUserCard';
 
 const ApproveUser = () => {
     const [token] = useState(sessionStorage.getItem('token'));
     const [users, setUsers] = useState([]);
 
-    const enqueueSnackbar = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         const fetchUsersToApprove = async () => {
@@ -39,7 +38,7 @@ const ApproveUser = () => {
             });
 
             if (response.status === 204) {
-                enqueueSnackbar('Usuário aprovado com sucesso.');
+                enqueueSnackbar('Usuário aprovado com sucesso.', { variant: 'success' });
                 setUsers(users.filter((user) => user.id !== id));
             }
 

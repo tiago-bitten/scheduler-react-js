@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Modal, Box, Chip, Typography } from "@mui/material";
-import { useSnackbar } from "./SnackbarProvider";
+import { useSnackbar } from "notistack";
 import AppointmentLine from "./AppointmentLine";
 import AppointVolunteer from "./AppointVolunteer";
 import instance from "../config/axiosConfig";
@@ -11,7 +11,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '50%',
+    width: '60%',
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
@@ -25,7 +25,7 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
     const [showAppointVolunteerModal, setShowAppointVolunteerModal] = React.useState(false);
     const [selectedMinistry, setSelectedMinistry] = React.useState(null);
 
-    const enqueueSnackbar = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
 
     React.useEffect(() => {
         fetchAppointments();
@@ -46,7 +46,6 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
 
             if (response.status === 200) {
                 setAppointments(response.data.schedule.appointments);
-                console.log(response.data.schedule.appointments);
             }
 
         } catch (err) {
@@ -94,9 +93,14 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                             ))}
                         </Box>
                     </Box>
-                    <Box sx={{ mt: 2 }}>
+                    <Box sx={{ mt: 2, overflow: 'auto', maxHeight: '500px', mx: 4 }}>
                         {appointments.map(appointment => (
-                            <AppointmentLine key={appointment.id} appointment={appointment} />
+                            <AppointmentLine
+                                key={appointment.id}
+                                appointment={appointment}
+                                userMinistries={ministries}
+                                fetchAppointments={fetchAppointments}
+                            />
                         ))}
                     </Box>
                 </Box>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Box, IconButton, CircularProgress } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { ChromePicker } from 'react-color';
-import { useSnackbar } from './SnackBarProvider';
+import { useSnackbar } from 'notistack';
 
 import instance from '../config/axiosConfig';
 
@@ -15,7 +15,7 @@ const CreateMinistryModal = ({ open, handleClose, getMinistries }) => {
     const [color, setColor] = useState('#000000');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const enqueueSnackbar = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
 
     const handleCreateMinistry = async () => {
         try {
@@ -30,12 +30,12 @@ const CreateMinistryModal = ({ open, handleClose, getMinistries }) => {
             });
 
             if (response.status === 204) {
-                enqueueSnackbar('Ministério cadastrado com sucesso!');
+                enqueueSnackbar('Ministério cadastrado com sucesso!', { variant: 'success' });
                 getMinistries();
             }
 
         } catch (err) {
-            enqueueSnackbar(err.response.data.message);
+            enqueueSnackbar(err.response?.data?.message || 'Ocorreu um erro ao cadastrar o ministério.', { variant: 'error' });
         }
     }
 
@@ -56,10 +56,9 @@ const CreateMinistryModal = ({ open, handleClose, getMinistries }) => {
         try {
             await handleCreateMinistry();
 
-            enqueueSnackbar('Ministério cadastrado com sucesso!');
             getMinistries();
         } catch (err) {
-            enqueueSnackbar(err.response?.data?.message || 'Ocorreu um erro ao cadastrar o ministério.');
+            enqueueSnackbar(err.response?.data?.message || 'Erro interno', { variant: 'error' });
         } finally {
             setIsSubmitting(false);
             handleClose();

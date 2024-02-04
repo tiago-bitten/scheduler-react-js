@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import RoundButton from './RoundButton';
 import CheckboxMinistry from './CheckboxMinistry';
-import { useSnackbar } from '../components/SnackBarProvider';
+import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 import instance from '../config/axiosConfig';
@@ -12,7 +12,7 @@ const CreateAccountRightCard = ({ name, email, password }) => {
     const [selectedMinistries, setSelectedMinistries] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const enqueueSnackbar = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         const getMinistries = async () => {
@@ -23,7 +23,7 @@ const CreateAccountRightCard = ({ name, email, password }) => {
                     setLoading(false);
                 }
             } catch (err) {
-                enqueueSnackbar(err.response.data.message);
+                enqueueSnackbar(err.response?.data?.message || 'Erro ao buscar ministérios', { variant: 'error' });
                 setLoading(false);
             }
         };
@@ -51,11 +51,11 @@ const CreateAccountRightCard = ({ name, email, password }) => {
             });
 
             if (response.status === 201) {
-                enqueueSnackbar('Sua conta foi enviada para análise!');
+                enqueueSnackbar('Sua conta foi enviada para análise.', { variant: 'success' });
                 navigate('/criar-conta/analise');
             }
         } catch (err) {
-            enqueueSnackbar(err.response.data.message);
+            enqueueSnackbar(err.response?.data?.message || 'Erro ao criar conta', { variant: 'error' });
         }
     };
 

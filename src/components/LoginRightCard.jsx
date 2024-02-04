@@ -3,7 +3,7 @@ import React from 'react';
 import instance from '../config/axiosConfig';
 
 import { useNavigate } from 'react-router-dom';
-import { useSnackbar } from '../components/SnackBarProvider';
+import { useSnackbar } from 'notistack';
 
 import DefaultInput from '../components/DefaultInput';
 import RoundButton from '../components/RoundButton';
@@ -16,7 +16,7 @@ const LoginRightCard = () => {
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
 
-    const enqueueSnackbar = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
     const handleLogin = async () => {
@@ -31,13 +31,13 @@ const LoginRightCard = () => {
             if (response.status === 200) {
                 sessionStorage.setItem('token', data.token);
                 sessionStorage.setItem('user', JSON.stringify(data.user));
-                enqueueSnackbar('Login efetuado com sucesso!');
+                enqueueSnackbar('Login efetuado com sucesso.', { variant: 'success' });
                 navigate('/voluntarios');
             }
 
         } catch (error) {
             if (error.response.status === 401) {
-                enqueueSnackbar(error.response.data.message);
+                enqueueSnackbar(error.response.data.message, { variant: 'error' });
             }
         }
     };

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Box, CircularProgress, IconButton, TextField } from '@mui/material';
 import { DatePicker } from '@mui/lab';
 import { AddAPhoto, Close } from '@mui/icons-material';
-import { useSnackbar } from '../components/SnackbarProvider';
+import { useSnackbar } from 'notistack';
 
 import DefaultInput from './DefaultInput';
 import CheckboxMinistry from './CheckboxMinistry';
@@ -32,7 +32,8 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
   const [whatsapp, setWhatsapp] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const enqueueSnackbar = useSnackbar();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   React.useEffect(() => {
     const getMinistries = async () => {
@@ -72,7 +73,7 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
       }
 
     } catch (err) {
-      enqueueSnackbar(err.response.data.message);
+      enqueueSnackbar(err.response?.data?.message || 'Ocorreu um erro ao criar voluntário', { variant: 'error' });
     }
   };
 
@@ -105,12 +106,12 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
 
         await Promise.all(ministryPromises);
         getVolunteers();
-        enqueueSnackbar('Voluntário cadastrado com sucesso!');
+        enqueueSnackbar('Voluntário cadastrado com sucesso.', { variant: 'success' });
 
         handleClose();
       }
     } catch (err) {
-      enqueueSnackbar(err.response.data.message);
+      enqueueSnackbar(err.response?.data?.message, { variant: 'error' });
     } finally {
       setIsSubmitting(false);
       resetFields();

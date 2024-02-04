@@ -1,7 +1,7 @@
 import React from 'react';
 
 import instance from '../config/axiosConfig';
-import { useSnackbar } from '../components/SnackBarProvider';
+import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 
 import DefaultInput from '../components/DefaultInput';
@@ -27,7 +27,7 @@ const Ministries = () => {
     const [title, setTitle] = React.useState('Voluntários vinculados');
     const [ministryId, setMinistryId] = React.useState(null);
 
-    const enqueueSnackbar = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
     React.useEffect(() => {
@@ -37,7 +37,7 @@ const Ministries = () => {
     React.useEffect(() => {
         if (!token) {
             navigate('/entrar');
-            enqueueSnackbar('Você precisa estar logado para acessar essa página!');
+            enqueueSnackbar('Você precisa estar logado para acessar essa página.', { variant: 'error' });
             return;
         }
 
@@ -71,7 +71,7 @@ const Ministries = () => {
             }
 
         } catch (err) {
-            enqueueSnackbar(err.response.data.message);
+            enqueueSnackbar(err.response?.data?.message || 'Erro ao buscar ministérios', { variant: 'error' });
         }
     };
 

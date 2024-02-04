@@ -7,7 +7,7 @@ import Switch from '@mui/material/Switch';
 import { SearchOff } from '@mui/icons-material';
 
 import instance from '../config/axiosConfig';
-import { useSnackbar } from '../components/SnackBarProvider';
+import { useSnackbar } from 'notistack';
 
 import VolunteerBox from '../components/VolunteerBox';
 import CreateVolunteerModal from '../components/CreateVolunteerModal';
@@ -22,7 +22,7 @@ const Volunteer = () => {
     const [open, setOpen] = React.useState(false);
     const [requestCompleted, setRequestCompleted] = React.useState(false);
 
-    const enqueueSnackbar = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
 
     React.useEffect(() => {
         if (!token) {
@@ -61,7 +61,7 @@ const Volunteer = () => {
             }
 
         } catch (err) {
-            enqueueSnackbar(err.response.data.message);
+            enqueueSnackbar(err.response?.data?.message || 'Erro ao buscar voluntários', { variant: 'error' });
         }
     };
 

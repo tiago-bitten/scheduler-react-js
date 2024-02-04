@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSnackbar } from '../components/SnackbarProvider';
+import { useSnackbar } from 'notistack';
 import MyCalendar from '../components/MyCalender';
 
 import instance from '../config/axiosConfig';
@@ -19,13 +19,13 @@ const Schedule = () => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedEvent, setSelectedEvent] = useState(null);
 
-    const enqueueSnackbar = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
     useEffect(() => {
         if (!token) {
             navigate('/login');
-            enqueueSnackbar('Você precisa estar logado para acessar essa página');
+            enqueueSnackbar('Você precisa estar logado para acessar essa página.', { variant: 'error' });
             return;
         }
 
@@ -65,7 +65,7 @@ const Schedule = () => {
         } catch (err) {
             if (err.response.status === 401) {
                 navigate('/entrar');
-                enqueueSnackbar('Sessão expirada, faça login novamente');
+                enqueueSnackbar('Sessão expirada, faça login novamente.', { variant: 'error' });
             }
         }
     }

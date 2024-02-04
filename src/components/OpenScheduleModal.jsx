@@ -1,6 +1,6 @@
 import React from "react";
 import moment from "moment";
-import { useSnackbar } from "./SnackbarProvider";
+import { useSnackbar } from "notistack";
 import instance from "../config/axiosConfig";
 import RoundButton from "./RoundButton";
 import { Modal, Box, TextField, Grid, Typography, IconButton } from "@mui/material";
@@ -30,7 +30,7 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
     const [startDate, setStartDate] = React.useState(moment(selectedDate).format('YYYY-MM-DDTHH:mm'));
     const [endDate, setEndDate] = React.useState(moment(selectedDate).format('YYYY-MM-DDTHH:mm'));
 
-    const enqueueSnackbar = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
 
     const handleSubmit = async () => {
         const formattedStartDate = moment(startDate).format('YYYY-MM-DDTHH:mm:ss');
