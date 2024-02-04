@@ -89,7 +89,7 @@ const Schedule = () => {
             <AppointmentModal
                 open={showEventModal}
                 onClose={() => setShowEventModal(false)}
-                scheduleId={selectedEvent.id}
+                schedule={selectedEvent}
             />
         </>
     );
