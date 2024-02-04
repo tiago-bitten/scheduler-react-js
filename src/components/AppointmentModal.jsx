@@ -5,6 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from "notistack";
 import AppointmentLine from "./AppointmentLine";
 import AppointVolunteer from "./AppointVolunteer";
+import NotFoundItem from "./NotFoundItem";
 import instance from "../config/axiosConfig";
 
 const style = {
@@ -98,14 +99,18 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                         </Box>
                     </Box>
                     <Box sx={{ mt: 2, overflow: 'auto', maxHeight: '500px', mx: 4 }}>
-                        {appointments.map(appointment => (
-                            <AppointmentLine
-                                key={appointment.id}
-                                appointment={appointment}
-                                userMinistries={ministries}
-                                fetchAppointments={fetchAppointments}
-                            />
-                        ))}
+                        {appointments.length > 0 ? (
+                            appointments.map(appointment => (
+                                <AppointmentLine
+                                    key={appointment.id}
+                                    appointment={appointment}
+                                    userMinistries={ministries}
+                                    fetchAppointments={fetchAppointments}
+                                />
+                            ))
+                        ) : (
+                            <NotFoundItem entities="agendamentos" />
+                        )}
                     </Box>
                 </Box>
             </Modal>

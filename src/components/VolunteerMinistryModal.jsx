@@ -13,6 +13,7 @@ import {
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import RoundButton from "./RoundButton";
+import NotFoundItem from "./NotFoundItem";
 
 const VolunteerMinistryModal = ({ open, handleClose, volunteers, changeAction, action, title, handleAssociateVolunteer, handleDisassociateVolunteer }) => {
     return (
@@ -47,22 +48,26 @@ const VolunteerMinistryModal = ({ open, handleClose, volunteers, changeAction, a
                     bgcolor: '#F5F5F5',
                 }}>
                     <List>
-                        {volunteers.map((volunteer) => (
-                            <ListItem key={volunteer.id} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <ListItemText primary={volunteer.name} />
-                                <span>
-                                    {action === "ADICIONAR" ? (
-                                        <IconButton color="error" onClick={() => handleDisassociateVolunteer(volunteer.id)}>
-                                            <HighlightOffIcon />
-                                        </IconButton>
-                                    ) : (
-                                        <IconButton color="primary" onClick={() => handleAssociateVolunteer(volunteer.id)}>
-                                            <CheckCircleOutlineIcon />
-                                        </IconButton>
-                                    )}
-                                </span>
-                            </ListItem>
-                        ))}
+                        {volunteers.length > 0 ? (
+                            volunteers.map((volunteer) => (
+                                    <ListItem key={volunteer.id} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <ListItemText primary={volunteer.name} />
+                                        <span>
+                                            {action === "ADICIONAR" ? (
+                                                <IconButton color="error" onClick={() => handleDisassociateVolunteer(volunteer.id)}>
+                                                    <HighlightOffIcon />
+                                                </IconButton>
+                                            ) : (
+                                                <IconButton color="primary" onClick={() => handleAssociateVolunteer(volunteer.id)}>
+                                                    <CheckCircleOutlineIcon />
+                                                </IconButton>
+                                            )}
+                                        </span>
+                                    </ListItem>
+                                ))
+                        ) : (
+                            <NotFoundItem entities="voluntários" />
+                        )}
                     </List>
                 </Box>
             </Box>

@@ -3,6 +3,7 @@ import { Modal, Box, IconButton, Grid, Typography, TextField, List, ListItem, Li
 import CloseIcon from '@mui/icons-material/Close';
 import DoneIcon from '@mui/icons-material/Done';
 import instance from "../config/axiosConfig";
+import NotFoundItem from "./NotFoundItem";
 import { useSnackbar } from "notistack";
 
 const style = {
@@ -86,24 +87,38 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                             sx={{ mb: 2 }}
                         />
                         <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
-                            {volunteers.map(volunteer => (
-                                <ListItem key={volunteer.id} divider>
-                                    <ListItemAvatar>
-                                        <Avatar src="https://thispersondoesnotexist.com/" alt="thispersondoesnotexists" />
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={volunteer.name + ' ' + volunteer.lastName}
-                                    />
-                                    <IconButton
-                                        onClick={() => handleAppointment(volunteer.id)}>
-                                        <DoneIcon fontSize="medium" />
-                                    </IconButton>
-                                </ListItem>
-                            ))}
+                            {volunteers.length > 0 ? (
+                                volunteers.map(volunteer => (
+                                    <ListItem key={volunteer.id} divider>
+                                        <ListItemAvatar>
+                                            <Avatar src="https://thispersondoesnotexist.com/" alt="thispersondoesnotexists" />
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={volunteer.name + ' ' + volunteer.lastName}
+                                        />
+                                        <IconButton
+                                            onClick={() => handleAppointment(volunteer.id)}>
+                                            <DoneIcon fontSize="medium" />
+                                        </IconButton>
+                                    </ListItem>
+                                ))) : (
+                                <NotFoundItem entities="voluntários" />
+                            )}
                         </List>
                     </Grid>
                     <Grid item xs={6}>
                         <Typography variant="subtitle1" gutterBottom>Grupos</Typography>
+                        <TextField
+                            label="Buscar"
+                            variant="standard"
+                            size="small"
+                            fullWidth
+                            autoComplete="off"
+                            sx={{ mb: 2 }}
+                        />
+                        <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
+                            <NotFoundItem entities="grupos" />
+                        </List>
                     </Grid>
                 </Grid>
             </Box>

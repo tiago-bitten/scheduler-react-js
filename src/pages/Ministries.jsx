@@ -10,9 +10,9 @@ import MinistryLine from '../components/MinistryLine';
 import CreateMinistryModal from '../components/CreateMinistryModal';
 import VolunteerMinistryModal from '../components/VolunteerMinistryModal';
 import MinistriesSkeleton from '../components/MinistriesSkeleton';
+import NotFoundItem from '../components/NotFoundItem';
 
 import Header from '../components/Header';
-import SearchOff from '@mui/icons-material/SearchOff';
 
 const Ministries = () => {
     const [token] = React.useState(sessionStorage.getItem('token'));
@@ -218,12 +218,7 @@ const Ministries = () => {
                                 <MinistryLine key={ministry.id} ministry={ministry} onMinistryNameClick={() => handleVolunteerMinistryModal(ministry.id)} />
                             ))
                         ) : (
-                            <tr>
-                                <td colSpan="4" className="text-center p-10">
-                                    <SearchOff style={{ fontSize: 76, color: '#A0B4F0' }} />
-                                    <p className="text-tertiary text-lg mt-2">Não existem ministérios cadastrados</p>
-                                </td>
-                            </tr>
+                            <NotFoundItem entities="ministérios" />
                         )}
                     </tbody>
                 </table>

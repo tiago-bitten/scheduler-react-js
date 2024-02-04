@@ -78,6 +78,7 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             variant="standard"
+                            autoComplete="off"
                             required
                             sx={textFieldStyle}
                         />
@@ -88,6 +89,7 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             variant="standard"
+                            autoComplete="off"
                             sx={textFieldStyle}
                         />
                     </Grid>
