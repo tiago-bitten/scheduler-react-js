@@ -6,6 +6,7 @@ import MyCalendar from '../components/MyCalender';
 import instance from '../config/axiosConfig';
 import Header from '../components/Header';
 import OpenScheduleModal from '../components/OpenScheduleModal';
+import AppointmentModal from '../components/AppointmentModal';
 import RoundButton from '../components/RoundButton';
 
 const Schedule = () => {
@@ -14,7 +15,9 @@ const Schedule = () => {
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
     const [showOpenScheduleModal, setOpenScheduleModal] = useState(false);
+    const [showEventModal, setShowEventModal] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedEvent, setSelectedEvent] = useState(null);
 
     const enqueueSnackbar = useSnackbar();
     const navigate = useNavigate();
@@ -29,10 +32,15 @@ const Schedule = () => {
         fetchSchedules();
     }, [token, month, year, navigate, enqueueSnackbar]);
 
-    const handleSelect = ({ start }) => {
+    const handleSelectDate = ({ start }) => {
         setOpenScheduleModal(true);
         setSelectedDate(start);
     };
+
+    const handleSelectEvent = (event) => {
+        setSelectedEvent(event);
+        setShowEventModal(true);
+    }
 
     const fetchSchedules = async () => {
         try {
@@ -49,6 +57,7 @@ const Schedule = () => {
                     start: new Date(schedule.startDate),
                     end: new Date(schedule.endDate),
                     allDay: false,
+                    id: schedule.id,
                 }));
                 setSchedules(schedulesData);
             }
@@ -65,13 +74,22 @@ const Schedule = () => {
                 <RoundButton value="ABRIR AGENDA" onClick={() => setOpenScheduleModal(true)} />
             </div>
             <div className="mx-12 mt-6">
-                <MyCalendar events={schedules} onSelectSlot={handleSelect} />
+                <MyCalendar
+                    events={schedules}
+                    onSelectSlot={handleSelectDate}
+                    onSelectEvent={handleSelectEvent}
+                />
             </div>
             <OpenScheduleModal
                 open={showOpenScheduleModal}
                 onClose={() => setOpenScheduleModal(false)}
                 selectedDate={selectedDate}
                 fetchSchedules={fetchSchedules}
+            />
+            <AppointmentModal
+                open={showEventModal}
+                onClose={() => setShowEventModal(false)}
+                scheduleId={selectedEvent.id}
             />
         </>
     );

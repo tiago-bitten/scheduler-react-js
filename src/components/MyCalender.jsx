@@ -6,7 +6,7 @@ import 'moment/locale/pt-br';
 
 const localizer = momentLocalizer(moment);
 
-const MyCalendar = ({ events, onSelectSlot }) => {
+const MyCalendar = ({ events, onSelectSlot, onSelectEvent }) => {
   const messages = {
     allDay: 'Dia inteiro',
     previous: 'Anterior',
@@ -29,6 +29,7 @@ const MyCalendar = ({ events, onSelectSlot }) => {
         endAccessor="end"
         messages={messages}
         onSelectSlot={onSelectSlot}
+        onSelectEvent={onSelectEvent}
         selectable
         style={{ height: 600 }}
       />
