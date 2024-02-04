@@ -26,7 +26,9 @@ const Header = () => {
                     setUsersCount(response.data.users.length);
                 }
             } catch (err) {
-                console.log(err.response.data.message)
+                if(err.response?.status === 401) {
+                    navigate('/login');
+                }
             }
         }
 

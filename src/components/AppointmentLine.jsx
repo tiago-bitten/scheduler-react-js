@@ -34,7 +34,7 @@ const AppointmentLine = ({ appointment, userMinistries, fetchAppointments }) => 
 
     const isActive = appointment.volunteerMinistry.isActive;
 
-    const tooltipContent = isActive ? "" : `Não existe mais vinculo entre o voluntário ${appointment.volunteer.name} e o ministério ${appointment.ministry.name}`;
+    const tooltipContent = isActive ? "" : `Não existe mais vinculo entre o voluntário ${appointment.volunteerMinistry.volunteer.name} e o ministério ${appointment.volunteerMinistry.ministry.name}`;
 
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2, borderBottom: 1, borderColor: 'grey.300', backgroundColor: 'grey.200' }}>

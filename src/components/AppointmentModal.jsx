@@ -1,6 +1,7 @@
 import React from "react";
 
-import { Modal, Box, Chip, Typography } from "@mui/material";
+import { Modal, Box, Chip, Typography, IconButton } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from "notistack";
 import AppointmentLine from "./AppointmentLine";
 import AppointVolunteer from "./AppointVolunteer";
@@ -78,6 +79,9 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
         <>
             <Modal open={open} onClose={onClose}>
                 <Box sx={style}>
+                    <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
+                        <CloseIcon />
+                    </IconButton>
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <Typography variant="h6" component="h2" sx={{ my: 2 }}>
                             {schedule?.title}

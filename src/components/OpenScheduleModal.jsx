@@ -78,6 +78,7 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             variant="standard"
+                            required
                             sx={textFieldStyle}
                         />
                     </Grid>

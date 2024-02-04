@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import DefaultInput from '../components/DefaultInput';
 import RoundButton from '../components/RoundButton';
 import Switch from '@mui/material/Switch';
-import { SearchOff } from '@mui/icons-material';
+import NotFoundItem from '../components/NotFoundItem';
 
 import instance from '../config/axiosConfig';
 import { useSnackbar } from 'notistack';
@@ -38,6 +38,11 @@ const Volunteer = () => {
                 });
                 setVolunteers(response.data.volunteers);
             } catch (err) {
+                if (err.response?.status === 401) {
+                    navigate('/entrar');
+                    enqueueSnackbar('Você precisa estar logado para acessar essa página.', { variant: 'error' });
+                    return;
+                }
                 enqueueSnackbar(err.response?.data?.message || 'Erro ao buscar voluntários', { variant: 'error' });
             } finally {
                 setLoading(false);
@@ -46,7 +51,7 @@ const Volunteer = () => {
         };
 
         fetchVolunteers();
-    }, [token, navigate, enqueueSnackbar]);
+    }, [token, navigate]);
 
     const getVolunteers = async () => {
         try {
@@ -61,6 +66,11 @@ const Volunteer = () => {
             }
 
         } catch (err) {
+            if (err.response?.status === 401) {
+                navigate('/entrar');
+                enqueueSnackbar('Você precisa estar logado para acessar essa página.', { variant: 'error' });
+                return;
+            }
             enqueueSnackbar(err.response?.data?.message || 'Erro ao buscar voluntários', { variant: 'error' });
         }
     };
@@ -103,10 +113,7 @@ const Volunteer = () => {
                 <span className="text-quinary">Apenas voluntários com ministérios</span>
             </div>
             {requestCompleted && volunteers.length === 0 ? (
-                <div className="flex flex-col items-center justify-center mt-16">
-                    <SearchOff style={{ fontSize: 76, color: '#A0B4F0' }} />
-                    <p className="text-tertiary text-lg mt-2">Não existem voluntários cadastrados</p>
-                </div>
+                <NotFoundItem entities="voluntários" />
             ) : (
                 <div className="bg-septenary p-4 mx-12 mt-12">
                     {volunteers.map((volunteer) => (

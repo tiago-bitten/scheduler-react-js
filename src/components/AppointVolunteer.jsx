@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Box, IconButton, Grid, Typography, TextField, List, ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 import DoneIcon from '@mui/icons-material/Done';
 import instance from "../config/axiosConfig";
 import { useSnackbar } from "notistack";
@@ -65,6 +66,9 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     return (
         <Modal open={open} onClose={onClose}>
             <Box sx={style}>
+                <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
+                    <CloseIcon />
+                </IconButton>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Typography variant="h6" component="h2" gutterBottom>
