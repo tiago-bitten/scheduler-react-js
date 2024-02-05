@@ -5,6 +5,8 @@ import DefaultInput from '../components/DefaultInput';
 import RoundButton from '../components/RoundButton';
 import Switch from '@mui/material/Switch';
 import NotFoundItem from '../components/NotFoundItem';
+import IconButton from '@mui/material/IconButton';
+import AddLinkIcon from '@mui/icons-material/AddLink';
 
 import instance from '../config/axiosConfig';
 import { useSnackbar } from 'notistack';
@@ -21,6 +23,7 @@ const Volunteer = () => {
     const [volunteers, setVolunteers] = React.useState([]);
     const [open, setOpen] = React.useState(false);
     const [requestCompleted, setRequestCompleted] = React.useState(false);
+    const [selfRegistrationLink, setSelfRegistrationLink] = React.useState('');
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -87,6 +90,25 @@ const Volunteer = () => {
         setOpen(false);
     }
 
+    const handleGenerateSelfRegistrationLink = async () => {
+        try {
+            const response = await instance.post(`/self-registrations/generate/link`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 201) {
+                setSelfRegistrationLink(response.data.link);
+                navigator.clipboard.writeText(`http://localhost:5173/voluntario/autocadastro/${response.data.link}`);
+                enqueueSnackbar('Link de autocadastro copiado.', { variant: 'success' });
+            }
+
+        } catch (err) {
+            enqueueSnackbar(err.response?.data?.message || 'Erro ao gerar link de auto-cadastro', { variant: 'error' });
+        }
+    };
+
     if (loading) {
         return <VolunteerListSkeleton />
     }
@@ -101,6 +123,9 @@ const Volunteer = () => {
                 </div>
                 <div>
                     <RoundButton value="CADASTRAR VOLUNTÁRIO" onClick={handleClick} />
+                    <IconButton onClick={handleGenerateSelfRegistrationLink} sx={{ ml: '5px' }}>
+                        <AddLinkIcon />
+                    </IconButton>
                 </div>
             </div>
             <div className="ml-10 mt-4">
