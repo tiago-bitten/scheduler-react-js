@@ -56,7 +56,7 @@ const Header = () => {
     return (
         <div className="bg-primary flex justify-between items-center w-full text-white" style={{ height: '80px' }}>
             <div className="flex items-center">
-                <img src={NacoesImg} alt="Nacoes" className="w-24 h-24 ml-4" />
+                <img src={NacoesImg} alt="Nacoes" className="w-14 h-14 ml-12" />
                 <nav>
                     <ul className="flex">
                         <li className={liClass} onClick={handleVolunteers}>Voluntários</li>
