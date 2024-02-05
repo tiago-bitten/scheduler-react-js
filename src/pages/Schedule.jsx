@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import MyCalendar from '../components/MyCalender';
+import moment from 'moment';
 
 import instance from '../config/axiosConfig';
 import Header from '../components/Header';
@@ -31,6 +32,11 @@ const Schedule = () => {
 
         fetchSchedules();
     }, [token, month, year, navigate]);
+
+    const handleClickOpenSchedule = () => {
+        setOpenScheduleModal(true);
+        setSelectedDate(null);
+    }
 
     const handleSelectDate = ({ start }) => {
         setOpenScheduleModal(true);
@@ -80,7 +86,7 @@ const Schedule = () => {
         <>
             <Header />
             <div className="mx-12 mt-6 text-right">
-                <RoundButton value="ABRIR AGENDA" onClick={() => setOpenScheduleModal(true)} />
+                <RoundButton value="ABRIR AGENDA" onClick={handleClickOpenSchedule} />
             </div>
             <div className="mx-12 mt-6">
                 <MyCalendar

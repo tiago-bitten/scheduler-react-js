@@ -1,10 +1,10 @@
-import React from "react";
-import moment from "moment";
-import { useSnackbar } from "notistack";
-import instance from "../config/axiosConfig";
-import RoundButton from "./RoundButton";
-import { Modal, Box, TextField, Grid, Typography, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import React from 'react';
+import moment from 'moment';
+import { useSnackbar } from 'notistack';
+import instance from '../config/axiosConfig';
+import RoundButton from './RoundButton';
+import { Modal, Box, TextField, Grid, Typography, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const style = {
     position: 'absolute',
@@ -24,24 +24,35 @@ const textFieldStyle = {
 };
 
 const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
-    const [token] = React.useState(sessionStorage.getItem("token"));
-    const [name, setName] = React.useState("");
-    const [description, setDescription] = React.useState("");
-    const [startDate, setStartDate] = React.useState(moment(selectedDate).format('YYYY-MM-DDTHH:mm'));
-    const [endDate, setEndDate] = React.useState(moment(selectedDate).format('YYYY-MM-DDTHH:mm'));
+    const [token] = React.useState(sessionStorage.getItem('token'));
+    const [name, setName] = React.useState('');
+    const [description, setDescription] = React.useState('');
+    const [startDate, setStartDate] = React.useState('');
+    const [startTime, setStartTime] = React.useState('');
+    const [duration, setDuration] = React.useState(60);
 
     const { enqueueSnackbar } = useSnackbar();
 
+    React.useEffect(() => {
+        if (selectedDate) {
+            setStartDate(moment(selectedDate).format('YYYY-MM-DD'));
+            setStartTime(moment(selectedDate).format('HH:mm'));
+        } else {
+            setStartDate('');
+            setStartTime('');
+        }
+    }, [selectedDate]);
+
     const handleSubmit = async () => {
-        const formattedStartDate = moment(startDate).format('YYYY-MM-DDTHH:mm:ss');
-        const formattedEndDate = moment(endDate).format('YYYY-MM-DDTHH:mm:ss');
+        const startDateTime = moment(`${startDate} ${startTime}`);
+        const endDateTime = startDateTime.clone().add(duration, 'minutes');
 
         try {
             const response = await instance.post('/schedules/open', {
                 name,
                 description,
-                startDate: formattedStartDate,
-                endDate: formattedEndDate,
+                startDate: startDateTime.format('YYYY-MM-DDTHH:mm:ss'),
+                endDate: endDateTime.format('YYYY-MM-DDTHH:mm:ss'),
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -54,11 +65,12 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                 fetchSchedules();
                 setName('');
                 setDescription('');
-                setStartDate('');
-                setEndDate('');
+                setStartDate(moment(selectedDate).format('YYYY-MM-DD'));
+                setStartTime(moment(selectedDate).format('HH:mm'));
+                setDuration(60);
             }
         } catch (err) {
-            enqueueSnackbar(err.response?.data?.message || "Não foi possível abrir a agenda", { variant: 'error' });
+            enqueueSnackbar(err.response?.data?.message || 'Não foi possível abrir a agenda', { variant: 'error' });
         }
     };
 
@@ -93,10 +105,10 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                             sx={textFieldStyle}
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={6}>
                         <TextField
                             label="Data de início"
-                            type="datetime-local"
+                            type="date"
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
                             InputLabelProps={{ shrink: true }}
@@ -104,13 +116,23 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                             sx={textFieldStyle}
                         />
                     </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            label="Hora de início"
+                            type="time"
+                            value={startTime}
+                            onChange={(e) => setStartTime(e.target.value)}
+                            InputLabelProps={{ shrink: true }}
+                            variant="standard"
+                            sx={textFieldStyle}
+                        />
+                    </Grid>
                     <Grid item xs={12}>
                         <TextField
-                            label="Data de término"
-                            type="datetime-local"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                            InputLabelProps={{ shrink: true }}
+                            label="Duração (minutos)"
+                            type="number"
+                            value={duration}
+                            onChange={(e) => setDuration(e.target.value)}
                             variant="standard"
                             sx={textFieldStyle}
                         />
