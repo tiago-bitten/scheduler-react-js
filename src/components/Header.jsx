@@ -33,7 +33,7 @@ const Header = () => {
         }
 
         fetchUsers();
-    }, []);
+    }, [usersCount]);
 
     const navigate = useNavigate();
 
@@ -71,8 +71,7 @@ const Header = () => {
                     <Badge badgeContent={usersCount} color="error" max={99}>
                         <Notifications onClick={handleNotifications} />
                     </Badge>
-                </div>
-                }
+                </div>}
                 <Person className="text-white mr-12" />
             </div>
         </div>

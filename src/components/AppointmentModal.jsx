@@ -8,6 +8,9 @@ import AppointVolunteer from "./AppointVolunteer";
 import NotFoundItem from "./NotFoundItem";
 import instance from "../config/axiosConfig";
 import moment from "moment";
+import html2canvas from "html2canvas";
+import RoundButton from "./RoundButton";
+import DownloadIcon from '@mui/icons-material/Download';
 
 const style = {
     position: 'absolute',
@@ -30,6 +33,7 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
     const [isSchedulePast, setIsSchedulePast] = React.useState(null);
 
     const { enqueueSnackbar } = useSnackbar();
+    const printRef = React.useRef();
 
     React.useEffect(() => {
         if (schedule) {
@@ -78,7 +82,6 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
         }
     }
 
-
     const handleAppointment = (ministry) => {
         if (isSchedulePast) {
             enqueueSnackbar('Não é possível agendar voluntários para eventos passados', { variant: 'error' });
@@ -87,6 +90,20 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
 
         setShowAppointVolunteerModal(true);
         setSelectedMinistry(ministry);
+    }
+
+    const handleDownloadImage = async () => {
+        const canvas = await html2canvas(printRef.current);
+        const image = canvas.toDataURL('image/png', 1.0);
+        downloadImage(image, `agendamentos-${schedule.title}.png`);
+    }
+
+    const downloadImage = (blob, fileName) => {
+        const link = document.createElement('a');
+        link.href = blob;
+        link.download = fileName;
+        link.click();
+        link.remove();
     }
 
     return (
@@ -128,7 +145,7 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                             ))}
                         </Box>
                     </Box>
-                    <Box sx={{ overflow: 'auto', maxHeight: '500px', mx: 4 }}>
+                    <Box sx={{ overflow: 'auto', maxHeight: '500px', mx: 4 }} ref={printRef}>
                         {appointments.length > 0 ? (
                             appointments.map(appointment => (
                                 <AppointmentLine
@@ -143,6 +160,9 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                             <NotFoundItem entities="agendamentos" />
                         )}
                     </Box>
+                    <IconButton onClick={handleDownloadImage} sx={{ position: 'absolute', right: 8, bottom: 8 }}>
+                        <DownloadIcon />
+                    </IconButton>
                 </Box>
             </Modal>
             <AppointVolunteer
