@@ -72,6 +72,7 @@ const SelfRegistration = () => {
                         <form onSubmit={formik.handleSubmit} style={{ width: '100%' }}>
                             <TextField
                                 fullWidth
+                                required
                                 id="name"
                                 name="name"
                                 label="Nome"
@@ -86,6 +87,7 @@ const SelfRegistration = () => {
                             />
                             <TextField
                                 fullWidth
+                                required
                                 id="lastName"
                                 name="lastName"
                                 label="Sobrenome"
@@ -100,6 +102,7 @@ const SelfRegistration = () => {
                             />
                             <TextField
                                 fullWidth
+                                required
                                 id="phone"
                                 name="phone"
                                 label="Telefone"
@@ -114,6 +117,7 @@ const SelfRegistration = () => {
                             />
                             <TextField
                                 fullWidth
+                                required
                                 id="birthDate"
                                 name="birthDate"
                                 label="Data de Nascimento"
