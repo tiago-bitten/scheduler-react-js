@@ -139,6 +139,8 @@ const SelfRegistration = () => {
                             </Box>
                         </form>
                     </>
+
+                    // TODO: add a loading spinner
                 )}
             </Box>
         </Container>
