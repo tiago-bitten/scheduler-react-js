@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import instance from '../config/axiosConfig';
 import { useSnackbar } from 'notistack';
-import { TextField, Box, Typography, Container, Tab, Tabs } from '@mui/material';
+import { TextField, Box, Typography, Container, Tab, Tabs, Grid } from '@mui/material';
 import { TabPanel, a11yProps } from '../components/TabPanel';
 import RoundButton from '../components/RoundButton';
 
@@ -19,22 +19,22 @@ const SelfRegistration = () => {
     const { uuid } = useParams();
     const [message, setMessage] = React.useState('');
     const [tabValue, setTabValue] = React.useState(0);
-
+    const [unavailableDates, setUnavailableDates] = React.useState([]);
+    const [startDate, setStartDate] = React.useState('');
+    const [endDate, setEndDate] = React.useState('');
     const { enqueueSnackbar } = useSnackbar();
 
     React.useEffect(() => {
         const fetchAutoRegistration = async () => {
             try {
                 const response = await instance.get(`/self-registrations/validate/${uuid}`);
-
                 if (response.status === 204) {
                     setMessage('');
                 }
             } catch (error) {
                 setMessage(error.response.data.message);
             }
-        }
-
+        };
         fetchAutoRegistration();
     }, [uuid]);
 
@@ -45,11 +45,10 @@ const SelfRegistration = () => {
             phone: '',
             birthDate: '',
         },
-        validationSchema: validationSchema,
+        validationSchema,
         onSubmit: async (values) => {
             try {
                 const response = await instance.post(`/self-registrations/create/${uuid}`, values);
-
                 if (response.status === 204) {
                     enqueueSnackbar('Autocadastro realizado com sucesso', { variant: 'success' });
                     setMessage('Autocadastro realizado com sucesso');
@@ -62,23 +61,33 @@ const SelfRegistration = () => {
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
-    }
+    };
+
+    const handleAddUnavailableDate = () => {
+        if (startDate && endDate) {
+            setUnavailableDates([...unavailableDates, { startDate, endDate }]);
+            setStartDate('');
+            setEndDate('');
+        } else {
+            enqueueSnackbar('Por favor, preencha todas as datas', { variant: 'warning' });
+        }
+    };
 
     return (
         <Container maxWidth="sm" sx={{ minHeight: '100vh', minWidth: '100vw', backgroundColor: '#4169E1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Box sx={{ backgroundColor: 'white', py: 4, px: 15, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '40%' }}>
+            <Box sx={{ backgroundColor: 'white', py: 4, px: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                 {message ? (
                     <Typography variant="h6" component="h1" sx={{ color: 'grey.700', mb: 2 }}>
                         {message}
                     </Typography>
                 ) : (
                     <>
-                        <Tabs value={tabValue} onChange={handleTabChange} aria-label="simple tabs example">
+                        <Tabs value={tabValue} onChange={handleTabChange} aria-label="autocadastro tabs">
                             <Tab label="Autocadastro" {...a11yProps(0)} />
                             <Tab label="Datas Indisponíveis" {...a11yProps(1)} />
                         </Tabs>
                         <TabPanel value={tabValue} index={0}>
-                            <Typography variant="h4" component="h1" gutterBottom sx={{ marginBottom: 2, textAlign: 'center' }}>
+                            <Typography variant="h4" component="h1" gutterBottom>
                                 Se cadastre
                             </Typography>
                             <form onSubmit={formik.handleSubmit} style={{ width: '100%' }}>
@@ -151,14 +160,39 @@ const SelfRegistration = () => {
                                 </Box>
                             </form>
                         </TabPanel>
-
                         <TabPanel value={tabValue} index={1}>
-                            <Typography variant="h4" component="h1" gutterBottom sx={{ marginBottom: 2, textAlign: 'center' }}>
-                                Datas Indisponíveis
-                            </Typography>
-                            <Typography variant="h6" component="h1" sx={{ color: 'grey.700', mb: 2 }}>
-                                {message}
-                            </Typography>
+                            <Grid container spacing={2} alignItems="center">
+                                <Grid item xs={5}>
+                                    <TextField
+                                        fullWidth
+                                        label="Data de Início"
+                                        type="date"
+                                        value={startDate}
+                                        variant="standard"
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                        InputLabelProps={{ shrink: true }}
+                                    />
+                                </Grid>
+                                <Grid item xs={5}>
+                                    <TextField
+                                        fullWidth
+                                        label="Data de Fim"
+                                        type="date"
+                                        value={endDate}
+                                        variant="standard"
+                                        onChange={(e) => setEndDate(e.target.value)}
+                                        InputLabelProps={{ shrink: true }}
+                                    />
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <RoundButton value="Adicionar" onClick={handleAddUnavailableDate} />
+                                </Grid>
+                            </Grid>
+                            {unavailableDates.map((date, index) => (
+                                <Typography key={index} sx={{ mt: 2 }}>
+                                    De {date.startDate} até {date.endDate}
+                                </Typography>
+                            ))}
                         </TabPanel>
                     </>
                 )}
