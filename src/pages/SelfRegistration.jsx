@@ -4,7 +4,8 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import instance from '../config/axiosConfig';
 import { useSnackbar } from 'notistack';
-import { TextField, Box, Typography, Container } from '@mui/material';
+import { TextField, Box, Typography, Container, Tab, Tabs } from '@mui/material';
+import { TabPanel, a11yProps } from '../components/TabPanel';
 import RoundButton from '../components/RoundButton';
 
 const validationSchema = yup.object({
@@ -17,6 +18,8 @@ const validationSchema = yup.object({
 const SelfRegistration = () => {
     const { uuid } = useParams();
     const [message, setMessage] = React.useState('');
+    const [tabValue, setTabValue] = React.useState(0);
+
     const { enqueueSnackbar } = useSnackbar();
 
     React.useEffect(() => {
@@ -57,6 +60,10 @@ const SelfRegistration = () => {
         },
     });
 
+    const handleTabChange = (event, newValue) => {
+        setTabValue(newValue);
+    }
+
     return (
         <Container maxWidth="sm" sx={{ minHeight: '100vh', minWidth: '100vw', backgroundColor: '#4169E1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Box sx={{ backgroundColor: 'white', py: 4, px: 15, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '40%' }}>
@@ -66,81 +73,94 @@ const SelfRegistration = () => {
                     </Typography>
                 ) : (
                     <>
-                        <Typography variant="h4" component="h1" gutterBottom sx={{ marginBottom: 2, textAlign: 'center' }}>
-                            Se cadastre
-                        </Typography>
-                        <form onSubmit={formik.handleSubmit} style={{ width: '100%' }}>
-                            <TextField
-                                fullWidth
-                                required
-                                id="name"
-                                name="name"
-                                label="Nome"
-                                variant="standard"
-                                autoComplete="off"
-                                value={formik.values.name}
-                                onChange={formik.handleChange}
-                                error={formik.touched.name && Boolean(formik.errors.name)}
-                                helperText={formik.touched.name && formik.errors.name}
-                                margin="normal"
+                        <Tabs value={tabValue} onChange={handleTabChange} aria-label="simple tabs example">
+                            <Tab label="Autocadastro" {...a11yProps(0)} />
+                            <Tab label="Datas Indisponíveis" {...a11yProps(1)} />
+                        </Tabs>
+                        <TabPanel value={tabValue} index={0}>
+                            <Typography variant="h4" component="h1" gutterBottom sx={{ marginBottom: 2, textAlign: 'center' }}>
+                                Se cadastre
+                            </Typography>
+                            <form onSubmit={formik.handleSubmit} style={{ width: '100%' }}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="name"
+                                    name="name"
+                                    label="Nome"
+                                    variant="standard"
+                                    autoComplete="off"
+                                    value={formik.values.name}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.name && Boolean(formik.errors.name)}
+                                    helperText={formik.touched.name && formik.errors.name}
+                                    margin="normal"
 
-                            />
-                            <TextField
-                                fullWidth
-                                required
-                                id="lastName"
-                                name="lastName"
-                                label="Sobrenome"
-                                variant="standard"
-                                autoComplete="off"
-                                value={formik.values.lastName}
-                                onChange={formik.handleChange}
-                                error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-                                helperText={formik.touched.lastName && formik.errors.lastName}
-                                margin="normal"
+                                />
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="lastName"
+                                    name="lastName"
+                                    label="Sobrenome"
+                                    variant="standard"
+                                    autoComplete="off"
+                                    value={formik.values.lastName}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                                    helperText={formik.touched.lastName && formik.errors.lastName}
+                                    margin="normal"
 
-                            />
-                            <TextField
-                                fullWidth
-                                required
-                                id="phone"
-                                name="phone"
-                                label="Telefone"
-                                variant="standard"
-                                autoComplete="off"
-                                value={formik.values.phone}
-                                onChange={formik.handleChange}
-                                error={formik.touched.phone && Boolean(formik.errors.phone)}
-                                helperText={formik.touched.phone && formik.errors.phone}
-                                margin="normal"
+                                />
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="phone"
+                                    name="phone"
+                                    label="Telefone"
+                                    variant="standard"
+                                    autoComplete="off"
+                                    value={formik.values.phone}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.phone && Boolean(formik.errors.phone)}
+                                    helperText={formik.touched.phone && formik.errors.phone}
+                                    margin="normal"
 
-                            />
-                            <TextField
-                                fullWidth
-                                required
-                                id="birthDate"
-                                name="birthDate"
-                                label="Data de Nascimento"
-                                type="date"
-                                variant="standard"
-                                autoComplete="off"
-                                value={formik.values.birthDate}
-                                onChange={formik.handleChange}
-                                error={formik.touched.birthDate && Boolean(formik.errors.birthDate)}
-                                helperText={formik.touched.birthDate && formik.errors.birthDate}
-                                margin="normal"
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                sx={{ marginTop: 4 }}
-                            />
-                            <Box sx={{ textAlign: 'center', marginTop: 4, width: '100%' }}>
-                                <RoundButton value="CRIAR" type="submit" />
-                            </Box>
-                        </form>
+                                />
+                                <TextField
+                                    fullWidth
+                                    required
+                                    id="birthDate"
+                                    name="birthDate"
+                                    label="Data de Nascimento"
+                                    type="date"
+                                    variant="standard"
+                                    autoComplete="off"
+                                    value={formik.values.birthDate}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.birthDate && Boolean(formik.errors.birthDate)}
+                                    helperText={formik.touched.birthDate && formik.errors.birthDate}
+                                    margin="normal"
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    sx={{ marginTop: 4 }}
+                                />
+                                <Box sx={{ textAlign: 'center', marginTop: 4, width: '100%' }}>
+                                    <RoundButton value="CRIAR" type="submit" />
+                                </Box>
+                            </form>
+                        </TabPanel>
+
+                        <TabPanel value={tabValue} index={1}>
+                            <Typography variant="h4" component="h1" gutterBottom sx={{ marginBottom: 2, textAlign: 'center' }}>
+                                Datas Indisponíveis
+                            </Typography>
+                            <Typography variant="h6" component="h1" sx={{ color: 'grey.700', mb: 2 }}>
+                                {message}
+                            </Typography>
+                        </TabPanel>
                     </>
-
-                    // TODO: add a loading spinner
                 )}
             </Box>
         </Container>
