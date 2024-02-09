@@ -22,6 +22,7 @@ const SelfRegistration = () => {
     const [unavailableDates, setUnavailableDates] = React.useState([]);
     const [startDate, setStartDate] = React.useState('');
     const [endDate, setEndDate] = React.useState('');
+
     const { enqueueSnackbar } = useSnackbar();
 
     React.useEffect(() => {
@@ -38,6 +39,42 @@ const SelfRegistration = () => {
         fetchAutoRegistration();
     }, [uuid]);
 
+    const postVolunteer = async (values) => {
+        try {
+            const response = await instance.post(`/self-registrations/create/${uuid}`, values);
+            if (response.status === 201) {
+                return response.data.volunteer.id;                
+            }
+        } catch (error) {
+            enqueueSnackbar('Erro ao enviar o formulário de autocadastro', { variant: 'error' });
+        }
+    };
+
+    const postUnavailableDates = async (startDate, endDate, volunteerId) => {
+        try {
+            const response = await instance.post(`/unavailable-dates/create?volunteerId=${volunteerId}`, {
+                startDate,
+                endDate,
+                rrule: 'FREQ=WEEKLY;COUNT=1',
+            });
+            if (response.status === 204) {
+                console.log('Datas indisponíveis enviadas com sucesso');
+            }
+        } catch (error) {
+            throw new Error('Erro ao enviar as datas indisponíveis');
+        }
+    };
+
+    const handlePostUnavailableDates = async (volunteerId) => {
+        if (unavailableDates.length > 0) {
+            console.log(unavailableDates)
+            unavailableDates.forEach((date) => {
+                postUnavailableDates(date.startDate, date.endDate, volunteerId);
+            });
+        }
+        setUnavailableDates([]);
+    };
+
     const formik = useFormik({
         initialValues: {
             name: '',
@@ -48,12 +85,12 @@ const SelfRegistration = () => {
         validationSchema,
         onSubmit: async (values) => {
             try {
-                const response = await instance.post(`/self-registrations/create/${uuid}`, values);
-                if (response.status === 204) {
-                    enqueueSnackbar('Autocadastro realizado com sucesso', { variant: 'success' });
-                    setMessage('Autocadastro realizado com sucesso');
-                }
-            } catch (error) {
+                const volunteerId = await postVolunteer(values);
+                if (volunteerId) {
+                    await handlePostUnavailableDates(volunteerId);
+                    enqueueSnackbar('Cadastro realizado com sucesso', { variant: 'success' });
+                } 
+            } catch (err) {
                 enqueueSnackbar('Erro ao enviar o formulário de autocadastro', { variant: 'error' });
             }
         },
@@ -166,7 +203,7 @@ const SelfRegistration = () => {
                                     <TextField
                                         fullWidth
                                         label="Data de Início"
-                                        type="date"
+                                        type="datetime-local"
                                         value={startDate}
                                         variant="standard"
                                         onChange={(e) => setStartDate(e.target.value)}
@@ -177,7 +214,7 @@ const SelfRegistration = () => {
                                     <TextField
                                         fullWidth
                                         label="Data de Fim"
-                                        type="date"
+                                        type="datetime-local"
                                         value={endDate}
                                         variant="standard"
                                         onChange={(e) => setEndDate(e.target.value)}
