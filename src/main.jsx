@@ -17,6 +17,7 @@ import Ministries from './pages/Ministries.jsx';
 import ApproveUser from './pages/ApproveUser.jsx';
 import Schedule from './pages/Schedule.jsx';
 import SelfRegistration from './pages/SelfRegistration.jsx';
+import LoginVolunteer from './pages/LoginVolunteer.jsx';
 
 
 const router = createBrowserRouter([
@@ -53,8 +54,8 @@ const router = createBrowserRouter([
         element: <Schedule />
       },
       {
-        path: "/voluntario/autocadastro/:uuid",
-        element: <SelfRegistration />
+        path: "/voluntario/login/",
+        element: <LoginVolunteer />
       }
     ]
   }
