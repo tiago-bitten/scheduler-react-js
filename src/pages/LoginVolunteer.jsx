@@ -7,6 +7,7 @@ import { useSnackbar } from 'notistack';
 import { cpfValidation } from '../utils/cpfValidation';
 
 import LoginVolunteerStep from '../components/LoginVolunteerStep';
+import UnavailableDate from '../components/UnavailableDate';
 
 const validationSchema = yup.object({
     cpf: yup.string().required("O CPF é obrigatório").test('is-valid', 'CPF não é válido', cpfValidation),
@@ -40,8 +41,11 @@ const LoginVolunteer = () => {
 
     return (
         <Container maxWidth="sm" sx={{ minHeight: '100vh', minWidth: '100vw', backgroundColor: '#4169E1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <LoginVolunteerStep formik={formik} />
-            
+            {nextStep.number === 0 ? (
+                <LoginVolunteerStep formik={formik} />
+            ) : nextStep.pass && nextStep.number === 2 ? (
+                <UnavailableDate />
+            ) : null}
         </Container>
     );
 };
