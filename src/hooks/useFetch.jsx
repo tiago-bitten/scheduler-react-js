@@ -1,22 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useState, useCallback } from 'react';
 import instance from '../config/axiosConfig';
 
-const useFetch = (url) => {
+export const useFetch = (url) => {
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
+    const fetch = useCallback(() => {
+        setLoading(true);
         const headers = {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${sessionStorage.getItem('token')}`
         };
 
         instance.get(url, { headers })
-            .then((response) => setData(response.data))
-            .catch((error) => setError(error))
+            .then((response) => {
+                setData(response.data);
+                setError(null);
+            })
+            .catch((error) => {
+                setError(error);
+                setData(null);
+            })
             .finally(() => setLoading(false));
     }, [url]);
 
-    return { data, error, loading };
+    return { data, error, loading, fetch };
 };

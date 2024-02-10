@@ -3,13 +3,29 @@ import { Box, Grid, Typography, TextField, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useSnackbar } from 'notistack';
 import UnavailableDateLine from './UnavailableDateLine';
+import { usePost } from '../hooks/usePost';
+import { useFetch } from '../hooks/useFetch';
+import { format } from 'date-fns';
 
-const UnavailableDate = () => {
+const UnavailableDate = ({ volunteerId }) => {
+    const { post } = usePost(`/unavailable-dates/create?volunteerId=${volunteerId}`);
+    const { data, error, loading, fetch } = useFetch(`/unavailable-dates/${volunteerId}`);
+
     const [dates, setDates] = React.useState([]);
     const [startDate, setStartDate] = React.useState('');
     const [endDate, setEndDate] = React.useState('');
 
     const { enqueueSnackbar } = useSnackbar();
+
+    React.useEffect(() => {
+        fetch();
+    }, [fetch, volunteerId]);
+
+    React.useEffect(() => {
+        if (data) {
+            setDates(data.unavailableDates);
+        }
+    }, [data]);
 
     const handleAddDate = () => {
         if (!startDate || !endDate) {
@@ -17,17 +33,23 @@ const UnavailableDate = () => {
             return;
         }
 
-        const convertedStartDate = new Date(startDate);
-        const convertedEndDate = new Date(endDate);
+        const start = new Date(startDate);
+        const end = new Date(endDate);
 
-        if (convertedStartDate > convertedEndDate) {
+        const formattedStartDate = format(start, "yyyy-MM-dd'T'HH:mm");
+        const formattedEndDate = format(end, "yyyy-MM-dd'T'HH:mm");
+
+        if (start > end) {
             enqueueSnackbar('A data inicial não pode ser maior que a data final', { variant: 'warning' });
             return;
         }
 
+        post({ startDate: formattedStartDate, endDate: formattedEndDate });
         setDates([...dates, { startDate, endDate }]);
         setStartDate('');
         setEndDate('');
+
+        enqueueSnackbar('Data adicionada com sucesso', { variant: 'success' });
     };
 
     const handleRemoveDate = (indexToRemove) => {

@@ -17,10 +17,13 @@ const validationSchema = yup.object({
 const LoginVolunteer = () => {
     const { data, error, loading, post } = usePost('/volunteers/sign-in');
     const [nextStep, setNextStep] = React.useState({ pass: false, number: 0 });
+    const [volunteerId, setVolunteerId] = React.useState('');
+
     const { enqueueSnackbar } = useSnackbar();
 
     React.useEffect(() => {
         if (data) {
+            setVolunteerId(data.volunteer.id);
             enqueueSnackbar(`Bem vindo ${data.volunteer.name}`, { variant: 'success' });
             setNextStep({ pass: true, number: 2 });
         }
@@ -44,7 +47,7 @@ const LoginVolunteer = () => {
             {nextStep.number === 0 ? (
                 <LoginVolunteerStep formik={formik} />
             ) : nextStep.pass && nextStep.number === 2 ? (
-                <UnavailableDate />
+                <UnavailableDate volunteerId={volunteerId} />
             ) : null}
         </Container>
     );
