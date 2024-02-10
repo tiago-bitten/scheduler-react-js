@@ -5,8 +5,6 @@ import DefaultInput from '../components/DefaultInput';
 import RoundButton from '../components/RoundButton';
 import Switch from '@mui/material/Switch';
 import NotFoundItem from '../components/NotFoundItem';
-import IconButton from '@mui/material/IconButton';
-import AddLinkIcon from '@mui/icons-material/AddLink';
 
 import instance from '../config/axiosConfig';
 import { useSnackbar } from 'notistack';
@@ -17,6 +15,7 @@ import VolunteerListSkeleton from '../components/VolunteerListSkeleton';
 
 const Volunteer = () => {
     const navigate = useNavigate();
+    
     const [token] = React.useState(sessionStorage.getItem('token'));
     const [loading, setLoading] = React.useState(true);
     const [checked, setChecked] = React.useState(false);
@@ -123,9 +122,6 @@ const Volunteer = () => {
                 </div>
                 <div>
                     <RoundButton value="CADASTRAR VOLUNTÁRIO" onClick={handleClick} />
-                    <IconButton onClick={handleGenerateSelfRegistrationLink} sx={{ ml: '5px' }}>
-                        <AddLinkIcon />
-                    </IconButton>
                 </div>
             </div>
             <div className="ml-10 mt-4">

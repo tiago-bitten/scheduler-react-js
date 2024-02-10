@@ -16,8 +16,8 @@ import Analysis from './pages/Analysis.jsx';
 import Ministries from './pages/Ministries.jsx';
 import ApproveUser from './pages/ApproveUser.jsx';
 import Schedule from './pages/Schedule.jsx';
-import SelfRegistration from './pages/SelfRegistration.jsx';
 import LoginVolunteer from './pages/LoginVolunteer.jsx';
+import AutoCreateVolunteer from './pages/AutoCreateVolunteer.jsx';
 
 
 const router = createBrowserRouter([
@@ -54,8 +54,12 @@ const router = createBrowserRouter([
         element: <Schedule />
       },
       {
-        path: "/voluntario/login/",
+        path: "/voluntario/entrar/",
         element: <LoginVolunteer />
+      },
+      {
+        path: '/voluntario/criar-conta/:cpf/:birthDate',
+        element: <AutoCreateVolunteer />
       }
     ]
   }

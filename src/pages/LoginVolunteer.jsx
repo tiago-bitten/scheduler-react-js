@@ -5,9 +5,9 @@ import { Box, Button, TextField, Container } from "@mui/material";
 import { usePost } from "../hooks/usePost";
 import { useSnackbar } from 'notistack';
 import { cpfValidation } from '../utils/cpfValidation';
+import { useNavigate } from 'react-router-dom';
 
 import LoginVolunteerStep from '../components/LoginVolunteerStep';
-import UnavailableDate from '../components/UnavailableDate';
 
 const validationSchema = yup.object({
     cpf: yup.string().required("O CPF é obrigatório").test('is-valid', 'CPF não é válido', cpfValidation),
@@ -16,16 +16,22 @@ const validationSchema = yup.object({
 
 const LoginVolunteer = () => {
     const { data, error, loading, post } = usePost('/volunteers/sign-in');
-    const [nextStep, setNextStep] = React.useState({ pass: false, number: 0 });
+    const [cpf, setCPF] = React.useState('');
+    const [birthDate, setBirthDate] = React.useState('');
     const [volunteerId, setVolunteerId] = React.useState('');
 
     const { enqueueSnackbar } = useSnackbar();
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         if (data) {
             setVolunteerId(data.volunteer.id);
             enqueueSnackbar(`Bem vindo ${data.volunteer.name}`, { variant: 'success' });
-            setNextStep({ pass: true, number: 2 });
+        }
+
+        if (error) {
+            enqueueSnackbar('Preencha os campos', { variant: 'success' });
+            navigate(`/voluntario/criar-conta/${cpf}/${birthDate}`);
         }
 
     }, [data, error, enqueueSnackbar]);
@@ -38,17 +44,15 @@ const LoginVolunteer = () => {
         validationSchema,
         onSubmit: (values, { setSubmitting }) => {
             post(values);
+            setCPF(values.cpf);
+            setBirthDate(values.birthDate);
             setSubmitting(false);
         }
     });
 
     return (
         <Container maxWidth="sm" sx={{ minHeight: '100vh', minWidth: '100vw', backgroundColor: '#4169E1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {nextStep.number === 0 ? (
-                <LoginVolunteerStep formik={formik} />
-            ) : nextStep.pass && nextStep.number === 2 ? (
-                <UnavailableDate volunteerId={volunteerId} />
-            ) : null}
+            <LoginVolunteerStep formik={formik} />
         </Container>
     );
 };
