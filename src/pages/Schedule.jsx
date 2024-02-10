@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSnackbar } from 'notistack';
+import React from 'react';
 import MyCalendar from '../components/MyCalender';
 import moment from 'moment';
-import useFetch from '../hooks/useFetch';
+import { useFetch } from '../hooks/useFetch';
 
 import Header from '../components/Header';
 import OpenScheduleModal from '../components/OpenScheduleModal';
@@ -11,20 +9,19 @@ import AppointmentModal from '../components/AppointmentModal';
 import RoundButton from '../components/RoundButton';
 
 const Schedule = () => {
+    const [schedules, setSchedules] = React.useState([]);
+    const [month, setMonth] = React.useState(new Date().getMonth() + 1);
+    const [year, setYear] = React.useState(new Date().getFullYear());
+    const [showOpenScheduleModal, setOpenScheduleModal] = React.useState(false);
+    const [showEventModal, setShowEventModal] = React.useState(false);
+    const [selectedDate, setSelectedDate] = React.useState(null);
+    const [selectedEvent, setSelectedEvent] = React.useState(null);
+    
     const { data, fetch } = useFetch(`/schedules?month=${month}&year=${year}`);
-    const [schedules, setSchedules] = useState([]);
-    const [month, setMonth] = useState(new Date().getMonth() + 1);
-    const [year, setYear] = useState(new Date().getFullYear());
-    const [showOpenScheduleModal, setOpenScheduleModal] = useState(false);
-    const [showEventModal, setShowEventModal] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(null);
-    const [selectedEvent, setSelectedEvent] = useState(null);
-
-    const navigate = useNavigate();
-
+    
     React.useEffect(() => {
         fetch();
-    }, [fetch, month, year, navigate]);
+    }, [fetch, month, year]);
 
     React.useEffect(() => {
         if (data) {

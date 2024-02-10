@@ -1,10 +1,20 @@
 import React from 'react';
 import moment from 'moment';
 import { useSnackbar } from 'notistack';
-import instance from '../config/axiosConfig';
 import RoundButton from './RoundButton';
 import { Modal, Box, TextField, Grid, Typography, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { usePost } from '../hooks/usePost';
+import { useFormik } from 'formik/dist';
+
+import * as yup from 'yup';
+
+const validationSchema = yup.object({
+    name: yup.string().required('Nome da agenda é obrigatório'),
+    startDate: yup.date().required('Data de início é obrigatória').nullable(),
+    startTime: yup.string().required('Hora de início é obrigatória'),
+    duration: yup.number().required('Duração é obrigatória').positive('Duração deve ser positiva').integer('Duração deve ser um número inteiro'),
+});
 
 const style = {
     position: 'absolute',
@@ -24,55 +34,61 @@ const textFieldStyle = {
 };
 
 const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
-    const [token] = React.useState(sessionStorage.getItem('token'));
-    const [name, setName] = React.useState('');
-    const [description, setDescription] = React.useState('');
-    const [startDate, setStartDate] = React.useState('');
-    const [startTime, setStartTime] = React.useState('');
-    const [duration, setDuration] = React.useState(60);
-
+    const { response, error, loading, post } = usePost('/schedules/open');
     const { enqueueSnackbar } = useSnackbar();
-
-    React.useEffect(() => {
-        if (selectedDate) {
-            setStartDate(moment(selectedDate).format('YYYY-MM-DD'));
-            setStartTime(moment(selectedDate).format('HH:mm'));
-        } else {
-            setStartDate('');
-            setStartTime('');
-        }
-    }, [selectedDate]);
-
-    const handleSubmit = async () => {
-        const startDateTime = moment(`${startDate} ${startTime}`);
+  
+    const formik = useFormik({
+      initialValues: {
+        name: '',
+        description: '',
+        startDate: selectedDate ? moment(selectedDate).format('YYYY-MM-DD') : '',
+        startTime: selectedDate ? moment(selectedDate).format('HH:mm') : '',
+        duration: 60,
+      },
+      validationSchema,
+      onSubmit: values => {
+        const { name, description, startDate, startTime, duration } = values;
+        const startDateTime = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
         const endDateTime = startDateTime.clone().add(duration, 'minutes');
-
-        try {
-            const response = await instance.post('/schedules/open', {
-                name,
-                description,
-                startDate: startDateTime.format('YYYY-MM-DDTHH:mm:ss'),
-                endDate: endDateTime.format('YYYY-MM-DDTHH:mm:ss'),
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (response.status === 204) {
-                enqueueSnackbar('Agenda aberta com sucesso', { variant: 'success' });
-                onClose();
-                fetchSchedules();
-                setName('');
-                setDescription('');
-                setStartDate(moment(selectedDate).format('YYYY-MM-DD'));
-                setStartTime(moment(selectedDate).format('HH:mm'));
-                setDuration(60);
-            }
-        } catch (err) {
-            enqueueSnackbar(err.response?.data?.message || 'Não foi possível abrir a agenda', { variant: 'error' });
+  
+        const payload = {
+          name,
+          description,
+          startDate: startDateTime.toISOString(),
+          endDate: endDateTime.toISOString(),
+        };
+  
+        post(payload);
+      },
+    });
+  
+    React.useEffect(() => {
+      if (open && selectedDate) {
+        formik.setValues(prevValues => ({
+          ...prevValues,
+          startDate: moment(selectedDate).format('YYYY-MM-DD'),
+          startTime: moment(selectedDate).format('HH:mm'),
+        }));
+      } else {
+        formik.setValues({
+            name: '',
+            description: '',
+            startDate: '',
+            startTime: '',
+            duration: 60,
+        });
         }
-    };
+    }, [open, selectedDate, formik.setValues]);
+  
+    React.useEffect(() => {
+      if (response?.status === 204) {
+        enqueueSnackbar('Agenda aberta com sucesso', { variant: 'success' });
+        onClose();
+        fetchSchedules();
+      } else if (error) {
+        enqueueSnackbar(error.response.data.message, { variant: 'error' });
+      }
+    }, [response, error, fetchSchedules]);
 
     return (
         <Modal open={open} onClose={onClose}>
@@ -83,64 +99,74 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                 <Typography variant="h6" component="h2" sx={{ mb: 2, textAlign: 'center' }}>
                     Abrir Agenda
                 </Typography>
-                <Grid container spacing={2} justifyContent="center">
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Nome"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            variant="standard"
-                            autoComplete="off"
-                            required
-                            sx={textFieldStyle}
-                        />
+                <form onSubmit={formik.handleSubmit}>
+                    <Grid container spacing={2} justifyContent="center">
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Nome"
+                                variant="standard"
+                                required
+                                autoComplete="off"
+                                {...formik.getFieldProps('name')}
+                                error={formik.touched.name && Boolean(formik.errors.name)}
+                                helperText={formik.touched.name && formik.errors.name}
+                                sx={textFieldStyle}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Descrição"
+                                variant="standard"
+                                {...formik.getFieldProps('description')}
+                                sx={textFieldStyle}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                label="Data de início"
+                                type="date"
+                                required
+                                autoComplete="off"
+                                {...formik.getFieldProps('startDate')}
+                                error={formik.touched.startDate && Boolean(formik.errors.startDate)}
+                                helperText={formik.touched.startDate && formik.errors.startDate}
+                                InputLabelProps={{ shrink: true }}
+                                variant="standard"
+                                sx={textFieldStyle}
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                label="Hora de início"
+                                type="time"
+                                required
+                                autoComplete="off"
+                                {...formik.getFieldProps('startTime')}
+                                error={formik.touched.startTime && Boolean(formik.errors.startTime)}
+                                helperText={formik.touched.startTime && formik.errors.startTime}
+                                InputLabelProps={{ shrink: true }}
+                                variant="standard"
+                                sx={textFieldStyle}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Duração (minutos)"
+                                type="number"
+                                required
+                                autoComplete="off"
+                                {...formik.getFieldProps('duration')}
+                                error={formik.touched.duration && Boolean(formik.errors.duration)}
+                                helperText={formik.touched.duration && formik.errors.duration}
+                                variant="standard"
+                                sx={textFieldStyle}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sx={{ textAlign: 'center' }}>
+                            <RoundButton type="submit" value="ABRIR" />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Descrição"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            variant="standard"
-                            autoComplete="off"
-                            sx={textFieldStyle}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label="Data de início"
-                            type="date"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                            InputLabelProps={{ shrink: true }}
-                            variant="standard"
-                            sx={textFieldStyle}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label="Hora de início"
-                            type="time"
-                            value={startTime}
-                            onChange={(e) => setStartTime(e.target.value)}
-                            InputLabelProps={{ shrink: true }}
-                            variant="standard"
-                            sx={textFieldStyle}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Duração (minutos)"
-                            type="number"
-                            value={duration}
-                            onChange={(e) => setDuration(e.target.value)}
-                            variant="standard"
-                            sx={textFieldStyle}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sx={{ textAlign: 'center' }}>
-                        <RoundButton value="ABRIR" onClick={handleSubmit} />
-                    </Grid>
-                </Grid>
+                </form>
             </Box>
         </Modal>
     );

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import instance from '../config/axiosConfig';
 
 const usePost = (url) => {
-    const [data, setData] = useState(null);
+    const [response, setResponse] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -15,17 +15,17 @@ const usePost = (url) => {
         setLoading(true);
         instance.post(url, body, { headers })
             .then((response) => {
-                setData(response.data);
+                setResponse(response);
                 setError(null);
             })
             .catch((error) => {
                 setError(error);
-                setData(null);
+                setResponse(null);
             })
             .finally(() => setLoading(false));
     };
 
-    return { data, error, loading, post };
+    return { response, error, loading, post };
 };
 
 export { usePost };
