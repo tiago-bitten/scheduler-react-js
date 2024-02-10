@@ -6,6 +6,7 @@ import instance from "../config/axiosConfig";
 import NotFoundItem from "./NotFoundItem";
 import { useSnackbar } from "notistack";
 import moment from "moment";
+import AppointVolunteerLine from "./AppointVolunteerLine";
 
 const style = {
     position: 'absolute',
@@ -90,18 +91,11 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                         <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
                             {volunteers.length > 0 ? (
                                 volunteers.map(volunteer => (
-                                    <ListItem key={volunteer.id} divider>
-                                        <ListItemAvatar>
-                                            <Avatar src="https://thispersondoesnotexist.com/" alt="thispersondoesnotexists" />
-                                        </ListItemAvatar>
-                                        <ListItemText
-                                            primary={volunteer.name + ' ' + volunteer.lastName}
-                                        />
-                                        <IconButton
-                                            onClick={() => handleAppointment(volunteer.id)}>
-                                            <DoneIcon fontSize="medium" />
-                                        </IconButton>
-                                    </ListItem>
+                                    <AppointVolunteerLine
+                                        key={volunteer.id}
+                                        volunteer={volunteer}
+                                        handleAppointment={handleAppointment}
+                                    />
                                 ))) : (
                                 <NotFoundItem entities="voluntários" />
                             )}

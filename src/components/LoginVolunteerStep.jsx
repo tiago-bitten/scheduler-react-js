@@ -31,6 +31,7 @@ const LoginVolunteerStep = ({ formik }) => {
                         name="cpf"
                         label="CPF"
                         variant="standard"
+                        required
                         value={formik.values.cpf}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
@@ -47,6 +48,7 @@ const LoginVolunteerStep = ({ formik }) => {
                         label="Data de Nascimento"
                         type="date"
                         variant="standard"
+                        required
                         value={formik.values.birthDate}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}

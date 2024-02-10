@@ -18,7 +18,7 @@ import ApproveUser from './pages/ApproveUser.jsx';
 import Schedule from './pages/Schedule.jsx';
 import LoginVolunteer from './pages/LoginVolunteer.jsx';
 import AutoCreateVolunteer from './pages/AutoCreateVolunteer.jsx';
-
+import UnavailableDate from './pages/UnavailableDate.jsx';
 
 const router = createBrowserRouter([
   {
@@ -60,6 +60,10 @@ const router = createBrowserRouter([
       {
         path: '/voluntario/criar-conta/:cpf/:birthDate',
         element: <AutoCreateVolunteer />
+      },
+      {
+        path: "/voluntario/:accessKey/indisponibilidade",
+        element: <UnavailableDate />
       }
     ]
   }

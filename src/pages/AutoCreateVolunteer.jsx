@@ -5,6 +5,7 @@ import { Box, Container, Typography, TextField, Button } from '@mui/material';
 import { usePost } from '../hooks/usePost';
 import { useSnackbar } from 'notistack';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import RoundButton from '../components/RoundButton';
 
 const validationSchema = yup.object({
@@ -18,10 +19,12 @@ const AutoCreateVolunteer = () => {
     const { data, error, post } = usePost('/volunteers/auto-create');
 
     const { enqueueSnackbar } = useSnackbar();
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         if (data) {
             enqueueSnackbar(`Bem vindo ${data.volunteer.name}`, { variant: 'success' });
+            navigate(`/voluntario/${data.volunteer.accessKey}/indisponibilidade`);
         }
 
     }, [data, error, enqueueSnackbar]);

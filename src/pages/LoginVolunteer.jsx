@@ -27,14 +27,19 @@ const LoginVolunteer = () => {
         if (data) {
             setVolunteerId(data.volunteer.id);
             enqueueSnackbar(`Bem vindo ${data.volunteer.name}`, { variant: 'success' });
+            navigate(`/voluntario/${data.volunteer.accessKey}/indisponibilidade`);
         }
-
-        if (error) {
+        
+        if (error?.response?.status === 422) {
             enqueueSnackbar('Preencha os campos', { variant: 'success' });
             navigate(`/voluntario/criar-conta/${cpf}/${birthDate}`);
         }
 
-    }, [data, error, enqueueSnackbar]);
+        if (error?.response?.status === 400) {
+            enqueueSnackbar(error.response.data, { variant: 'error' });
+        }
+    
+    }, [data, error]);
 
     const formik = useFormik({
         initialValues: {

@@ -14,8 +14,14 @@ const usePost = (url) => {
 
         setLoading(true);
         instance.post(url, body, { headers })
-            .then((response) => setData(response.data))
-            .catch((error) => setError(error))
+            .then((response) => {
+                setData(response.data);
+                setError(null);
+            })
+            .catch((error) => {
+                setError(error);
+                setData(null);
+            })
             .finally(() => setLoading(false));
     };
 

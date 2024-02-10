@@ -5,6 +5,8 @@ import DefaultInput from '../components/DefaultInput';
 import RoundButton from '../components/RoundButton';
 import Switch from '@mui/material/Switch';
 import NotFoundItem from '../components/NotFoundItem';
+import IconButton from '@mui/material/IconButton';
+import AddLinkIcon from '@mui/icons-material/AddLink';
 
 import instance from '../config/axiosConfig';
 import { useSnackbar } from 'notistack';
@@ -15,7 +17,6 @@ import VolunteerListSkeleton from '../components/VolunteerListSkeleton';
 
 const Volunteer = () => {
     const navigate = useNavigate();
-    
     const [token] = React.useState(sessionStorage.getItem('token'));
     const [loading, setLoading] = React.useState(true);
     const [checked, setChecked] = React.useState(false);
@@ -90,22 +91,8 @@ const Volunteer = () => {
     }
 
     const handleGenerateSelfRegistrationLink = async () => {
-        try {
-            const response = await instance.post(`/self-registrations/generate/link`, {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            if (response.status === 201) {
-                setSelfRegistrationLink(response.data.link);
-                navigator.clipboard.writeText(`http://localhost:5173/voluntario/autocadastro/${response.data.link}`);
-                enqueueSnackbar('Link de autocadastro copiado.', { variant: 'success' });
-            }
-
-        } catch (err) {
-            enqueueSnackbar(err.response?.data?.message || 'Erro ao gerar link de auto-cadastro', { variant: 'error' });
-        }
+        navigator.clipboard.writeText(`http://localhost:5173/voluntario/entrar`);
+        enqueueSnackbar('Link de autocadastro copiado.', { variant: 'success' });
     };
 
     if (loading) {
@@ -122,6 +109,9 @@ const Volunteer = () => {
                 </div>
                 <div>
                     <RoundButton value="CADASTRAR VOLUNTÁRIO" onClick={handleClick} />
+                    <IconButton onClick={handleGenerateSelfRegistrationLink} sx={{ ml: '5px' }}>
+                        <AddLinkIcon />
+                    </IconButton>
                 </div>
             </div>
             <div className="ml-10 mt-4">
