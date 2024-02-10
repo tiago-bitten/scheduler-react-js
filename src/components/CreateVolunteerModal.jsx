@@ -61,8 +61,9 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
       const response = await instance.post('/volunteers/create', {
         name,
         lastName,
+        cpf: '11642426954',
         whatsapp,
-        birthDate
+        birthDate: '2003-10-10'
       }, {
         headers: {
           Authorization: `Bearer ${token}`

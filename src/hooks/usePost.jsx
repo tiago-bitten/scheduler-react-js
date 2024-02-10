@@ -21,3 +21,5 @@ const usePost = (url) => {
 
     return { data, error, loading, post };
 };
+
+export { usePost };
