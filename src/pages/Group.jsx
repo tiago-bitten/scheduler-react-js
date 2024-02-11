@@ -3,8 +3,25 @@ import Header from '../components/Header';
 import { TextField, Box, Grid } from '@mui/material';
 import RoundButton from '../components/RoundButton';
 import GroupLine from '../components/GroupLine';
+import NotFoundItem from '../components/NotFoundItem';
+import { useFetch } from '../hooks/useFetch';
 
 const Group = () => {
+    const { data, error, loading, fetch } = useFetch('/groups');
+    const [groups, setGroups] = React.useState([]);
+
+    React.useEffect(() => {
+        document.title = 'Grupos';
+    }, []);
+
+
+    React.useEffect(() => {
+        fetch();
+
+        if (data) {
+            setGroups(data.groups);
+        }
+    }, [fetch, data]);
 
     return (
         <>
@@ -26,15 +43,20 @@ const Group = () => {
                     </Grid>
                 </Grid>
             </Box>
-            <Box sx={{
-                backgroundColor: '#F3F3F3',
-                padding: 4,
-                marginX: 6,
-                marginTop: 4,
-            }}>
-                <GroupLine />
-                <GroupLine />
-            </Box>
+            {!loading && groups.length > 0 ?
+                <Box sx={{
+                    backgroundColor: '#F3F3F3',
+                    padding: 4,
+                    marginX: 6,
+                    marginTop: 4,
+                }}>
+                    groups.map((group) => (
+                    <GroupLine key={group.id} group={group} />
+                    ))
+                </Box>
+                :
+                <NotFoundItem entities="grupos" />
+            }
         </>
     );
 };
