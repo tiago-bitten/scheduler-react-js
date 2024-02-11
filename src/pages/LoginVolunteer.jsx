@@ -1,7 +1,7 @@
 import React from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { Box, Button, TextField, Container } from "@mui/material";
+import { Container } from "@mui/material";
 import { usePost } from "../hooks/usePost";
 import { useSnackbar } from 'notistack';
 import { cpfValidation } from '../utils/cpfValidation';
@@ -15,32 +15,9 @@ const validationSchema = yup.object({
 });
 
 const LoginVolunteer = () => {
-    const { loading, post } = usePost();
-    const [cpf, setCPF] = React.useState('');
-    const [birthDate, setBirthDate] = React.useState('');
-    const [volunteerId, setVolunteerId] = React.useState('');
-
+    const { post } = usePost();
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
-
-    React.useEffect(() => {
-        if (response) {
-            setVolunteerId(response.data.volunteer.id);
-            enqueueSnackbar(`Bem vindo ${response.data.volunteer.name}`, { variant: 'success' });
-            navigate(`/voluntario/${response.data.volunteer.accessKey}/indisponibilidade`);
-        }
-        
-        if (error?.response?.status === 422) {
-            enqueueSnackbar('Preencha os campos', { variant: 'success' });
-            navigate(`/voluntario/criar-conta/${cpf}/${birthDate}`);
-        }
-
-        if (error?.response?.status === 400) {
-            enqueueSnackbar(error.response.data, { variant: 'error' });
-        }
-    
-        // eslint-disable-next-line
-    }, [response, error]);
 
     const formik = useFormik({
         initialValues: {
@@ -48,11 +25,28 @@ const LoginVolunteer = () => {
             birthDate: ''
         },
         validationSchema,
-        onSubmit: (values, { setSubmitting }) => {
-            post('/volunteers/sign-in', values);
-            setCPF(values.cpf);
-            setBirthDate(values.birthDate);
-            setSubmitting(false);
+        onSubmit: async (values, { setSubmitting }) => {
+            try {
+                const response = await post('/volunteers/sign-in', values);
+                if (response.status === 201) {
+                    enqueueSnackbar(`Bem vindo ${response.data.volunteer.name}`, { variant: 'success' });
+                    navigate(`/voluntario/${response.data.volunteer.accessKey}/indisponibilidade`);
+                } 
+            } catch (error) {
+                const errorStatus = error.response?.status;
+
+                if (errorStatus === 400) {
+                    enqueueSnackbar(error.response.data.message, { variant: 'error' });
+                }
+
+                if (errorStatus === 422) {
+                    enqueueSnackbar("Preencha os campos", { variant: 'success' });
+                    navigate(`/voluntario/criar-conta/${values.cpf}/${values.birthDate}`);
+                }
+
+            } finally {
+                setSubmitting(false);
+            }
         }
     });
 
