@@ -16,18 +16,10 @@ const validationSchema = yup.object({
 
 const AutoCreateVolunteer = () => {
     const { cpf, birthDate } = useParams();
-    const { data, error, post } = usePost('/volunteers/auto-create');
+    const { post } = usePost();
 
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
-
-    React.useEffect(() => {
-        if (data) {
-            enqueueSnackbar(`Bem vindo ${data.volunteer.name}`, { variant: 'success' });
-            navigate(`/voluntario/${data.volunteer.accessKey}/indisponibilidade`);
-        }
-
-    }, [data, error, enqueueSnackbar]);
 
     const formik = useFormik({
         initialValues: {
@@ -36,9 +28,18 @@ const AutoCreateVolunteer = () => {
             phone: '',
         },
         validationSchema: validationSchema,
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
             const payload = { ...values, cpf, birthDate };
-            post(payload);
+        
+            try {
+                const response = await post('/volunteers/auto-create', payload);
+                if (response.status === 201) {
+                    enqueueSnackbar(`Bem vindo ${response.data.volunteer.name}`, { variant: 'success' });
+                    navigate(`/voluntario/${response.data.volunteer.accessKey}/indisponibilidade`);
+                }
+            } catch (error) {
+                enqueueSnackbar(error.response?.data?.message || 'Erro ao criar conta', { variant: 'error' });
+            }
         },
     });
 
