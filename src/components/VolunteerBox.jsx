@@ -27,12 +27,12 @@ const VolunteerBox = ({ open, onClose, volunteer, ministries, handleDeleteClick,
                 <div className="flex items-center">
                     <Tooltip title="Editar">
                         <IconButton>
-                            <Edit className="cursor-pointer text-quinary mx-2" />
+                            <Edit className="cursor-pointer mx-2" />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Excluir">
                         <IconButton onClick={handleDeleteClick}>
-                            <Delete className="cursor-pointer text-quinary" />
+                            <Delete className="cursor-pointer" />
                         </IconButton>
                     </Tooltip>
                 </div>
