@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
 
 const UnavailableDate = () => {
     const { accessKey } = useParams();
-    const { post } = usePost(`/unavailable-dates/create/${accessKey}`);
+    const { post } = usePost();
     const { data, error, loading, fetch } = useFetch(`/unavailable-dates/access-key/${accessKey}`);
 
     const [dates, setDates] = React.useState([]);
@@ -29,28 +29,41 @@ const UnavailableDate = () => {
         }
     }, [data]);
 
-    const handleAddDate = () => {
-        if (!startDate || !endDate) {
-            enqueueSnackbar('Preencha as datas corretamente', { variant: 'warning' });
-            return;
+    const handleAddDate = async () => {
+        try {
+            if (!startDate || !endDate) {
+                enqueueSnackbar('Preencha as datas corretamente', { variant: 'warning' });
+                return;
+            }
+
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+
+            const formattedStartDate = format(start, "yyyy-MM-dd'T'HH:mm");
+            const formattedEndDate = format(end, "yyyy-MM-dd'T'HH:mm");
+
+            if (start > end) {
+                enqueueSnackbar('A data inicial não pode ser maior que a data final', { variant: 'warning' });
+                return;
+            }
+
+            const payload = {
+                startDate: formattedStartDate,
+                endDate: formattedEndDate
+            };
+
+            const response = await post(`/unavailable-dates/create/${accessKey}`, payload);
+
+            if (response.status === 204) {
+                enqueueSnackbar('Data adicionada com sucesso', { variant: 'success' });
+                setStartDate('');
+                setEndDate('');
+                fetch();
+            }
+
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message, { variant: 'error' });
         }
-
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-
-        const formattedStartDate = format(start, "yyyy-MM-dd'T'HH:mm");
-        const formattedEndDate = format(end, "yyyy-MM-dd'T'HH:mm");
-
-        if (start > end) {
-            enqueueSnackbar('A data inicial não pode ser maior que a data final', { variant: 'warning' });
-            return;
-        }
-
-        post({ startDate: formattedStartDate, endDate: formattedEndDate });
-        setStartDate('');
-        setEndDate('');
-
-        enqueueSnackbar('Data adicionada com sucesso', { variant: 'success' });
     };
 
     return (
