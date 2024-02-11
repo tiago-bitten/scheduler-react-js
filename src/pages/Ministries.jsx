@@ -31,6 +31,10 @@ const Ministries = () => {
     const navigate = useNavigate();
 
     React.useEffect(() => {
+        document.title = 'Ministérios';
+    }, []);
+
+    React.useEffect(() => {
         resetAction();
     }, [ministryId]);
 

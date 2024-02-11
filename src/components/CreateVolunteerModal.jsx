@@ -21,7 +21,7 @@ const style = {
   justifyContent: 'space-between',
 };
 
-const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
+const CreateVolunteerModal = ({ open, handleClose, fetch }) => {
   const { enqueueSnackbar } = useSnackbar();
 
   const userMinistriesFetch = useFetch('/users/ministries');
@@ -70,7 +70,7 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
         );
 
         await Promise.all(ministryPromises);
-        getVolunteers();
+        fetch();
         enqueueSnackbar('Voluntário cadastrado com sucesso.', { variant: 'success' });
 
         handleClose();

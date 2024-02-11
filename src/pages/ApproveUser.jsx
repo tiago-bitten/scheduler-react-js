@@ -3,31 +3,28 @@ import instance from '../config/axiosConfig';
 import Header from '../components/Header';
 import { useSnackbar } from 'notistack';
 import ApproveUserCard from '../components/ApproveUserCard';
+import { useFetch } from '../hooks/useFetch';
 
 const ApproveUser = () => {
     const [token] = useState(sessionStorage.getItem('token'));
     const [users, setUsers] = useState([]);
+    const { data, error, loading, fetch } = useFetch('/users/approve');
 
     const { enqueueSnackbar } = useSnackbar();
 
-    useEffect(() => {
-        const fetchUsersToApprove = async () => {
-            try {
-                const response = await instance.get('/users/approve', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                if (response.status === 200) {
-                    setUsers(response.data.users);
-                }
-            } catch (err) {
-                enqueueSnackbar(err.response?.data?.message || 'Erro ao buscar usuários', { variant: 'error' });
-            }
-        };
+    React.useEffect(() => {
+        document.title = 'Aprovar usuários';
+    }, []);
 
-        fetchUsersToApprove();
-    }, [token, enqueueSnackbar]);
+    React.useEffect(() => {
+        fetch();
+    }, [fetch]);
+
+    React.useEffect(() => {
+        if (data) {
+            setUsers(data.users);
+        }
+    }, [data]);
 
     const onApprove = async (id, allowAprove) => {
         try {

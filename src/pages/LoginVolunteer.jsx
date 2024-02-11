@@ -19,6 +19,10 @@ const LoginVolunteer = () => {
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
+    React.useEffect(() => {
+        document.title = 'Entrar';
+    }, []);
+
     const formik = useFormik({
         initialValues: {
             cpf: '',

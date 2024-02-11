@@ -15,6 +15,10 @@ const CreateAccount = () => {
     let leftCardComponent;
     let rightCardComponent;
 
+    React.useEffect(() => {
+        document.title = 'Criar conta';
+    }, []);
+
     switch (nextStep) {
         case 1:
             leftCardComponent = <CreateAccountLeftCard

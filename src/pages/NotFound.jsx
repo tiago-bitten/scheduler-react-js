@@ -3,6 +3,11 @@ import { Box, Typography } from '@mui/material';
 import perdeu from '../assets/perdeu.webp';
 
 const NotFound = () => {
+    
+    React.useEffect(() => {
+        document.title = 'Ops...';
+    }, []);
+
     return (
         <Box sx={{
             display: 'flex',

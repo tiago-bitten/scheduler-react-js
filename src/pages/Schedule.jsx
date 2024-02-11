@@ -20,6 +20,10 @@ const Schedule = () => {
     const { data, fetch } = useFetch(`/schedules?month=${month}&year=${year}`);
     
     React.useEffect(() => {
+        document.title = 'Agenda';
+    }, []);
+
+    React.useEffect(() => {
         fetch();
     }, [fetch, month, year]);
 

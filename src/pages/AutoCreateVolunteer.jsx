@@ -21,6 +21,10 @@ const AutoCreateVolunteer = () => {
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
+    React.useEffect(() => {
+        document.title = 'Criar conta';
+    }, []);
+
     const formik = useFormik({
         initialValues: {
             name: '',

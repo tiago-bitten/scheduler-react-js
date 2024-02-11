@@ -8,6 +8,7 @@ import NotFoundItem from '../components/NotFoundItem';
 import IconButton from '@mui/material/IconButton';
 import AddLinkIcon from '@mui/icons-material/AddLink';
 import { useDelete } from '../hooks/useDelete';
+import { useFetch } from '../hooks/useFetch';
 
 import instance from '../config/axiosConfig';
 import { useSnackbar } from 'notistack';
@@ -20,62 +21,20 @@ const Volunteer = () => {
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
     const { deleteRequest } = useDelete();
+    const { data, error, loading, fetch } = useFetch('/volunteers');
     const [confirmModalOpen, setConfirmModalOpen] = React.useState(false);
 
     const [token] = React.useState(sessionStorage.getItem('token'));
-    const [loading, setLoading] = React.useState(true);
     const [checked, setChecked] = React.useState(false);
-    const [volunteers, setVolunteers] = React.useState([]);
     const [open, setOpen] = React.useState(false);
-    const [requestCompleted, setRequestCompleted] = React.useState(false);
-
 
     React.useEffect(() => {
-        const fetchVolunteers = async () => {
-            try {
-                const response = await instance.get('/volunteers', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                setVolunteers(response.data.volunteers);
-            } catch (err) {
-                if (err.response?.status === 401) {
-                    navigate('/entrar');
-                    enqueueSnackbar('Você precisa estar logado para acessar essa página.', { variant: 'error' });
-                    return;
-                }
-                enqueueSnackbar(err.response?.data?.message || 'Erro ao buscar voluntários', { variant: 'error' });
-            } finally {
-                setLoading(false);
-                setRequestCompleted(true);
-            }
-        };
+        document.title = 'Voluntários';
+    }, []);
 
-        fetchVolunteers();
-
-        // eslint-disable-next-line
-    }, [token, navigate]);
-
-    const getVolunteers = async () => {
-        try {
-            const response = await instance.get('/volunteers', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            if (response.status === 200) {
-                setVolunteers(response.data.volunteers);
-            }
-
-        } catch (err) {
-            if (err.response?.status === 401) {
-                navigate('/entrar');
-                enqueueSnackbar('Você precisa estar logado para acessar essa página.', { variant: 'error' });
-                return;
-            }
-            enqueueSnackbar(err.response?.data?.message || 'Erro ao buscar voluntários', { variant: 'error' });
-        }
-    };
+    React.useEffect(() => {
+        fetch();
+    }, [fetch]);
 
     const handleSwitchChange = (event) => {
         setChecked(event.target.checked);
@@ -104,7 +63,7 @@ const Volunteer = () => {
 
             if (response.status === 204) {
                 enqueueSnackbar('Voluntário removido com sucesso', { variant: 'success' });
-                getVolunteers();
+                fetch();
             }
 
         } catch (error) {
@@ -142,11 +101,11 @@ const Volunteer = () => {
                 />
                 <span className="text-quinary">Apenas voluntários com ministérios</span>
             </div>
-            {requestCompleted && volunteers.length === 0 ? (
+            {!loading && data?.volunteers?.length === 0 ? (
                 <NotFoundItem entities="voluntários" />
             ) : (
                 <div className="bg-septenary p-4 mx-12 mt-12">
-                    {volunteers.map((volunteer) => (
+                    {data?.volunteers.map((volunteer) => (
                         <VolunteerBox
                             key={volunteer.id}
                             volunteer={volunteer}
@@ -163,7 +122,7 @@ const Volunteer = () => {
                 open={open}
                 setOpen={setOpen}
                 handleClose={handleClose}
-                getVolunteers={getVolunteers}
+                fetch={fetch}
             />
         </>
     );

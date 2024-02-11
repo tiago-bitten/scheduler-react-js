@@ -13,6 +13,10 @@ const Analysis = () => {
         navigate('/entrar');
     }
 
+    React.useEffect(() => {
+        document.title = 'Análise de cadastro';
+    }, [])
+
     return (
         <div className="flex flex-col items-center justify-center h-screen bg-primary">
             <div className="bg-white text-center px-24 py-8" style={{ width: '800px', height: '550px' }}>

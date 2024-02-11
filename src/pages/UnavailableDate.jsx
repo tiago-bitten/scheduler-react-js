@@ -20,6 +20,10 @@ const UnavailableDate = () => {
     const { enqueueSnackbar } = useSnackbar();
 
     React.useEffect(() => {
+        document.title = 'Indisponibilidade';
+    }, []);
+
+    React.useEffect(() => {
         fetch();
     }, [fetch, accessKey]);
 
