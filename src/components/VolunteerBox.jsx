@@ -2,20 +2,11 @@ import React from 'react';
 import { Tooltip, IconButton } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import ConfirmModal from './ConfirmModal';
+import { useDelete } from '../hooks/useDelete';
+import { useSnackbar } from 'notistack';
 
-const VolunteerBox = ({ volunteer, ministries }) => {
-    const [confirmModalOpen, setConfirmModalOpen] = React.useState(false);
-
+const VolunteerBox = ({ open, onClose, volunteer, ministries, handleDeleteClick, handleDeleteConfirm }) => {
     const avatarBorderClass = ministries.length > 0 ? 'border-2 border-primary' : 'border-2 border-quinary';
-
-    const handleDeleteClick = () => {
-        setConfirmModalOpen(true);
-    }
-
-    const handleDeleteConfirm = (id) => {
-        console.log(id);
-        setConfirmModalOpen(false);
-    }
 
     return (
         <>
@@ -47,8 +38,8 @@ const VolunteerBox = ({ volunteer, ministries }) => {
                 </div>
             </div>
             <ConfirmModal
-                open={confirmModalOpen}
-                onClose={() => setConfirmModalOpen(false)}
+                open={open}
+                onClose={onClose}
                 title="Remover voluntário"
                 content="Deseja realmente remover este voluntário? Esta ação não poderá ser desfeita."
                 action={() => handleDeleteConfirm(volunteer.id)}

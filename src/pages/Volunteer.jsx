@@ -7,6 +7,7 @@ import Switch from '@mui/material/Switch';
 import NotFoundItem from '../components/NotFoundItem';
 import IconButton from '@mui/material/IconButton';
 import AddLinkIcon from '@mui/icons-material/AddLink';
+import { useDelete } from '../hooks/useDelete';
 
 import instance from '../config/axiosConfig';
 import { useSnackbar } from 'notistack';
@@ -17,6 +18,10 @@ import VolunteerListSkeleton from '../components/VolunteerListSkeleton';
 
 const Volunteer = () => {
     const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
+    const { deleteRequest } = useDelete();
+    const [confirmModalOpen, setConfirmModalOpen] = React.useState(false);
+
     const [token] = React.useState(sessionStorage.getItem('token'));
     const [loading, setLoading] = React.useState(true);
     const [checked, setChecked] = React.useState(false);
@@ -24,15 +29,8 @@ const Volunteer = () => {
     const [open, setOpen] = React.useState(false);
     const [requestCompleted, setRequestCompleted] = React.useState(false);
 
-    const { enqueueSnackbar } = useSnackbar();
 
     React.useEffect(() => {
-        if (!token) {
-            navigate('/entrar');
-            enqueueSnackbar('Você precisa estar logado para acessar essa página.');
-            return;
-        }
-
         const fetchVolunteers = async () => {
             try {
                 const response = await instance.get('/volunteers', {
@@ -96,6 +94,26 @@ const Volunteer = () => {
         enqueueSnackbar('Link de autocadastro copiado.', { variant: 'success' });
     };
 
+    const handleDeleteClick = () => {
+        setConfirmModalOpen(true);
+    }
+
+    const handleDeleteConfirm = async (id) => {
+        try {
+            const response = await deleteRequest(`/volunteers/${id}`);
+
+            if (response.status === 204) {
+                enqueueSnackbar('Voluntário removido com sucesso', { variant: 'success' });
+                getVolunteers();
+            }
+
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message || "Erro geral", { variant: 'error' });
+        } finally {
+            setConfirmModalOpen(false);
+        }
+    }
+
     if (loading) {
         return <VolunteerListSkeleton />
     }
@@ -133,6 +151,10 @@ const Volunteer = () => {
                             key={volunteer.id}
                             volunteer={volunteer}
                             ministries={volunteer.ministries}
+                            handleDeleteClick={handleDeleteClick}
+                            handleDeleteConfirm={handleDeleteConfirm}
+                            open={confirmModalOpen}
+                            onClose={() => setConfirmModalOpen(false)}
                         />
                     ))}
                 </div>

@@ -28,7 +28,7 @@ const LoginVolunteer = () => {
         onSubmit: async (values, { setSubmitting }) => {
             try {
                 const response = await post('/volunteers/sign-in', values);
-                if (response.status === 201) {
+                if (response.status === 200) {
                     enqueueSnackbar(`Bem vindo ${response.data.volunteer.name}`, { variant: 'success' });
                     navigate(`/voluntario/${response.data.volunteer.accessKey}/indisponibilidade`);
                 } 
