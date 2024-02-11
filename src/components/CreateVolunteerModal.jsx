@@ -3,7 +3,8 @@ import { Modal, Box, CircularProgress, IconButton, TextField } from '@mui/materi
 import { DatePicker } from '@mui/lab';
 import { AddAPhoto, AddLink, Close } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
-import AddLinkIcon from '@mui/icons-material/AddLink';
+import { usePost } from '../hooks/usePost';
+import { useFetch } from '../hooks/useFetch';
 
 import DefaultInput from './DefaultInput';
 import CheckboxMinistry from './CheckboxMinistry';
@@ -25,74 +26,43 @@ const style = {
 };
 
 const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const userMinistriesFetch = useFetch('/users/ministries');
+  const createVolunteerPost = usePost();
+  const associateVolunteerMinistryPost = usePost();
+
   const [token] = React.useState(sessionStorage.getItem('token'));
   const [ministries, setMinistries] = useState([]);
   const [selectedMinistries, setSelectedMinistries] = useState([]);
   const [name, setName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [phone, setPhone] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { enqueueSnackbar } = useSnackbar();
-
   React.useEffect(() => {
-    const getMinistries = async () => {
-      try {
-        const response = await instance.get('/users/ministries', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        if (response.status === 200) {
-          setMinistries(response.data.ministries);
-        }
-
-      } catch (err) {
-        enqueueSnackbar(err.response.data.message);
-      }
-    };
-
-    getMinistries();
+    userMinistriesFetch.fetch();
   }, []);
 
   const handleCreateVolunteer = async () => {
-    try {
-      const response = await instance.post('/volunteers/create', {
-        name,
-        lastName,
-        cpf: '11642426954',
-        whatsapp,
-        birthDate: '2003-10-10'
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+    const payload = {
+      name,
+      lastName,
+      cpf,
+      phone,
+      birthDate
+    };
 
-      if (response.status === 201) {
-        return response.data.volunteer.id;
-      }
+    await createVolunteerPost.post('/volunteers/create', payload);
 
-    } catch (err) {
-      enqueueSnackbar(err.response?.data?.message || 'Ocorreu um erro ao criar voluntário', { variant: 'error' });
-    }
+    console.log(createVolunteerPost.response?.data?.volunteer?.id);
+    return createVolunteerPost.response?.data?.volunteer?.id;
   };
 
   const handleCreateVolunteerMinistry = async (volunteerId, ministryId) => {
-    try {
-      const response = await instance.post(`/volunteer-ministries/associate?volunteerId=${volunteerId}&ministryId=${ministryId}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      if (response.status === 201)
-        console.log('volunteerministry ok');
-
-    } catch (err) {
-      enqueueSnackbar(err.response.data.message);
-    }
+    associateVolunteerMinistryPost.post(`/volunteer-ministries/associate?volunteerId=${volunteerId}&ministryId=${ministryId}`);
   };
 
   const handleClick = async () => {
@@ -113,6 +83,7 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
         handleClose();
       }
     } catch (err) {
+      console.log(err);
       enqueueSnackbar(err.response?.data?.message, { variant: 'error' });
     } finally {
       setIsSubmitting(false);
@@ -128,8 +99,12 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
     setLastName(event.target.value);
   };
 
+  const handleCpfChange = (event) => {
+    setCpf(event.target.value);
+  };
+
   const handleWhatsappChange = (event) => {
-    setWhatsapp(event.target.value);
+    setPhone(event.target.value);
   };
 
   const handleBirthDateChange = (event) => {
@@ -139,7 +114,7 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
   const resetFields = () => {
     setName('');
     setLastName('');
-    setWhatsapp('');
+    setPhone('');
     setBirthDate('');
     setSelectedMinistries([]);
   };
@@ -181,27 +156,70 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
           </IconButton>
           <div className="w-full border-r-2 border-senary">
             <h1 className="text-3xl text-quinary text-center mb-10">Dados do voluntário</h1>
-            <div className="flex flex-col items-center mb-10">
+            <div className="flex flex-col items-center mb-4">
               <AddAPhoto className="text-tertiary mb-2" sx={{ fontSize: 60 }} />
               <small className="text-tertiary" style={{ fontStyle: 'italic' }}>Adicionar foto</small>
             </div>
             <div className="mb-8">
-              <DefaultInput label="Nome" id="nome" onChange={handleNameChange} />
+              <TextField
+                label="Nome"
+                id="name"
+                variant="standard"
+                onChange={handleNameChange}
+                fullWidth
+                required
+                value={name}
+                autoComplete="off"
+              />
             </div>
             <div className="mb-8">
-              <DefaultInput label="Sobrenome" id="sobrenome" onChange={handleLastNameChange} />
+              <TextField
+                label="Sobrenome"
+                id="lastName"
+                variant="standard"
+                onChange={handleLastNameChange}
+                fullWidth
+                required
+                value={lastName}
+                autoComplete="off"
+              />
             </div>
             <div className="mb-8">
-              <DefaultInput label="WhatsApp" id="whatsapp" onChange={handleWhatsappChange} />
+              <TextField
+                label="CPF"
+                id="cpf"
+                variant="standard"
+                fullWidth
+                required
+                value={cpf}
+                autoComplete="off"
+                onChange={handleCpfChange}
+              />
             </div>
             <div className="mb-8">
-              <DatePicker
+              <TextField
+                label="Telefone"
+                id="phone"
+                variant="standard"
+                onChange={handleWhatsappChange}
+                fullWidth
+                required
+                value={phone}
+                autoComplete="off"
+              />
+            </div>
+            <div>
+              <TextField
                 label="Data de nascimento"
+                id="birthDate"
+                variant="standard"
+                type="date"
+                onChange={handleBirthDateChange}
+                fullWidth
+                required
                 value={birthDate}
-                onChange={(newValue) => {
-                  setBirthDate(newValue);
-                }}
-                renderInput={(params) => <TextField {...params} />}
+                autoComplete="off"
+                InputLabelProps={{ shrink: true }}
               />
             </div>
           </div>
@@ -209,7 +227,7 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
             <h1 className="text-3xl text-quinary text-center mb-10">Ministérios</h1>
             <div className="w-5/6" style={{ maxHeight: '350px', marginBottom: '16px' }}>
               <div className="overflow-auto bg-septenary" style={{ maxHeight: '340px' }}>
-                {ministries.map((ministry) => (
+                {userMinistriesFetch.data?.ministries?.map((ministry) => (
                   <CheckboxMinistry
                     key={ministry.id}
                     ministry={ministry.name}

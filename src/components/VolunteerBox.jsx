@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tooltip, IconButton } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
 const VolunteerBox = ({ name, lastName, ministries }) => {
@@ -20,8 +21,16 @@ const VolunteerBox = ({ name, lastName, ministries }) => {
                 </div>
             </div>
             <div className="flex items-center">
-                <Edit className="cursor-pointer text-quinary mx-2" />
-                <Delete className="cursor-pointer text-quinary mx-2" />
+                <Tooltip title="Editar">
+                    <IconButton>
+                        <Edit className="cursor-pointer text-quinary mx-2" />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Excluir">
+                    <IconButton>
+                        <Delete className="cursor-pointer text-quinary" />
+                    </IconButton>
+                </Tooltip>
             </div>
         </div>
     );

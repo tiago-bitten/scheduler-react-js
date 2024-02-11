@@ -15,7 +15,7 @@ const validationSchema = yup.object({
 });
 
 const LoginVolunteer = () => {
-    const { data, error, loading, post } = usePost('/volunteers/sign-in');
+    const { loading, post } = usePost();
     const [cpf, setCPF] = React.useState('');
     const [birthDate, setBirthDate] = React.useState('');
     const [volunteerId, setVolunteerId] = React.useState('');
@@ -24,10 +24,10 @@ const LoginVolunteer = () => {
     const navigate = useNavigate();
 
     React.useEffect(() => {
-        if (data) {
-            setVolunteerId(data.volunteer.id);
-            enqueueSnackbar(`Bem vindo ${data.volunteer.name}`, { variant: 'success' });
-            navigate(`/voluntario/${data.volunteer.accessKey}/indisponibilidade`);
+        if (response) {
+            setVolunteerId(response.data.volunteer.id);
+            enqueueSnackbar(`Bem vindo ${response.data.volunteer.name}`, { variant: 'success' });
+            navigate(`/voluntario/${response.data.volunteer.accessKey}/indisponibilidade`);
         }
         
         if (error?.response?.status === 422) {
@@ -39,7 +39,8 @@ const LoginVolunteer = () => {
             enqueueSnackbar(error.response.data, { variant: 'error' });
         }
     
-    }, [data, error]);
+        // eslint-disable-next-line
+    }, [response, error]);
 
     const formik = useFormik({
         initialValues: {
@@ -48,7 +49,7 @@ const LoginVolunteer = () => {
         },
         validationSchema,
         onSubmit: (values, { setSubmitting }) => {
-            post(values);
+            post('/volunteers/sign-in', values);
             setCPF(values.cpf);
             setBirthDate(values.birthDate);
             setSubmitting(false);

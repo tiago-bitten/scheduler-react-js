@@ -2,8 +2,6 @@ import { useState } from 'react';
 import instance from '../config/axiosConfig';
 
 const usePost = () => {
-    const [response, setResponse] = useState(null);
-    const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const post = async (url, body = {}) => {
@@ -13,18 +11,16 @@ const usePost = () => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
             };
-            const res = await instance.post(url, body, { headers });
-            setResponse(res);
-            setError(null);
-        } catch (err) {
-            setError(err);
-            setResponse(null);
-        } finally {
+            const response = await instance.post(url, body, { headers });
             setLoading(false);
+            return response; // Retorna a resposta diretamente
+        } catch (err) {
+            setLoading(false);
+            throw err; // Lança o erro para ser capturado pelo chamador
         }
     };
 
-    return { response, error, loading, post };
+    return { loading, post };
 };
 
 export { usePost };

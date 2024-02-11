@@ -23,7 +23,6 @@ const Volunteer = () => {
     const [volunteers, setVolunteers] = React.useState([]);
     const [open, setOpen] = React.useState(false);
     const [requestCompleted, setRequestCompleted] = React.useState(false);
-    const [selfRegistrationLink, setSelfRegistrationLink] = React.useState('');
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -54,6 +53,8 @@ const Volunteer = () => {
         };
 
         fetchVolunteers();
+
+        // eslint-disable-next-line
     }, [token, navigate]);
 
     const getVolunteers = async () => {
@@ -128,11 +129,21 @@ const Volunteer = () => {
             ) : (
                 <div className="bg-septenary p-4 mx-12 mt-12">
                     {volunteers.map((volunteer) => (
-                        <VolunteerBox key={volunteer.id} name={volunteer.name} lastName={volunteer.lastName} ministries={volunteer.ministries} />
+                        <VolunteerBox
+                            key={volunteer.id}
+                            name={volunteer.name}
+                            lastName={volunteer.lastName}
+                            ministries={volunteer.ministries}
+                        />
                     ))}
                 </div>
             )}
-            <CreateVolunteerModal open={open} setOpen={setOpen} handleClose={handleClose} getVolunteers={getVolunteers} />
+            <CreateVolunteerModal
+                open={open}
+                setOpen={setOpen}
+                handleClose={handleClose}
+                getVolunteers={getVolunteers}
+            />
         </>
     );
 };
