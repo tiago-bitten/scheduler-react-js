@@ -27,7 +27,7 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     const { enqueueSnackbar } = useSnackbar();
 
     const volunteersFetch = useFetch(`/volunteers/not-in-schedule/${schedule?.id}/ministry/${ministry?.id}`);
-    const appointPost = usePost();
+    const { post } = usePost();
 
     React.useEffect(() => {
         if (open) {
@@ -36,22 +36,19 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
         // eslint-disable-next-line
     }, [open]);
 
-    React.useEffect(() => {
-        if (appointPost.response?.status === 204) {
-            enqueueSnackbar('Voluntário agendado com sucesso', { variant: 'success' });
-            fetchAppointments();
-            volunteersFetch.fetch();
-        }
-
-        if (appointPost.error) {
-            enqueueSnackbar(appointPost.error?.response?.data?.message, { variant: 'error' });
-        }
-
-        // eslint-disable-next-line
-    }, [appointPost.response, appointPost.error]);
-
     const handleAppointment = async (volunteerId) => {
-        appointPost.post(`/appointments/appoint?scheduleId=${schedule?.id}&volunteerId=${volunteerId}&ministryId=${ministry?.id}`);
+        try {
+            const response = await post(`/appointments/appoint?scheduleId=${schedule?.id}&volunteerId=${volunteerId}&ministryId=${ministry?.id}`);
+
+            if (response.status === 204) {
+                enqueueSnackbar('Voluntário agendado com sucesso', { variant: 'success' });
+                fetchAppointments();
+                volunteersFetch.fetch();
+            }
+
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message || "Erro geral", { variant: 'error' });
+        }
     };
 
     return (
