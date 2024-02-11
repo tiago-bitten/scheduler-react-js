@@ -2,6 +2,7 @@ import React from 'react';
 import MyCalendar from '../components/MyCalender';
 import moment from 'moment';
 import { useFetch } from '../hooks/useFetch';
+import { useSnackbar } from 'notistack';
 
 import Header from '../components/Header';
 import OpenScheduleModal from '../components/OpenScheduleModal';
@@ -9,6 +10,7 @@ import AppointmentModal from '../components/AppointmentModal';
 import RoundButton from '../components/RoundButton';
 
 const Schedule = () => {
+    const { enqueueSnackbar } = useSnackbar();
     const [schedules, setSchedules] = React.useState([]);
     const [month, setMonth] = React.useState(new Date().getMonth() + 1);
     const [year, setYear] = React.useState(new Date().getFullYear());
@@ -47,6 +49,10 @@ const Schedule = () => {
     }
 
     const handleSelectDate = ({ start }) => {
+        if (start < new Date() && !moment(start).isSame(new Date(), 'day')) {
+            enqueueSnackbar('Não é possível abrir uma agenda em uma data passada', { variant: 'warning' });
+            return;
+        }
         setOpenScheduleModal(true);
         setSelectedDate(start);
     };

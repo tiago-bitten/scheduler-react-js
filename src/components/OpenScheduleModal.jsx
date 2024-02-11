@@ -67,7 +67,9 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
             }
 
             } catch (error) {
-                console.error(error);
+                if (error.response?.status === 422) {
+                    enqueueSnackbar(error.response?.data?.message, { variant: 'warning' });
+                } 
             } 
         },
     });

@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import AddLinkIcon from '@mui/icons-material/AddLink';
 import { useDelete } from '../hooks/useDelete';
 import { useFetch } from '../hooks/useFetch';
+import { Tooltip } from '@mui/material';
 
 import instance from '../config/axiosConfig';
 import { useSnackbar } from 'notistack';
@@ -18,13 +19,11 @@ import CreateVolunteerModal from '../components/CreateVolunteerModal';
 import VolunteerListSkeleton from '../components/VolunteerListSkeleton';
 
 const Volunteer = () => {
-    const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
     const { deleteRequest } = useDelete();
     const { data, error, loading, fetch } = useFetch('/volunteers');
     const [confirmModalOpen, setConfirmModalOpen] = React.useState(false);
 
-    const [token] = React.useState(sessionStorage.getItem('token'));
     const [checked, setChecked] = React.useState(false);
     const [open, setOpen] = React.useState(false);
 
@@ -48,7 +47,7 @@ const Volunteer = () => {
         setOpen(false);
     }
 
-    const handleGenerateSelfRegistrationLink = async () => {
+    const copyAutocadastroLink = async () => {
         navigator.clipboard.writeText(`http://localhost:5173/voluntario/entrar`);
         enqueueSnackbar('Link de autocadastro copiado.', { variant: 'success' });
     };
@@ -87,9 +86,11 @@ const Volunteer = () => {
                 </div>
                 <div>
                     <RoundButton value="CADASTRAR VOLUNTÁRIO" onClick={handleClick} />
-                    <IconButton onClick={handleGenerateSelfRegistrationLink} sx={{ ml: '5px' }}>
-                        <AddLinkIcon />
-                    </IconButton>
+                    <Tooltip title="Copiar link de autocadastro" arrow>
+                        <IconButton onClick={copyAutocadastroLink} sx={{ ml: '5px' }}>
+                            <AddLinkIcon />
+                        </IconButton>
+                    </Tooltip>
                 </div>
             </div>
             <div className="ml-10 mt-4">
