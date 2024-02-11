@@ -36,58 +36,50 @@ const textFieldStyle = {
 const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
     const { response, error, loading, post } = usePost('/schedules/open');
     const { enqueueSnackbar } = useSnackbar();
-  
+
     const formik = useFormik({
-      initialValues: {
-        name: '',
-        description: '',
-        startDate: selectedDate ? moment(selectedDate).format('YYYY-MM-DD') : '',
-        startTime: selectedDate ? moment(selectedDate).format('HH:mm') : '',
-        duration: 60,
-      },
-      validationSchema,
-      onSubmit: values => {
-        const { name, description, startDate, startTime, duration } = values;
-        const startDateTime = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
-        const endDateTime = startDateTime.clone().add(duration, 'minutes');
-  
-        const payload = {
-          name,
-          description,
-          startDate: startDateTime.toISOString(),
-          endDate: endDateTime.toISOString(),
-        };
-  
-        post(payload);
-      },
-    });
-  
-    React.useEffect(() => {
-      if (open && selectedDate) {
-        formik.setValues(prevValues => ({
-          ...prevValues,
-          startDate: moment(selectedDate).format('YYYY-MM-DD'),
-          startTime: moment(selectedDate).format('HH:mm'),
-        }));
-      } else {
-        formik.setValues({
+        initialValues: {
             name: '',
             description: '',
-            startDate: '',
-            startTime: '',
+            startDate: selectedDate ? moment(selectedDate).format('YYYY-MM-DD') : '',
+            startTime: selectedDate ? moment(selectedDate).format('HH:mm') : '',
             duration: 60,
-        });
+        },
+        validationSchema,
+        onSubmit: values => {
+            const { name, description, startDate, startTime, duration } = values;
+            const startDateTime = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
+            const endDateTime = startDateTime.clone().add(duration, 'minutes');
+
+            const payload = {
+                name,
+                description,
+                startDate: startDateTime.toISOString(),
+                endDate: endDateTime.toISOString(),
+            };
+
+            post(payload);
+        },
+    });
+
+    React.useEffect(() => {
+        if (open && selectedDate) {
+            formik.setValues(prevValues => ({
+                ...prevValues,
+                startDate: moment(selectedDate).format('YYYY-MM-DD'),
+                startTime: moment(selectedDate).format('HH:mm'),
+            }));
         }
     }, [open, selectedDate, formik.setValues]);
-  
+
     React.useEffect(() => {
-      if (response?.status === 204) {
-        enqueueSnackbar('Agenda aberta com sucesso', { variant: 'success' });
-        onClose();
-        fetchSchedules();
-      } else if (error) {
-        enqueueSnackbar(error.response.data.message, { variant: 'error' });
-      }
+        if (response?.status === 204) {
+            enqueueSnackbar('Agenda aberta com sucesso', { variant: 'success' });
+            onClose();
+            fetchSchedules();
+        } else if (error) {
+            enqueueSnackbar(error.response.data.message, { variant: 'error' });
+        }
     }, [response, error, fetchSchedules]);
 
     return (

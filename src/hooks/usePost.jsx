@@ -1,28 +1,27 @@
 import { useState } from 'react';
 import instance from '../config/axiosConfig';
 
-const usePost = (url) => {
+const usePost = () => {
     const [response, setResponse] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const post = (body) => {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${sessionStorage.getItem('token')}`
-        };
-
+    const post = async (url, body = {}) => {
         setLoading(true);
-        instance.post(url, body, { headers })
-            .then((response) => {
-                setResponse(response);
-                setError(null);
-            })
-            .catch((error) => {
-                setError(error);
-                setResponse(null);
-            })
-            .finally(() => setLoading(false));
+        try {
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem('token')}`,
+            };
+            const res = await instance.post(url, body, { headers });
+            setResponse(res);
+            setError(null);
+        } catch (err) {
+            setError(err);
+            setResponse(null);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return { response, error, loading, post };

@@ -7,6 +7,8 @@ import NotFoundItem from "./NotFoundItem";
 import { useSnackbar } from "notistack";
 import moment from "moment";
 import AppointVolunteerLine from "./AppointVolunteerLine";
+import { usePost } from "../hooks/usePost";
+import { useFetch } from "../hooks/useFetch";
 
 const style = {
     position: 'absolute',
@@ -22,49 +24,35 @@ const style = {
 };
 
 const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments }) => {
-    const [token] = useState(sessionStorage.getItem('token'));
-    const [volunteers, setVolunteers] = useState([]);
     const { enqueueSnackbar } = useSnackbar();
 
-    useEffect(() => {
-        if (!ministry || !open) return;
-        fetchVolunteers();
-    }, [ministry, token, open]);
+    const volunteersFetch = useFetch(`/volunteers/not-in-schedule/${schedule?.id}/ministry/${ministry?.id}`);
+    const appointPost = usePost();
 
-    const fetchVolunteers = async () => {
-        try {
-            const response = await instance.get(`/volunteers/not-in-schedule/${schedule.id}/ministry/${ministry.id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (response.status === 200) {
-                setVolunteers(response.data.volunteers);
-            }
-        } catch (err) {
-            enqueueSnackbar(err.response.data.message || 'Erro ao buscar voluntários', { variant: 'error' });
+    React.useEffect(() => {
+        if (open) {
+            volunteersFetch.fetch();
         }
-    }
+        // eslint-disable-next-line
+    }, [open]);
+
+    React.useEffect(() => {
+        if (appointPost.response?.status === 204) {
+            enqueueSnackbar('Voluntário agendado com sucesso', { variant: 'success' });
+            fetchAppointments();
+            volunteersFetch.fetch();
+        }
+
+        if (appointPost.error) {
+            enqueueSnackbar(appointPost.error?.response?.data?.message, { variant: 'error' });
+        }
+
+        // eslint-disable-next-line
+    }, [appointPost.response, appointPost.error]);
 
     const handleAppointment = async (volunteerId) => {
-        try {
-            const response = await instance.post(`/appointments/appoint?scheduleId=${schedule.id}&volunteerId=${volunteerId}&ministryId=${ministry.id}`, {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (response.status === 204) {
-                enqueueSnackbar('Voluntário agendado com sucesso', { variant: 'success' });
-                fetchAppointments();
-                fetchVolunteers();
-            }
-
-        } catch (err) {
-            enqueueSnackbar(err.response.data.message || 'Erro ao agendar voluntário', { variant: 'error' });
-        }
-    }
+        appointPost.post(`/appointments/appoint?scheduleId=${schedule?.id}&volunteerId=${volunteerId}&ministryId=${ministry?.id}`);
+    };
 
     return (
         <Modal open={open} onClose={onClose}>
@@ -89,8 +77,8 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                             sx={{ mb: 2 }}
                         />
                         <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
-                            {volunteers.length > 0 ? (
-                                volunteers.map(volunteer => (
+                            {volunteersFetch.data?.volunteers?.length > 0 ? (
+                                volunteersFetch.data?.volunteers?.map(volunteer => (
                                     <AppointVolunteerLine
                                         key={volunteer.id}
                                         volunteer={volunteer}
