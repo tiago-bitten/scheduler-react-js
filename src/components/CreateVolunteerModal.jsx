@@ -29,10 +29,8 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
   const { enqueueSnackbar } = useSnackbar();
 
   const userMinistriesFetch = useFetch('/users/ministries');
-  const createVolunteerPost = usePost();
-  const associateVolunteerMinistryPost = usePost();
+  const { post } = usePost();
 
-  const [token] = React.useState(sessionStorage.getItem('token'));
   const [ministries, setMinistries] = useState([]);
   const [selectedMinistries, setSelectedMinistries] = useState([]);
   const [name, setName] = useState('');
@@ -47,27 +45,35 @@ const CreateVolunteerModal = ({ open, handleClose, getVolunteers }) => {
   }, []);
 
   const handleCreateVolunteer = async () => {
-    const payload = {
-      name,
-      lastName,
-      cpf,
-      phone,
-      birthDate
-    };
+    try {
+      const payload = {
+        name,
+        lastName,
+        cpf,
+        phone,
+        birthDate
+      };
 
-    await createVolunteerPost.post('/volunteers/create', payload);
+      const response = await post('/volunteers/create', payload);
+      if (response.status === 201) {
+        return response.data.volunteer.id;
+      }
 
-    console.log(createVolunteerPost.response?.data?.volunteer?.id);
-    return createVolunteerPost.response?.data?.volunteer?.id;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleCreateVolunteerMinistry = async (volunteerId, ministryId) => {
-    associateVolunteerMinistryPost.post(`/volunteer-ministries/associate?volunteerId=${volunteerId}&ministryId=${ministryId}`);
+    const response = await post(`/volunteer-ministries/associate?volunteerId=${volunteerId}&ministryId=${ministryId}`)
+
+    if (response.status === 204) {
+      console.log('Ministério associado com sucesso')
+    }
   };
 
   const handleClick = async () => {
     setIsSubmitting(true);
-
     try {
       const newVolunteerId = await handleCreateVolunteer();
 

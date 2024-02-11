@@ -13,10 +13,10 @@ const usePost = () => {
             };
             const response = await instance.post(url, body, { headers });
             setLoading(false);
-            return response; // Retorna a resposta diretamente
+            return response; 
         } catch (err) {
             setLoading(false);
-            throw err; // Lança o erro para ser capturado pelo chamador
+            throw err;
         }
     };
 
