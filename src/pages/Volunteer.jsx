@@ -131,8 +131,7 @@ const Volunteer = () => {
                     {volunteers.map((volunteer) => (
                         <VolunteerBox
                             key={volunteer.id}
-                            name={volunteer.name}
-                            lastName={volunteer.lastName}
+                            volunteer={volunteer}
                             ministries={volunteer.ministries}
                         />
                     ))}
