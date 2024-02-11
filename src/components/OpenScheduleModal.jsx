@@ -34,7 +34,7 @@ const textFieldStyle = {
 };
 
 const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
-    const { response, error, loading, post } = usePost('/schedules/open');
+    const { post } = usePost();
     const { enqueueSnackbar } = useSnackbar();
 
     const formik = useFormik({
@@ -46,8 +46,9 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
             duration: 60,
         },
         validationSchema,
-        onSubmit: values => {
-            const { name, description, startDate, startTime, duration } = values;
+        onSubmit: async (values) => {
+            try {
+                const { name, description, startDate, startTime, duration } = values;
             const startDateTime = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
             const endDateTime = startDateTime.clone().add(duration, 'minutes');
 
@@ -58,7 +59,16 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                 endDate: endDateTime.toISOString(),
             };
 
-            post(payload);
+            const response = await post('/schedules/open', payload);
+            if (response.status === 204) {
+                enqueueSnackbar('Agenda aberta com sucesso', { variant: 'success' });
+                onClose();
+                fetchSchedules();
+            }
+
+            } catch (error) {
+                console.error(error);
+            } 
         },
     });
 
@@ -70,17 +80,10 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                 startTime: moment(selectedDate).format('HH:mm'),
             }));
         }
+
+        // eslint-disable-next-line
     }, [open, selectedDate, formik.setValues]);
 
-    React.useEffect(() => {
-        if (response?.status === 204) {
-            enqueueSnackbar('Agenda aberta com sucesso', { variant: 'success' });
-            onClose();
-            fetchSchedules();
-        } else if (error) {
-            enqueueSnackbar(error.response.data.message, { variant: 'error' });
-        }
-    }, [response, error, fetchSchedules]);
 
     return (
         <Modal open={open} onClose={onClose}>
