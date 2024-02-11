@@ -43,7 +43,11 @@ const Header = () => {
 
     const handleVolunteers = () => {
         navigate('/voluntarios');
-    }	
+    }
+    
+    const handleGroups = () => {
+        navigate('/grupos');
+    }
 
     const handleAgendas = () => {
         navigate('/agendas');
@@ -60,7 +64,7 @@ const Header = () => {
                 <nav>
                     <ul className="flex">
                         <li className={liClass} onClick={handleVolunteers}>Voluntários</li>
-                        <li className={liClass} onClick={null}>Grupos</li>
+                        <li className={liClass} onClick={handleGroups}>Grupos</li>
                         <li className={liClass} onClick={handleMinistries}>Ministérios</li>
                         <li className={liClass} onClick={handleAgendas}>Agendas</li>
                     </ul>

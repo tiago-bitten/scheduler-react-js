@@ -19,6 +19,7 @@ import Schedule from './pages/Schedule.jsx';
 import LoginVolunteer from './pages/LoginVolunteer.jsx';
 import AutoCreateVolunteer from './pages/AutoCreateVolunteer.jsx';
 import UnavailableDate from './pages/UnavailableDate.jsx';
+import NotFound from './pages/NotFound.jsx';
 
 const router = createBrowserRouter([
   {
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
       {
         path: "/voluntario/:accessKey/indisponibilidade",
         element: <UnavailableDate />
+      },
+      {
+        path: "*",
+        element: <NotFound />
       }
     ]
   }
