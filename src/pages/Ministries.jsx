@@ -11,6 +11,7 @@ import CreateMinistryModal from '../components/CreateMinistryModal';
 import VolunteerMinistryModal from '../components/VolunteerMinistryModal';
 import MinistriesSkeleton from '../components/MinistriesSkeleton';
 import NotFoundItem from '../components/NotFoundItem';
+import EditMinistryModal from '../components/EditMinistryModal';
 
 import Header from '../components/Header';
 
@@ -20,12 +21,14 @@ const Ministries = () => {
     const [ministries, setMinistries] = React.useState([]);
     const [open, setOpen] = React.useState(false);
     const [openVolunteerMinistryModal, setVolunteerMinistryModal] = React.useState(false);
+    const [openEditModal, setOpenEditModal] = React.useState(false);
     const [requestCompleted, setRequestCompleted] = React.useState(false);
     const [volunteerRequestCompleted, setVolunteerRequestCompleted] = React.useState(false);
     const [volunteers, setVolunteers] = React.useState([]);
     const [action, setAction] = React.useState('ADICIONAR');
     const [title, setTitle] = React.useState('Voluntários vinculados');
     const [ministryId, setMinistryId] = React.useState(null);
+    const [selectedMinistry, setSelectedMinistry] = React.useState({});
 
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
@@ -187,6 +190,11 @@ const Ministries = () => {
         setTitle('Voluntários vinculados');
     }
 
+    const handleEditClick = (ministry) => {
+        setSelectedMinistry(ministry);
+        setOpenEditModal(true);
+    }
+
     if (loading) {
         return <MinistriesSkeleton />;
     }
@@ -215,7 +223,12 @@ const Ministries = () => {
                     <tbody>
                         {requestCompleted && ministries.length > 0 ? (
                             ministries.map((ministry) => (
-                                <MinistryLine key={ministry.id} ministry={ministry} onMinistryNameClick={() => handleVolunteerMinistryModal(ministry.id)} />
+                                <MinistryLine
+                                    key={ministry.id}
+                                    ministry={ministry}
+                                    onMinistryNameClick={() => handleVolunteerMinistryModal(ministry.id)}
+                                    handleEdit={() => handleEditClick(ministry)}
+                                />
                             ))
                         ) : (
                             <NotFoundItem entities="ministérios" />
@@ -238,6 +251,12 @@ const Ministries = () => {
                 handleAssociateVolunteer={handleAssociateVolunteer}
                 handleDisassociateVolunteer={handleDisassociateVolunteer}
                 volunteerRequestCompleted={volunteerRequestCompleted}
+            />
+            <EditMinistryModal
+                open={openEditModal}
+                onClose={() => setOpenEditModal(false)}
+                ministry={selectedMinistry}
+                fetchMinistries={getMinistries}
             />
         </>
     );
