@@ -4,7 +4,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ConfirmModal from './ConfirmModal';
 
-const GroupLine = ({ openConfirm, onCloseConfirm, group, handleAssociateVolunteer, handleDeleteClick, handleDeleteConfirm }) => {
+const GroupLine = ({ group, handleAssociateVolunteer, handleDeleteClick }) => {
 
     return (
         <>
@@ -30,13 +30,7 @@ const GroupLine = ({ openConfirm, onCloseConfirm, group, handleAssociateVoluntee
                     </Tooltip>
                 </Box>
             </Box>
-            <ConfirmModal
-                open={openConfirm}
-                onClose={onCloseConfirm}
-                title="Remover grupo"
-                content="Deseja realmente remover este grupo? Esta ação não poderá ser desfeita."
-                action={() => handleDeleteConfirm(group.id)}
-            />
+
         </>
     );
 };

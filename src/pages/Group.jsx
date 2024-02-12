@@ -9,6 +9,7 @@ import { useDelete } from '../hooks/useDelete';
 import CreateGroupModal from '../components/CreateGroupModal';
 import AssociateVolunteerGroupModal from '../components/AssociateVolunteerGroupModal';
 import { useSnackbar } from 'notistack';
+import ConfirmModal from '../components/ConfirmModal';
 
 const Group = () => {
     const { deleteRequest } = useDelete();
@@ -33,23 +34,24 @@ const Group = () => {
         setOpenAssociateVolunteerGroupModal(true);
     };
 
-    const handleDeleteClick = () => {
+    const handleDeleteClick = (group) => {
+        setSelectedGroup(group);
         setConfirmModalOpen(true);
     }
 
     const handleDeleteConfirm = async (id) => {
         try {
             const response = await deleteRequest(`/groups/${id}`);
-            
+
             if (response.status === 204) {
                 enqueueSnackbar('Grupo removido', { variant: 'success' });
                 fetch();
             }
-            
+
         } catch (error) {
-            if (error.response) {
-                enqueueSnackbar(error.response.data.message || "Erro geral - Group");
-            }
+            enqueueSnackbar(error.response?.data?.message || "Erro geral - Group", { variant: 'error' });
+        } finally {
+            setConfirmModalOpen(false);
         }
     };
 
@@ -83,10 +85,7 @@ const Group = () => {
                             key={group.id}
                             group={group}
                             handleAssociateVolunteer={() => handleAssociateVolunteer(group)}
-                            handleDeleteClick={handleDeleteClick}
-                            handleDeleteConfirm={() => handleDeleteConfirm(group.id)}
-                            openConfirm={confirmModalOpen}
-                            onCloseConfirm={() => setConfirmModalOpen(false)}
+                            handleDeleteClick={() => handleDeleteClick(group)}
                         />
                     ))}
                 </Box>
@@ -104,6 +103,13 @@ const Group = () => {
                 onClose={() => setOpenAssociateVolunteerGroupModal(false)}
                 fetchGroups={fetch}
                 group={selectedGroup}
+            />
+            <ConfirmModal
+                open={confirmModalOpen}
+                onClose={() => setConfirmModalOpen(false)}
+                title="Remover grupo"
+                content="Deseja realmente remover este grupo? Esta ação não poderá ser desfeita."
+                action={() => handleDeleteConfirm(selectedGroup?.id)}
             />
         </>
     );
