@@ -1,32 +1,45 @@
 import React from 'react';
-import { useFetch } from '../hooks/useFetch';
-import { usePost } from '../hooks/usePost';
-import { Modal, Box } from '@mui/material';
-import NotFoundItem from './NotFoundItem';
+import { Modal, Box, Tabs, Tab } from '@mui/material';
+import { TabPanel, a11yProps } from '../components/TabPanel';
 import AddVolunteerLine from './AddVolunteerLine';
+import RemoveVolunteerLine from './RemoveVolunteerLine';
+import NotFoundItem from './NotFoundItem';
+import { useFetch } from '../hooks/useFetch';
 import { useSnackbar } from 'notistack';
+import { usePost } from '../hooks/usePost';
+import { usePut } from '../hooks/usePut';
 
-const styles = {
+const boxStyle = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: '400px',
+    maxWidth: '600px',
     bgcolor: 'background.paper',
     boxShadow: 24,
-    p: 4,
+    p: 3,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
 };
 
 const AssociateVolunteerGroupModal = ({ open, onClose, group, fetchGroups }) => {
     const { enqueueSnackbar } = useSnackbar();
-    const { data, error, loading, fetch } = useFetch(`/volunteers/not-in-group`);
+    const [value, setValue] = React.useState(0);
+
     const { post } = usePost();
+    const { put } = usePut();
+
+    const associatedVolunteersFetch = useFetch(`/volunteers/group/${group?.id}`);
+    const notAssociatedVolunteersFetch = useFetch(`/volunteers/not-in-group`);
 
     React.useEffect(() => {
         if (open) {
-            fetch();
+            associatedVolunteersFetch.fetch();
+            notAssociatedVolunteersFetch.fetch();
         }
-    }, [fetch, open]);
+    }, [open]);
 
     const handleAddVolunteer = async (volunteerId) => {
         try {
@@ -35,7 +48,8 @@ const AssociateVolunteerGroupModal = ({ open, onClose, group, fetchGroups }) => 
             if (response.status === 204) {
                 enqueueSnackbar('Voluntário associado ao grupo', { variant: 'success' });
                 fetchGroups();
-                fetch();
+                notAssociatedVolunteersFetch.fetch();
+                associatedVolunteersFetch.fetch();
             }
 
         } catch (error) {
@@ -45,34 +59,63 @@ const AssociateVolunteerGroupModal = ({ open, onClose, group, fetchGroups }) => 
         }
     };
 
-    return (
-        <Modal
-            open={open}
-            onClose={onClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-        >
-            <Box sx={styles}>
-                <h2 id="modal-modal-title">Associar voluntário ao grupo</h2>
-                <p id="modal-modal-description">
-                    {group?.name}
-                </p>
+    const handleRemoveVolunteer = async (volunteerId) => {
+        try {
+            const response = await put(`/groups/${group?.id}/disassociate?volunteerId=${volunteerId}`)
+            if (response.status === 204) {
+                enqueueSnackbar('Voluntário desassociado do grupo', { variant: 'success' });
+                fetchGroups();
+                associatedVolunteersFetch.fetch();
+                notAssociatedVolunteersFetch.fetch();
+            }
 
-                {!loading && data?.volunteers?.length > 0 ? (
-                    data?.volunteers?.map(volunteer => (
-                        <AddVolunteerLine
-                            key={volunteer.id}
-                            volunteer={volunteer}
-                            addVolunter={() => handleAddVolunteer(volunteer.id)}
-                        />
-                    ))
-                ) : (
-                    <NotFoundItem entities="voluntários" />
-                )}
+        } catch (error) {
+            if (error.response) {
+                enqueueSnackbar(error.response.data.message || "Erro geral - AssociateVolunteerGroupModal", { variant: 'error' });
+            }
+        }
+    };
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
+    return (
+        <Modal open={open} onClose={onClose}>
+            <Box sx={boxStyle}>
+                <Tabs value={value} onChange={handleChange} aria-label="volunteers tabs">
+                    <Tab label="Associados" {...a11yProps(0)} />
+                    <Tab label="Não Associados" {...a11yProps(1)} />
+                </Tabs>
+                <TabPanel value={value} index={0}>
+                    {!associatedVolunteersFetch.loading && associatedVolunteersFetch.data?.volunteers?.length > 0 ? (
+                        associatedVolunteersFetch.data?.volunteers?.map(volunteer => (
+                            <RemoveVolunteerLine
+                                key={volunteer.id}
+                                volunteer={volunteer}
+                                removeVolunteer={() => handleRemoveVolunteer(volunteer.id)}
+                            />
+                        ))
+                    ) : (
+                        <NotFoundItem entities="voluntários" />
+                    )}
+                </TabPanel>
+                <TabPanel value={value} index={1}>
+                    {!notAssociatedVolunteersFetch.loading && notAssociatedVolunteersFetch.data?.volunteers?.length > 0 ? (
+                        notAssociatedVolunteersFetch.data?.volunteers?.map(volunteer => (
+                            <AddVolunteerLine
+                                key={volunteer.id}
+                                volunteer={volunteer}
+                                addVolunter={() => handleAddVolunteer(volunteer.id)}
+                            />
+                        ))
+                    ) : (
+                        <NotFoundItem entities="voluntários" />
+                    )}
+                </TabPanel>
             </Box>
         </Modal>
     );
-
-}
+};
 
 export default AssociateVolunteerGroupModal;
