@@ -19,7 +19,7 @@ const styles = {
 
 const AssociateVolunteerGroupModal = ({ open, onClose, group, fetchGroups }) => {
     const { enqueueSnackbar } = useSnackbar();
-    const { data, error, loading, fetch } = useFetch('/volunteers');
+    const { data, error, loading, fetch } = useFetch(`/volunteers/not-in-group`);
     const { post } = usePost();
 
     React.useEffect(() => {
