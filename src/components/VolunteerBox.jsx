@@ -3,7 +3,7 @@ import { Tooltip, IconButton } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import ConfirmModal from './ConfirmModal';
 
-const VolunteerBox = ({ open, onClose, volunteer, ministries, handleDeleteClick, handleDeleteConfirm }) => {
+const VolunteerBox = ({ volunteer, ministries, handleDeleteClick }) => {
     const avatarBorderClass = ministries.length > 0 ? 'border-2 border-primary' : 'border-2 border-quinary';
 
     return (
@@ -35,13 +35,6 @@ const VolunteerBox = ({ open, onClose, volunteer, ministries, handleDeleteClick,
                     </Tooltip>
                 </div>
             </div>
-            <ConfirmModal
-                open={open}
-                onClose={onClose}
-                title="Remover voluntário"
-                content="Deseja realmente remover este voluntário? Esta ação não poderá ser desfeita."
-                action={() => handleDeleteConfirm(volunteer.id)}
-            />
         </>
     );
 };

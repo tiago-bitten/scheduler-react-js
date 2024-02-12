@@ -10,8 +10,8 @@ import AddLinkIcon from '@mui/icons-material/AddLink';
 import { useDelete } from '../hooks/useDelete';
 import { useFetch } from '../hooks/useFetch';
 import { Tooltip } from '@mui/material';
+import ConfirmModal from '../components/ConfirmModal';
 
-import instance from '../config/axiosConfig';
 import { useSnackbar } from 'notistack';
 
 import VolunteerBox from '../components/VolunteerBox';
@@ -23,6 +23,7 @@ const Volunteer = () => {
     const { deleteRequest } = useDelete();
     const { data, error, loading, fetch } = useFetch('/volunteers');
     const [confirmModalOpen, setConfirmModalOpen] = React.useState(false);
+    const [selectedVolunteer, setSelectedVolunteer] = React.useState({});
 
     const [checked, setChecked] = React.useState(false);
     const [open, setOpen] = React.useState(false);
@@ -52,7 +53,8 @@ const Volunteer = () => {
         enqueueSnackbar('Link de autocadastro copiado.', { variant: 'success' });
     };
 
-    const handleDeleteClick = () => {
+    const handleDeleteClick = (volunteer) => {
+        setSelectedVolunteer(volunteer);
         setConfirmModalOpen(true);
     }
 
@@ -111,10 +113,7 @@ const Volunteer = () => {
                             key={volunteer.id}
                             volunteer={volunteer}
                             ministries={volunteer.ministries}
-                            handleDeleteClick={handleDeleteClick}
-                            handleDeleteConfirm={handleDeleteConfirm}
-                            open={confirmModalOpen}
-                            onClose={() => setConfirmModalOpen(false)}
+                            handleDeleteClick={() => handleDeleteClick(volunteer)}
                         />
                     ))}
                 </div>
@@ -124,6 +123,13 @@ const Volunteer = () => {
                 setOpen={setOpen}
                 handleClose={handleClose}
                 fetch={fetch}
+            />
+            <ConfirmModal
+                open={confirmModalOpen}
+                onClose={() => setConfirmModalOpen(false)}
+                title="Remover voluntário"
+                content="Deseja realmente remover este voluntário? Esta ação não poderá ser desfeita."
+                action={() => handleDeleteConfirm(selectedVolunteer?.id)}
             />
         </>
     );
