@@ -39,12 +39,6 @@ const Ministries = () => {
     }, [ministryId]);
 
     React.useEffect(() => {
-        if (!token) {
-            navigate('/entrar');
-            enqueueSnackbar('Você precisa estar logado para acessar essa página.', { variant: 'error' });
-            return;
-        }
-
         const fetchMinistries = async () => {
             try {
                 const response = await instance.get('/ministries', {
@@ -128,6 +122,7 @@ const Ministries = () => {
             if (response.status === 204) {
                 fetchVolunteerNotInMinistry(ministryId);
                 enqueueSnackbar("Voluntário associado com sucesso ao ministério", { variant: "success" });
+                getMinistries();
             }
 
         } catch (err) {
@@ -146,6 +141,7 @@ const Ministries = () => {
             if (response.status === 204) {
                 fetchVolunteerMinistry(ministryId);
                 enqueueSnackbar("Voluntário desassociado com sucesso do ministério", { variant: "success" });
+                getMinistries();
             }
 
         } catch (err) {

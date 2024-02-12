@@ -55,7 +55,9 @@ const CreateVolunteerModal = ({ open, handleClose, fetch }) => {
       }
 
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+          enqueueSnackbar(error.response.data.message || "Erro geral - CreateVolunteerModal", { variant: 'error' });
+      }
     }
   };
 

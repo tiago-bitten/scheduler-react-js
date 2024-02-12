@@ -101,17 +101,19 @@ const AssociateVolunteerGroupModal = ({ open, onClose, group, fetchGroups }) => 
                     )}
                 </TabPanel>
                 <TabPanel value={value} index={1}>
-                    {!notAssociatedVolunteersFetch.loading && notAssociatedVolunteersFetch.data?.volunteers?.length > 0 ? (
-                        notAssociatedVolunteersFetch.data?.volunteers?.map(volunteer => (
-                            <AddVolunteerLine
-                                key={volunteer.id}
-                                volunteer={volunteer}
-                                addVolunter={() => handleAddVolunteer(volunteer.id)}
-                            />
-                        ))
-                    ) : (
-                        <NotFoundItem entities="voluntários" />
-                    )}
+                    <Box sx={{ width: '100%' }}>
+                        {!notAssociatedVolunteersFetch.loading && notAssociatedVolunteersFetch.data?.volunteers?.length > 0 ? (
+                            notAssociatedVolunteersFetch.data?.volunteers?.map(volunteer => (
+                                <AddVolunteerLine
+                                    key={volunteer.id}
+                                    volunteer={volunteer}
+                                    addVolunter={() => handleAddVolunteer(volunteer.id)}
+                                />
+                            ))
+                        ) : (
+                            <NotFoundItem entities="voluntários" />
+                        )}
+                    </Box>
                 </TabPanel>
             </Box>
         </Modal>

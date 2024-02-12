@@ -5,14 +5,19 @@ import RoundButton from '../components/RoundButton';
 import GroupLine from '../components/GroupLine';
 import NotFoundItem from '../components/NotFoundItem';
 import { useFetch } from '../hooks/useFetch';
+import { useDelete } from '../hooks/useDelete';
 import CreateGroupModal from '../components/CreateGroupModal';
 import AssociateVolunteerGroupModal from '../components/AssociateVolunteerGroupModal';
+import { useSnackbar } from 'notistack';
 
 const Group = () => {
+    const { deleteRequest } = useDelete();
     const { data, error, loading, fetch } = useFetch('/groups');
+    const { enqueueSnackbar } = useSnackbar();
     const [openCreateGroupModal, setOpenCreateGroupModal] = React.useState(false);
     const [openAssociateVolunteerGroupModal, setOpenAssociateVolunteerGroupModal] = React.useState(false);
     const [selectedGroup, setSelectedGroup] = React.useState({});
+    const [confirmModalOpen, setConfirmModalOpen] = React.useState(false);
 
     React.useEffect(() => {
         document.title = 'Grupos';
@@ -26,6 +31,26 @@ const Group = () => {
     const handleAssociateVolunteer = (group) => {
         setSelectedGroup(group);
         setOpenAssociateVolunteerGroupModal(true);
+    };
+
+    const handleDeleteClick = () => {
+        setConfirmModalOpen(true);
+    }
+
+    const handleDeleteConfirm = async (id) => {
+        try {
+            const response = await deleteRequest(`/groups/${id}`);
+            
+            if (response.status === 204) {
+                enqueueSnackbar('Grupo removido', { variant: 'success' });
+                fetch();
+            }
+            
+        } catch (error) {
+            if (error.response) {
+                enqueueSnackbar(error.response.data.message || "Erro geral - Group");
+            }
+        }
     };
 
     return (
@@ -58,6 +83,10 @@ const Group = () => {
                             key={group.id}
                             group={group}
                             handleAssociateVolunteer={() => handleAssociateVolunteer(group)}
+                            handleDeleteClick={handleDeleteClick}
+                            handleDeleteConfirm={() => handleDeleteConfirm(group.id)}
+                            openConfirm={confirmModalOpen}
+                            onCloseConfirm={() => setConfirmModalOpen(false)}
                         />
                     ))}
                 </Box>

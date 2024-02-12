@@ -2,8 +2,6 @@ import React from 'react';
 import { Tooltip, IconButton } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import ConfirmModal from './ConfirmModal';
-import { useDelete } from '../hooks/useDelete';
-import { useSnackbar } from 'notistack';
 
 const VolunteerBox = ({ open, onClose, volunteer, ministries, handleDeleteClick, handleDeleteConfirm }) => {
     const avatarBorderClass = ministries.length > 0 ? 'border-2 border-primary' : 'border-2 border-quinary';
