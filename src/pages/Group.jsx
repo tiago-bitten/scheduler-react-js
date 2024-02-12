@@ -5,10 +5,14 @@ import RoundButton from '../components/RoundButton';
 import GroupLine from '../components/GroupLine';
 import NotFoundItem from '../components/NotFoundItem';
 import { useFetch } from '../hooks/useFetch';
+import CreateGroupModal from '../components/CreateGroupModal';
+import AssociateVolunteerGroupModal from '../components/AssociateVolunteerGroupModal';
 
 const Group = () => {
     const { data, error, loading, fetch } = useFetch('/groups');
-    const [groups, setGroups] = React.useState([]);
+    const [openCreateGroupModal, setOpenCreateGroupModal] = React.useState(false);
+    const [openAssociateVolunteerGroupModal, setOpenAssociateVolunteerGroupModal] = React.useState(false);
+    const [selectedGroup, setSelectedGroup] = React.useState({});
 
     React.useEffect(() => {
         document.title = 'Grupos';
@@ -17,11 +21,12 @@ const Group = () => {
 
     React.useEffect(() => {
         fetch();
+    }, [fetch]);
 
-        if (data) {
-            setGroups(data.groups);
-        }
-    }, [fetch, data]);
+    const handleAssociateVolunteer = (group) => {
+        setSelectedGroup(group);
+        setOpenAssociateVolunteerGroupModal(true);
+    };
 
     return (
         <>
@@ -29,34 +34,48 @@ const Group = () => {
             <Box sx={{ flexGrow: 1, marginX: 6, marginTop: 4 }}>
                 <Grid container justifyContent="space-between" alignItems="flex-end" spacing={2}>
                     <Grid item xs={12} sm={3}>
-                        <Box>
-                            <TextField
-                                label="Nome do grupo"
-                                fullWidth
-                                margin="normal"
-                                variant="standard"
-                            />
-                        </Box>
+                        <TextField
+                            label="Nome do grupo"
+                            fullWidth
+                            margin="normal"
+                            variant="standard"
+                        />
                     </Grid>
                     <Grid item>
-                        <RoundButton value="CRIAR" />
+                        <RoundButton value="CRIAR" onClick={() => setOpenCreateGroupModal(true)} />
                     </Grid>
                 </Grid>
             </Box>
-            {!loading && groups.length > 0 ?
+            {!loading && data && data.groups.length > 0 ? (
                 <Box sx={{
                     backgroundColor: '#F3F3F3',
                     padding: 4,
                     marginX: 6,
                     marginTop: 4,
                 }}>
-                    groups.map((group) => (
-                    <GroupLine key={group.id} group={group} />
-                    ))
+                    {data.groups.map(group => (
+                        <GroupLine
+                            key={group.id}
+                            group={group}
+                            handleAssociateVolunteer={() => handleAssociateVolunteer(group)}
+                        />
+                    ))}
                 </Box>
-                :
+            ) : (
                 <NotFoundItem entities="grupos" />
-            }
+            )}
+            <CreateGroupModal
+                open={openCreateGroupModal}
+                onClose={() => setOpenCreateGroupModal(false)}
+                fetchGroups={fetch}
+                handleAssociateVolunteer={handleAssociateVolunteer}
+            />
+            <AssociateVolunteerGroupModal
+                open={openAssociateVolunteerGroupModal}
+                onClose={() => setOpenAssociateVolunteerGroupModal(false)}
+                fetchGroups={fetch}
+                group={selectedGroup}
+            />
         </>
     );
 };
