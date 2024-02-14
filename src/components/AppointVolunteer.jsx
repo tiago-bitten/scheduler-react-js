@@ -9,6 +9,7 @@ import moment from "moment";
 import AppointVolunteerLine from "./AppointVolunteerLine";
 import { usePost } from "../hooks/usePost";
 import { useFetch } from "../hooks/useFetch";
+import CreateScaleModal from "./CreateScaleModal";
 
 const style = {
     position: 'absolute',
@@ -28,6 +29,8 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
 
     const volunteersFetch = useFetch(`/volunteers/not-in-schedule/${schedule?.id}/ministry/${ministry?.id}`);
     const { post } = usePost();
+
+    const [openCreateScaleModal, setOpenCreateScaleModal] = useState(false);
 
     React.useEffect(() => {
         if (open) {
@@ -52,57 +55,72 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     };
 
     return (
-        <Modal open={open} onClose={onClose}>
-            <Box sx={style}>
-                <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
-                    <CloseIcon />
-                </IconButton>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Typography variant="h6" component="h2" gutterBottom>
-                            Agendar para {schedule?.title}
-                        </Typography>
+        <>
+            <Modal open={open} onClose={onClose}>
+                <Box sx={style}>
+                    <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
+                        <CloseIcon />
+                    </IconButton>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <Typography variant="h6" component="h2" gutterBottom>
+                                Agendar para {schedule?.title}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="subtitle1" gutterBottom>Voluntários</Typography>
+                            <TextField
+                                label="Buscar"
+                                variant="standard"
+                                size="small"
+                                fullWidth
+                                autoComplete="off"
+                                sx={{ mb: 2 }}
+                            />
+                            <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
+                                {volunteersFetch.data?.volunteers?.length > 0 ? (
+                                    volunteersFetch.data?.volunteers?.map(volunteer => (
+                                        <AppointVolunteerLine
+                                            key={volunteer.id}
+                                            volunteer={volunteer}
+                                            handleAppointment={handleAppointment}
+                                        />
+                                    ))) : (
+                                    <NotFoundItem entities="voluntários" />
+                                )}
+                            </List>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="subtitle1" gutterBottom>Grupos</Typography>
+                            <TextField
+                                label="Buscar"
+                                variant="standard"
+                                size="small"
+                                fullWidth
+                                autoComplete="off"
+                                sx={{ mb: 2 }}
+                            />
+                            <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
+                                <ListItem button onClick={() => setOpenCreateScaleModal(true)}>
+                                    <ListItemAvatar>
+                                        <Avatar sx={{ bgcolor: 'primary.main' }}>
+                                            <DoneIcon />
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText primary="Criar escala" />
+                                </ListItem>
+                            </List>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={6}>
-                        <Typography variant="subtitle1" gutterBottom>Voluntários</Typography>
-                        <TextField
-                            label="Buscar"
-                            variant="standard"
-                            size="small"
-                            fullWidth
-                            autoComplete="off"
-                            sx={{ mb: 2 }}
-                        />
-                        <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
-                            {volunteersFetch.data?.volunteers?.length > 0 ? (
-                                volunteersFetch.data?.volunteers?.map(volunteer => (
-                                    <AppointVolunteerLine
-                                        key={volunteer.id}
-                                        volunteer={volunteer}
-                                        handleAppointment={handleAppointment}
-                                    />
-                                ))) : (
-                                <NotFoundItem entities="voluntários" />
-                            )}
-                        </List>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Typography variant="subtitle1" gutterBottom>Grupos</Typography>
-                        <TextField
-                            label="Buscar"
-                            variant="standard"
-                            size="small"
-                            fullWidth
-                            autoComplete="off"
-                            sx={{ mb: 2 }}
-                        />
-                        <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
-                            <NotFoundItem entities="grupos" />
-                        </List>
-                    </Grid>
-                </Grid>
-            </Box>
-        </Modal>
+                </Box>
+            </Modal>
+            <CreateScaleModal
+                open={openCreateScaleModal}
+                onClose={() => setOpenCreateScaleModal(false)}
+                schedule={schedule}
+                ministry={ministry}
+            />
+        </>
     );
 }
 
