@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import AddLinkIcon from '@mui/icons-material/AddLink';
 import { useDelete } from '../hooks/useDelete';
 import { useFetch } from '../hooks/useFetch';
-import { Tooltip } from '@mui/material';
+import { TextField, Tooltip } from '@mui/material';
 import ConfirmModal from '../components/ConfirmModal';
 
 import { useSnackbar } from 'notistack';
@@ -21,11 +21,13 @@ import VolunteerListSkeleton from '../components/VolunteerListSkeleton';
 const Volunteer = () => {
     const { enqueueSnackbar } = useSnackbar();
     const { deleteRequest } = useDelete();
-    const { data, error, loading, fetch } = useFetch('/volunteers');
     const [confirmModalOpen, setConfirmModalOpen] = React.useState(false);
     const [selectedVolunteer, setSelectedVolunteer] = React.useState({});
-
-    const [checked, setChecked] = React.useState(false);
+    const [volunteerName, setVolunteerName] = React.useState('');
+    const [ministryName, setMinistryName] = React.useState('');
+    const [isLinkedToAnyMinistry, setIsLinkedToAnyMinistry] = React.useState(false);
+    
+    const { data, error, loading, fetch } = useFetch(`/volunteers?volunteerName=${volunteerName}&ministryName=${ministryName}&isLinkedToAnyMinistry=${isLinkedToAnyMinistry}`);
     const [open, setOpen] = React.useState(false);
 
     React.useEffect(() => {
@@ -34,10 +36,18 @@ const Volunteer = () => {
 
     React.useEffect(() => {
         fetch();
-    }, [fetch]);
+    }, [fetch, volunteerName, ministryName, isLinkedToAnyMinistry]);
+
+    const handleVolunteerNameChange = (event) => {
+        setVolunteerName(event.target.value);
+    };
+
+    const handleMinistryNameChange = (event) => {
+        setMinistryName(event.target.value);
+    };
 
     const handleSwitchChange = (event) => {
-        setChecked(event.target.checked);
+        setIsLinkedToAnyMinistry(event.target.checked);
     };
 
     const handleClick = () => {
@@ -83,8 +93,23 @@ const Volunteer = () => {
             <Header />
             <div className="flex justify-between items-center mt-16 mx-12">
                 <div className="flex flex-1 gap-4">
-                    <DefaultInput label="Voluntários" id="voluntarios" />
-                    <DefaultInput label="Ministérios" id="ministerios" />
+                    <TextField
+                        label="Voluntários"
+                        variant="standard"
+                        size="small"
+                        value={volunteerName}
+                        onChange={handleVolunteerNameChange}
+                        sx={{ width: '300px' }}
+                    />
+
+                    <TextField
+                        label="Ministério"
+                        variant="standard"
+                        size="small"
+                        value={ministryName}
+                        onChange={handleMinistryNameChange}
+                        sx={{ width: '300px' }}
+                    />
                 </div>
                 <div>
                     <RoundButton value="CADASTRAR VOLUNTÁRIO" onClick={handleClick} />
@@ -97,7 +122,7 @@ const Volunteer = () => {
             </div>
             <div className="ml-10 mt-4">
                 <Switch
-                    checked={checked}
+                    checked={isLinkedToAnyMinistry}
                     onChange={handleSwitchChange}
                     name="checked"
                     color="primary"
