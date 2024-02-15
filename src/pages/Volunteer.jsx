@@ -11,6 +11,7 @@ import { useDelete } from '../hooks/useDelete';
 import { useFetch } from '../hooks/useFetch';
 import { TextField, Tooltip } from '@mui/material';
 import ConfirmModal from '../components/ConfirmModal';
+import { useDebounce } from '../hooks/useDebouce';
 
 import { useSnackbar } from 'notistack';
 
@@ -26,6 +27,10 @@ const Volunteer = () => {
     const [volunteerName, setVolunteerName] = React.useState('');
     const [ministryName, setMinistryName] = React.useState('');
     const [isLinkedToAnyMinistry, setIsLinkedToAnyMinistry] = React.useState(false);
+
+    const debouncedVolunteerName = useDebounce(volunteerName, 500);
+    const debouncedMinistryName = useDebounce(ministryName, 500);
+    const debouncedIsLinkedToAnyMinistry = useDebounce(isLinkedToAnyMinistry, 120);
     
     const { data, error, loading, fetch } = useFetch(`/volunteers?volunteerName=${volunteerName}&ministryName=${ministryName}&isLinkedToAnyMinistry=${isLinkedToAnyMinistry}`);
     const [open, setOpen] = React.useState(false);
@@ -36,7 +41,7 @@ const Volunteer = () => {
 
     React.useEffect(() => {
         fetch();
-    }, [fetch, volunteerName, ministryName, isLinkedToAnyMinistry]);
+    }, [debouncedVolunteerName, debouncedMinistryName, debouncedIsLinkedToAnyMinistry]);
 
     const handleVolunteerNameChange = (event) => {
         setVolunteerName(event.target.value);
