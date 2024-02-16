@@ -4,7 +4,7 @@ import instance from '../config/axiosConfig';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 
-import DefaultInput from '../components/DefaultInput';
+import { useDebounce } from '../hooks/useDebouce';
 import RoundButton from '../components/RoundButton';
 import MinistryLine from '../components/MinistryLine';
 import CreateMinistryModal from '../components/CreateMinistryModal';
@@ -12,6 +12,8 @@ import VolunteerMinistryModal from '../components/VolunteerMinistryModal';
 import MinistriesSkeleton from '../components/MinistriesSkeleton';
 import NotFoundItem from '../components/NotFoundItem';
 import EditMinistryModal from '../components/EditMinistryModal';
+import { TextField } from '@mui/material';
+import { useFetch } from '../hooks/useFetch';
 
 import Header from '../components/Header';
 
@@ -30,6 +32,14 @@ const Ministries = () => {
     const [ministryId, setMinistryId] = React.useState(null);
     const [selectedMinistry, setSelectedMinistry] = React.useState({});
 
+    const [ministryName, setMinistryName] = React.useState('');
+    const [volunteerName, setVolunteerName] = React.useState('');
+
+    const debouncedMinistryName = useDebounce(ministryName, 500);
+    const debouncedVolunteerName = useDebounce(volunteerName, 500);
+
+    const { data, error, fetch: fetchMinistries } = useFetch(`/ministries?ministryName=${ministryName}&volunteerName=${volunteerName}`);
+
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
@@ -42,22 +52,8 @@ const Ministries = () => {
     }, [ministryId]);
 
     React.useEffect(() => {
-        const fetchMinistries = async () => {
-            try {
-                const response = await instance.get('/ministries', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                setMinistries(response.data.ministries);
-            } catch (err) {
-                enqueueSnackbar(err.response?.data?.message || 'Erro ao buscar ministérios', { variant: 'error' });
-            } finally {
-                setLoading(false);
-                setRequestCompleted(true);
-            }
-        };
-
         fetchMinistries();
-    }, [token, navigate, enqueueSnackbar]);
+    }, [debouncedMinistryName, debouncedVolunteerName]);
 
     const getMinistries = async () => {
         try {
@@ -152,6 +148,14 @@ const Ministries = () => {
         }
     }
 
+    const handleMinistryNameChange = (event) => {
+        setMinistryName(event.target.value);
+    }
+
+    const handleVolunteerNameChange = (event) => {
+        setVolunteerName(event.target.value);
+    }
+
     const handleClick = () => {
         setOpen(true);
     };
@@ -204,8 +208,27 @@ const Ministries = () => {
             <Header />
             <div className="flex justify-between items-center mt-16 mx-12">
                 <div className="flex flex-1 gap-4">
-                    <DefaultInput label="Ministérios" id="ministerios" />
-                    <DefaultInput label="Voluntários" id="voluntarios" />
+                    <TextField
+                        label="Ministérios"
+                        variant="standard"
+                        size="small"
+                        fullWidth
+                        value={ministryName}
+                        onChange={handleMinistryNameChange}
+                        autoComplete="off"
+                        sx={{ width: '300px' }}
+                    />
+
+                    <TextField
+                        label="Descrição"
+                        variant="standard"
+                        size="small"
+                        fullWidth
+                        value={volunteerName}
+                        onChange={handleVolunteerNameChange}
+                        autoComplete="off"
+                        sx={{ width: '300px' }}
+                    />
                 </div>
                 <div>
                     <RoundButton value="CRIAR MINISTÉRIO" onClick={handleClick} />
@@ -221,8 +244,8 @@ const Ministries = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {requestCompleted && ministries.length > 0 ? (
-                            ministries.map((ministry) => (
+                        {requestCompleted && data?.ministries.length > 0 ? (
+                            data?.ministries.map((ministry) => (
                                 <MinistryLine
                                     key={ministry.id}
                                     ministry={ministry}
