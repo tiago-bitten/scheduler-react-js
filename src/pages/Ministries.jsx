@@ -19,7 +19,6 @@ import Header from '../components/Header';
 
 const Ministries = () => {
     const [token] = React.useState(sessionStorage.getItem('token'));
-    const [loading, setLoading] = React.useState(true);
     const [ministries, setMinistries] = React.useState([]);
     const [open, setOpen] = React.useState(false);
     const [openVolunteerMinistryModal, setVolunteerMinistryModal] = React.useState(false);
@@ -199,17 +198,13 @@ const Ministries = () => {
         setOpenEditModal(true);
     }
 
-    if (loading) {
-        return <MinistriesSkeleton />;
-    }
-
     return (
         <>
             <Header />
             <div className="flex justify-between items-center mt-16 mx-12">
                 <div className="flex flex-1 gap-4">
                     <TextField
-                        label="Ministérios"
+                        label="Ministério"
                         variant="standard"
                         size="small"
                         fullWidth
@@ -220,7 +215,7 @@ const Ministries = () => {
                     />
 
                     <TextField
-                        label="Descrição"
+                        label="Voluntário"
                         variant="standard"
                         size="small"
                         fullWidth
@@ -244,7 +239,7 @@ const Ministries = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {requestCompleted && data?.ministries.length > 0 ? (
+                        {data?.ministries.length > 0 ? (
                             data?.ministries.map((ministry) => (
                                 <MinistryLine
                                     key={ministry.id}

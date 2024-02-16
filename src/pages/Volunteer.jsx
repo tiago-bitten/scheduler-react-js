@@ -89,10 +89,6 @@ const Volunteer = () => {
         }
     }
 
-    if (loading) {
-        return <VolunteerListSkeleton />
-    }
-
     return (
         <>
             <Header />
