@@ -9,6 +9,7 @@ import { useFetch } from "../hooks/useFetch";
 import AppointmentLine from "./AppointmentLine";
 import AppointVolunteer from "./AppointVolunteer";
 import NotFoundItem from "./NotFoundItem";
+import CreateScaleModal from "./CreateScaleModal";
 
 const modalStyle = {
     position: 'absolute',
@@ -31,6 +32,8 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
 
     const [showAppointVolunteerModal, setShowAppointVolunteerModal] = useState(false);
     const [selectedMinistry, setSelectedMinistry] = useState(null);
+
+    const [openCreateScaleModal, setOpenCreateScaleModal] = useState(false);
 
     const printRef = useRef(null);
 
@@ -76,7 +79,7 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                         <CloseIcon />
                     </IconButton>
                     <Typography variant="h6" component="h2" textAlign="center">
-                        Agenda Information
+                        Agenda de {schedule?.title}
                     </Typography>
                     {appointmentsFetch.loading || ministriesFetch.loading ? (
                         <LinearProgress sx={{ width: '100%', my: 2 }} />
@@ -84,11 +87,8 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                         <Box sx={{ mt: 2 }}>
                             <Card variant="outlined">
                                 <CardContent>
-                                    <Typography variant="subtitle1">{schedule?.title}</Typography>
-                                    <Typography variant="body1">{moment(schedule?.start).format('DD/MM/YYYY HH:mm')}</Typography>
-                                    <Typography variant="body1">End: {moment(schedule?.end).format('DD/MM/YYYY HH:mm')}</Typography>
-                                    <Typography variant="body2">Description: {schedule?.description}</Typography>
-                                    {/* Render ministries */}
+                                    <Typography variant="body1">{moment(schedule?.start).format('DD/MM/YYYY')}</Typography>
+                                    <Typography variant="body1">{moment(schedule?.start).format('HH:mm')} - {moment(schedule?.end).format('HH:mm')}</Typography>
                                     <Box sx={{ display: 'flex', flexWrap: 'wrap', mt: 2 }}>
                                         {ministriesFetch.data?.ministries?.map((ministry) => (
                                             <Chip
@@ -101,6 +101,9 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                                     </Box>
                                 </CardContent>
                             </Card>
+                            <IconButton onClick={() => setOpenCreateScaleModal(true)} sx={{ mt: 2 }}>
+                                Criar escala
+                            </IconButton>
                             <Box sx={{ mt: 2, overflowY: 'auto', maxHeight: 300 }} ref={printRef}>
                                 {appointmentsFetch.data?.schedule?.appointments?.length > 0 ? (
                                     appointmentsFetch.data?.schedule?.appointments?.map((appointment) => (
@@ -130,6 +133,11 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                 schedule={schedule}
                 isSchedulePast={isSchedulePast}
                 fetchAppointments={appointmentsFetch.fetch}
+            />
+            <CreateScaleModal
+                open={openCreateScaleModal}
+                onClose={() => setOpenCreateScaleModal(false)}
+                ministries={ministriesFetch.data?.ministries || []}
             />
         </>
     );
