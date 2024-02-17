@@ -1,7 +1,10 @@
+// eslint-disable-next-line
 import React from "react";
 import { Box, Typography, Modal, Grid } from "@mui/material";
 import SwitchMinistry from "./SwitchMinistry";
 import RoundButton from "./RoundButton";
+import { usePost } from '../hooks/usePost';
+import { useSnackbar } from 'notistack';
 
 const modalStyle = {
     position: 'absolute',
@@ -17,6 +20,8 @@ const modalStyle = {
 };
 
 const CreateScaleModal = ({ open, onClose, ministries, schedule }) => {
+    const enqueueSnackbar = useSnackbar();
+    const { loading, post } = usePost();
     const [selectedMinistries, setSelectedMinistries] = React.useState([]);
 
     const handleSelectMinistry = (ministry, isChecked, maxVolunteers) => {
@@ -27,10 +32,27 @@ const CreateScaleModal = ({ open, onClose, ministries, schedule }) => {
             setSelectedMinistries(selectedMinistries.filter(m => m.ministry.id !== ministry.id));
         }
     }
-    
 
-    const handleGenerate = () => {
-        console.log(selectedMinistries);
+    const handleGenerate = async () => {
+        const ministryIdMaxVolunteers = selectedMinistries.reduce((acc, { ministry, maxVolunteers }) => {
+            acc[ministry.id] = Number(maxVolunteers);
+            return acc;
+        }, {});
+
+        const payload = {
+            ministryIdMaxVolunteers
+        };
+
+        try {
+            const response = await post(`/scales/create?scheduleId=${schedule?.id}`, payload);
+
+            if (response.status === 201) {
+                console.log(response.data);
+            }
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message || "Erro geral - CreateScaleModal", { variant: 'error' });
+        }
+
     }
 
     return (

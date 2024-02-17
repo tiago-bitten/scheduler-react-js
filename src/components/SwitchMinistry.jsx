@@ -11,6 +11,7 @@ const SwitchMinistry = ({ ministry, onSelect }) => {
             onSelect(ministry, event.target.checked, maxVolunteers);
         } else {
             onSelect(ministry, event.target.checked, 0);
+            setMaxVolunteers(0);
         }
     };
 
@@ -37,7 +38,19 @@ const SwitchMinistry = ({ ministry, onSelect }) => {
                         },
                     }}
                 />
-                <Typography variant="body1">{ministry.name}</Typography>
+                <Typography
+                    variant="body1"
+                    sx={{
+                        color: isChecked ? ministry.color : 'inherit',
+                        fontWeight: isChecked ? 'bold' : 'inherit',
+                        '&:hover': {
+                            cursor: 'pointer',
+                        },
+                    }}
+                    onClick={() => setIsChecked(!isChecked)}
+                >
+                    {ministry.name}
+                </Typography>
             </Box>
             <TextField
                 type="number"
@@ -49,6 +62,18 @@ const SwitchMinistry = ({ ministry, onSelect }) => {
                 value={maxVolunteers > 0 ? maxVolunteers : ''}
                 sx={{
                     mt: 1,
+                    '& input': {
+                        color: isChecked ? ministry.color : 'inherit',
+                    },
+                    '& .MuiFilledInput-root': {
+                        backgroundColor: isChecked ? `${ministry.color}20` : 'inherit',
+                    },
+                    '& .MuiFilledInput-underline:before': {
+                        borderBottomColor: isChecked ? ministry.color : 'inherit',
+                    },
+                    '& .MuiFilledInput-underline:after': {
+                        borderBottomColor: isChecked ? ministry.color : 'inherit',
+                    },
                     '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
                         '-webkit-appearance': 'none',
                         margin: 0,

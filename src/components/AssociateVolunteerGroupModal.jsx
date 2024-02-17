@@ -101,7 +101,7 @@ const AssociateVolunteerGroupModal = ({ open, onClose, group, fetchGroups }) => 
                     )}
                 </TabPanel>
                 <TabPanel value={value} index={1}>
-                    <Box sx={{ width: '100%' }}>
+                    <Box sx={{ width: '100%', overflow: 'auto', maxHeight: 400 }}>
                         {!notAssociatedVolunteersFetch.loading && notAssociatedVolunteersFetch.data?.volunteers?.length > 0 ? (
                             notAssociatedVolunteersFetch.data?.volunteers?.map(volunteer => (
                                 <AddVolunteerLine
