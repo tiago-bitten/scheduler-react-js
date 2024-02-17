@@ -126,7 +126,14 @@ const Volunteer = () => {
                     checked={isLinkedToAnyMinistry}
                     onChange={handleSwitchChange}
                     name="checked"
-                    color="primary"
+                    sx={{
+                        '& .MuiSwitch-switchBase.Mui-checked': {
+                            color: "#4169E1",
+                            '& + .MuiSwitch-track': {
+                                backgroundColor: "#4169E1",
+                            },
+                        },
+                    }}
                 />
                 <span className="text-quinary">Apenas voluntários com ministérios</span>
             </div>

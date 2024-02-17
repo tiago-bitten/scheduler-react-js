@@ -1,11 +1,25 @@
 import React, { useState } from "react";
 import { Switch, Box, TextField, Typography } from "@mui/material";
 
-const SwitchMinistry = ({ ministry }) => {
+const SwitchMinistry = ({ ministry, onSelect }) => {
     const [isChecked, setIsChecked] = useState(false);
+    const [maxVolunteers, setMaxVolunteers] = React.useState(0);
 
     const handleSwitchChange = (event) => {
         setIsChecked(event.target.checked);
+        if (event.target.checked) {
+            onSelect(ministry, event.target.checked, maxVolunteers);
+        } else {
+            onSelect(ministry, event.target.checked, 0);
+        }
+    };
+
+    const handleMaxVolunteersChange = (event) => {
+        const newMaxVolunteers = event.target.value < 0 ? 0 : event.target.value;
+        setMaxVolunteers(newMaxVolunteers);
+        if (isChecked) {
+            onSelect(ministry, isChecked, newMaxVolunteers);
+        }
     };
 
     return (
@@ -31,6 +45,8 @@ const SwitchMinistry = ({ ministry }) => {
                 autoComplete="off"
                 variant="filled"
                 disabled={!isChecked}
+                onChange={handleMaxVolunteersChange}
+                value={maxVolunteers > 0 ? maxVolunteers : ''}
                 sx={{
                     mt: 1,
                     '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {

@@ -138,6 +138,7 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                 open={openCreateScaleModal}
                 onClose={() => setOpenCreateScaleModal(false)}
                 ministries={ministriesFetch.data?.ministries || []}
+                schedule={schedule}
             />
         </>
     );

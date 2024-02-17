@@ -16,7 +16,23 @@ const modalStyle = {
     overflow: 'hidden'
 };
 
-const CreateScaleModal = ({ open, onClose, ministries }) => {
+const CreateScaleModal = ({ open, onClose, ministries, schedule }) => {
+    const [selectedMinistries, setSelectedMinistries] = React.useState([]);
+
+    const handleSelectMinistry = (ministry, isChecked, maxVolunteers) => {
+        if (isChecked) {
+            const updatedMinistries = selectedMinistries.filter(m => m.ministry.id !== ministry.id);
+            setSelectedMinistries([...updatedMinistries, { ministry, maxVolunteers }]);
+        } else {
+            setSelectedMinistries(selectedMinistries.filter(m => m.ministry.id !== ministry.id));
+        }
+    }
+    
+
+    const handleGenerate = () => {
+        console.log(selectedMinistries);
+    }
+
     return (
         <Modal open={open} onClose={onClose}>
             <Box sx={modalStyle}>
@@ -28,7 +44,10 @@ const CreateScaleModal = ({ open, onClose, ministries }) => {
                         {ministries.length > 0 ? (
                             ministries.map(ministry => (
                                 <Grid item xs={12} sm={6} key={ministry.id}>
-                                    <SwitchMinistry ministry={ministry} />
+                                    <SwitchMinistry
+                                        ministry={ministry}
+                                        onSelect={handleSelectMinistry}
+                                    />
                                 </Grid>
                             ))
                         ) : (
@@ -39,7 +58,7 @@ const CreateScaleModal = ({ open, onClose, ministries }) => {
                     </Grid>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                    <RoundButton value="GERAR" />
+                    <RoundButton value="GERAR" onClick={handleGenerate} />
                 </Box>
             </Box>
         </Modal>
