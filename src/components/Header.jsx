@@ -1,12 +1,20 @@
 import React from 'react';
 import { Person, Notifications } from '@mui/icons-material';
-import { Badge } from '@mui/material';
+import { Badge, IconButton, Tooltip, Box, AppBar, Toolbar, Typography } from '@mui/material';
 import NacoesImg from '../assets/melhorada.png';
-
 import { useNavigate } from 'react-router-dom';
 import instance from '../config/axiosConfig';
 
-const liClass = "px-3 rounded-lg mx-6 cursor-pointer text-xl transition-colors duration-300 hover:bg-secondary";
+const itemsStyle = {
+    cursor: 'pointer',
+    mx: 2,
+    px: 2,
+    '&:hover': {
+        bgcolor: '#718FE9'
+    },
+    fontSize: '1.2rem',
+    borderRadius: '9px',
+};
 
 const Header = () => {
     const [token] = React.useState(sessionStorage.getItem('token'));
@@ -26,7 +34,7 @@ const Header = () => {
                     setUsersCount(response.data.users.length);
                 }
             } catch (err) {
-                if(err.response?.status === 401) {
+                if (err.response?.status === 401) {
                     navigate('/entrar');
                 }
             }
@@ -44,7 +52,7 @@ const Header = () => {
     const handleVolunteers = () => {
         navigate('/voluntarios');
     }
-    
+
     const handleGroups = () => {
         navigate('/grupos');
     }
@@ -58,28 +66,39 @@ const Header = () => {
     }
 
     return (
-        <div className="bg-primary flex justify-between items-center w-full text-white" style={{ height: '80px' }}>
-            <div className="flex items-center">
-                <img src={NacoesImg} alt="Nacoes" className="w-12 h-14 ml-12" />
-                <nav>
-                    <ul className="flex">
-                        <li className={liClass} onClick={handleVolunteers}>Voluntários</li>
-                        <li className={liClass} onClick={handleGroups}>Grupos</li>
-                        <li className={liClass} onClick={handleMinistries}>Ministérios</li>
-                        <li className={liClass} onClick={handleAgendas}>Agendas</li>
-                    </ul>
-                </nav>
-            </div>
-            <div className="flex items-center">
-                {user?.isSuperUser && 
-                    <div className="text-white mr-12">
-                    <Badge badgeContent={usersCount} color="error" max={99}>
-                        <Notifications onClick={handleNotifications} />
-                    </Badge>
-                </div>}
-                <Person className="text-white mr-12" />
-            </div>
-        </div>
+        <AppBar position="static" sx={{ display: 'flex', justyContent: 'center', bgcolor: '#4169E1', height: '100px' }}>
+            <Toolbar sx={{ justifyContent: 'space-between', alignItems: 'center', height: '100%', mx: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <img src={NacoesImg} alt="Nacoes" className="w-12 h-14" />
+                    <Box sx={{ display: 'flex', ml: 2 }}>
+                        <Typography sx={itemsStyle} onClick={handleVolunteers}>Voluntários</Typography>
+                        <Typography sx={itemsStyle} onClick={handleGroups}>Grupos</Typography>
+                        <Typography sx={itemsStyle} onClick={handleMinistries}>Ministérios</Typography>
+                        <Typography sx={itemsStyle} onClick={handleAgendas}>Agendas</Typography>
+                    </Box>
+                </Box>
+                <Box sx={{ display: 'flex' }}>
+                    {user?.isSuperUser &&
+                        <Box sx={{ mx: 2 }}>
+                            <Tooltip title="Aprovar contas">
+                                <IconButton sx={{ color: 'white' }} onClick={handleNotifications}>
+                                    <Badge badgeContent={usersCount} color="error" max={99}>
+                                        <Notifications />
+                                    </Badge>
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                    }
+                    <Box sx={{ ml: 2 }}>
+                        <Tooltip title="Perfil">
+                            <IconButton sx={{ color: 'white' }}>
+                                <Person />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                </Box>
+            </Toolbar>
+        </AppBar>
     );
 };
 
