@@ -4,6 +4,8 @@ import Header from '../components/Header';
 import { useSnackbar } from 'notistack';
 import ApproveUserCard from '../components/ApproveUserCard';
 import { useFetch } from '../hooks/useFetch';
+import NotFoundItem from '../components/NotFoundItem';
+import { Box } from '@mui/material';
 
 const ApproveUser = () => {
     const [token] = useState(sessionStorage.getItem('token'));
@@ -54,14 +56,18 @@ const ApproveUser = () => {
             <Header />
             <div className="flex flex-col items-center">
                 <div className="flex flex-wrap justify-left mt-8">
-                    {users.map((user) => (
+                    {users.length > 0 ? users.map((user) => (
                         <ApproveUserCard
                             key={user.id}
                             user={user}
                             onApprove={onApprove}
                             onDisapprove={onDisapprove}
                         />
-                    ))}
+                    )) :
+                        <Box sx={{ mt: 10 }}>
+                            <NotFoundItem entities="usuários" />
+                        </Box>
+                    }
                 </div>
             </div>
         </>
