@@ -3,12 +3,12 @@ import { Modal, Box, IconButton, CircularProgress, TextField } from '@mui/materi
 import { Close } from '@mui/icons-material';
 import { HexColorPicker } from 'react-colorful';
 import { useSnackbar } from 'notistack';
-
-import instance from '../config/axiosConfig';
+import { usePost } from '../hooks/usePost';
 
 import RoundButton from './RoundButton';
 
-const CreateMinistryModal = ({ open, handleClose, getMinistries }) => {
+const CreateMinistryModal = ({ open, handleClose, fetchMinistries }) => {
+    const { loading, post } = usePost();
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [color, setColor] = useState('#000000');
@@ -18,23 +18,16 @@ const CreateMinistryModal = ({ open, handleClose, getMinistries }) => {
 
     const handleCreateMinistry = async () => {
         try {
-            const response = await instance.post('/ministries/create', {
-                name,
-                description,
-                color
-            }, {
-                headers: {
-                    Authorization: `Bearer ${sessionStorage.getItem('token')}`
-                }
-            });
+            const payload = { name, description, color };
+
+            const response = await post('/ministries/create', payload);
 
             if (response.status === 204) {
                 enqueueSnackbar('Ministério cadastrado com sucesso!', { variant: 'success' });
-                getMinistries();
-            }
+                fetchMinistries();            }
 
-        } catch (err) {
-            enqueueSnackbar(err.response?.data?.message || 'Ocorreu um erro ao cadastrar o ministério.', { variant: 'error' });
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message || 'Error geral - CreateMinistryModal', { variant: 'error' });
         }
     }
 
@@ -55,8 +48,7 @@ const CreateMinistryModal = ({ open, handleClose, getMinistries }) => {
         try {
             await handleCreateMinistry();
 
-            getMinistries();
-        } catch (err) {
+            fetchMinistries();        } catch (err) {
             enqueueSnackbar(err.response?.data?.message || 'Erro interno', { variant: 'error' });
         } finally {
             setIsSubmitting(false);
@@ -64,7 +56,6 @@ const CreateMinistryModal = ({ open, handleClose, getMinistries }) => {
             resetFields();
         }
     };
-
 
     const resetFields = () => {
         setName('');

@@ -52,24 +52,7 @@ const Ministries = () => {
 
     React.useEffect(() => {
         fetchMinistries();
-    }, [debouncedMinistryName, debouncedVolunteerName]);
-
-    const getMinistries = async () => {
-        try {
-            const response = await instance.get('/ministries', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            if (response.status === 200) {
-                setMinistries(response.data.ministries);
-            }
-
-        } catch (err) {
-            enqueueSnackbar(err.response?.data?.message || 'Erro ao buscar ministérios', { variant: 'error' });
-        }
-    };
+    }, [fetchMinistries, debouncedMinistryName, debouncedVolunteerName]);
 
     const fetchVolunteerMinistry = async (ministryId) => {
         setVolunteerRequestCompleted(false);
@@ -120,8 +103,7 @@ const Ministries = () => {
             if (response.status === 204) {
                 fetchVolunteerNotInMinistry(ministryId);
                 enqueueSnackbar("Voluntário associado com sucesso ao ministério", { variant: "success" });
-                getMinistries();
-            }
+                fetchMinistries();            }
 
         } catch (err) {
             enqueueSnackbar(err.response.data.message, { variant: "error" });
@@ -139,8 +121,7 @@ const Ministries = () => {
             if (response.status === 204) {
                 fetchVolunteerMinistry(ministryId);
                 enqueueSnackbar("Voluntário desassociado com sucesso do ministério", { variant: "success" });
-                getMinistries();
-            }
+                fetchMinistries();            }
 
         } catch (err) {
             enqueueSnackbar(err.response.data.message, { variant: "error" });
@@ -257,7 +238,7 @@ const Ministries = () => {
             <CreateMinistryModal
                 open={open}
                 handleClose={handleClose}
-                getMinistries={getMinistries}
+                fetchMinistries={fetchMinistries}
             />
             <VolunteerMinistryModal
                 open={openVolunteerMinistryModal}
@@ -274,7 +255,7 @@ const Ministries = () => {
                 open={openEditModal}
                 onClose={() => setOpenEditModal(false)}
                 ministry={selectedMinistry}
-                fetchMinistries={getMinistries}
+                fetchMinistries={fetchMinistries}
             />
         </>
     );
