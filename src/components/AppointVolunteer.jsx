@@ -9,6 +9,7 @@ import moment from "moment";
 import AppointVolunteerLine from "./AppointVolunteerLine";
 import { usePost } from "../hooks/usePost";
 import { useFetch } from "../hooks/useFetch";
+import { useDebounce } from '../hooks/useDebouce';
 
 const style = {
     position: 'absolute',
@@ -25,15 +26,24 @@ const style = {
 
 const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments }) => {
     const { enqueueSnackbar } = useSnackbar();
+    const [volunteerName, setVolunteerName] = useState('');
 
-    const volunteersFetch = useFetch(`/volunteers/not-in-schedule/${schedule?.id}/ministry/${ministry?.id}`);
+    const volunteersFetch = useFetch(`/volunteers/not-in-schedule/${schedule?.id}/ministry/${ministry?.id}?volunteerName=${volunteerName}`);
     const { post } = usePost();
+
+    const debouncedVolunteerName = useDebounce(volunteerName, 500);
 
     React.useEffect(() => {
         if (open) {
             volunteersFetch.fetch();
         }
         // eslint-disable-next-line
+    }, [open, debouncedVolunteerName]);
+
+    React.useEffect(() => {
+        if (open) {
+            setVolunteerName('');
+        }
     }, [open]);
 
     const handleAppointment = async (volunteerId) => {
@@ -50,6 +60,10 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
             enqueueSnackbar(error.response?.data?.message || "Erro geral", { variant: 'error' });
         }
     };
+
+    const handleVolunteerNameChange = (event) => {
+        setVolunteerName(event.target.value);
+    }
 
     return (
         <Modal open={open} onClose={onClose}>
@@ -71,6 +85,8 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                             size="small"
                             fullWidth
                             autoComplete="off"
+                            onChange={handleVolunteerNameChange}
+                            value={volunteerName}
                             sx={{ mb: 2 }}
                         />
                         <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>

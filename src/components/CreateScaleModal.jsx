@@ -20,7 +20,7 @@ const modalStyle = {
 };
 
 const CreateScaleModal = ({ open, onClose, ministries, schedule }) => {
-    const enqueueSnackbar = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
     const { loading, post } = usePost();
     const [selectedMinistries, setSelectedMinistries] = React.useState([]);
 
@@ -34,6 +34,10 @@ const CreateScaleModal = ({ open, onClose, ministries, schedule }) => {
     }
 
     const handleGenerate = async () => {
+        if (selectedMinistries.length === 0) {
+            enqueueSnackbar("Selecione ao menos um ministério", { variant: 'warning' });
+            return;
+        }
         const ministryIdMaxVolunteers = selectedMinistries.reduce((acc, { ministry, maxVolunteers }) => {
             acc[ministry.id] = Number(maxVolunteers);
             return acc;

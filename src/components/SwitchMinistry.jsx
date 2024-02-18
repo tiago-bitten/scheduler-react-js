@@ -15,6 +15,16 @@ const SwitchMinistry = ({ ministry, onSelect }) => {
         }
     };
 
+    const handleSwitchChangeByLabel = () => {
+        setIsChecked(!isChecked);
+        if (!isChecked) {
+            onSelect(ministry, !isChecked, maxVolunteers);
+        } else {
+            onSelect(ministry, !isChecked, 0);
+            setMaxVolunteers(0);
+        }
+    }
+
     const handleMaxVolunteersChange = (event) => {
         const newMaxVolunteers = event.target.value < 0 ? 0 : event.target.value;
         setMaxVolunteers(newMaxVolunteers);
@@ -47,7 +57,7 @@ const SwitchMinistry = ({ ministry, onSelect }) => {
                             cursor: 'pointer',
                         },
                     }}
-                    onClick={() => setIsChecked(!isChecked)}
+                    onClick={handleSwitchChangeByLabel}
                 >
                     {ministry.name}
                 </Typography>
