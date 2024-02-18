@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Modal, Box, IconButton, CircularProgress } from '@mui/material';
+import { Modal, Box, IconButton, CircularProgress, TextField } from '@mui/material';
 import { Close } from '@mui/icons-material';
-import { ChromePicker } from 'react-color';
+import { HexColorPicker } from 'react-colorful';
 import { useSnackbar } from 'notistack';
 
 import instance from '../config/axiosConfig';
 
-import DefaultInput from './DefaultInput';
 import RoundButton from './RoundButton';
 
 const CreateMinistryModal = ({ open, handleClose, getMinistries }) => {
@@ -48,7 +47,7 @@ const CreateMinistryModal = ({ open, handleClose, getMinistries }) => {
     };
 
     const handleColorChange = (color) => {
-        setColor(color.hex);
+        setColor(color);
     };
 
     const handleSubmit = async () => {
@@ -104,16 +103,29 @@ const CreateMinistryModal = ({ open, handleClose, getMinistries }) => {
                     </IconButton>
                     <h1 className="text-3xl text-center text-quinary mb-10">Dados do ministério</h1>
                     <div className="mb-8">
-                        <DefaultInput label="Nome" id="nome" onChange={handleNameChange} />
+                        <TextField
+                            label="Nome"
+                            variant="standard"
+                            size="small"
+                            value={name}
+                            onChange={handleNameChange}
+                            autoComplete="off"
+                            sx={{ width: '100%' }}
+                        />
                     </div>
                     <div className="mb-8">
-                        <DefaultInput label="Descrição" id="descricao" onChange={handleDescriptionChange} />
+                        <TextField 
+                            label="Descrição"
+                            variant="standard"
+                            size="small"
+                            value={description}
+                            onChange={handleDescriptionChange}
+                            autoComplete="off"
+                            sx={{ width: '100%' }}
+                        />
                     </div>
                     <div className="mb-8 flex flex-col items-center w-full">
-                        <ChromePicker
-                            color={color}
-                            onChangeComplete={handleColorChange}
-                        />
+                        <HexColorPicker color={color} onChange={handleColorChange} />
                     </div>
                     <div className="flex flex-col items-center w-full">
                         <RoundButton value="CADASTRAR" onClick={handleSubmit} />
