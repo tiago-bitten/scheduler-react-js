@@ -1,10 +1,12 @@
 import React from 'react';
-import { Modal, Box, TextField, Typography, Button } from '@mui/material';
+import { Modal, Box, TextField, Typography, IconButton } from '@mui/material';
+import { Close } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { usePost } from '../hooks/usePost';
 import { useSnackbar } from 'notistack';
 import RoundButton from './RoundButton';
+import CloseModal from './CloseModal';
 
 const styles = {
     position: 'absolute',
@@ -66,6 +68,7 @@ const CreateGroupModal = ({ open, onClose, fetchGroups, handleAssociateVolunteer
             aria-describedby="modal-modal-description"
         >
             <Box sx={styles} component="form" onSubmit={formik.handleSubmit}>
+                <CloseModal onClose={onClose} />
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                     <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
                         Escolha o nome do grupo
