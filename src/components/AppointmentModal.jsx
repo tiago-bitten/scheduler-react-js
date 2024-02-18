@@ -11,6 +11,7 @@ import AppointVolunteer from "./AppointVolunteer";
 import NotFoundItem from "./NotFoundItem";
 import CreateScaleModal from "./CreateScaleModal";
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import { useDebounce } from '../hooks/useDebouce';
 
 const modalStyle = {
     position: 'absolute',
@@ -27,7 +28,8 @@ const modalStyle = {
 
 const AppointmentModal = ({ open, onClose, schedule }) => {
     const { enqueueSnackbar } = useSnackbar();
-    const appointmentsFetch = useFetch(`/schedules/appointments?scheduleId=${schedule?.id}`);
+    const [volunteerName, setVolunteerName] = useState('');
+    const appointmentsFetch = useFetch(`/schedules/appointments?scheduleId=${schedule?.id}&volunteerName=${volunteerName}`);
     const ministriesFetch = useFetch('/users/ministries');
 
     const [showAppointVolunteerModal, setShowAppointVolunteerModal] = useState(false);
@@ -35,11 +37,19 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
 
     const [openCreateScaleModal, setOpenCreateScaleModal] = useState(false);
 
+    const debouncedVolunteerName = useDebounce(volunteerName, 500);
+
     const printRef = useRef(null);
 
     useEffect(() => {
         if (open) {
             appointmentsFetch.fetch();
+        }
+    }, [open, debouncedVolunteerName]);
+
+    useEffect(() => {
+        if (open) {
+            setVolunteerName('');
             ministriesFetch.fetch();
         }
     }, [open]);
@@ -68,6 +78,10 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
         }
         setShowAppointVolunteerModal(true);
         setSelectedMinistry(ministry);
+    }
+
+    const handleVolunteerNameChange = (event) => {
+        setVolunteerName(event.target.value);
     }
 
     return (
@@ -117,6 +131,8 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                                     size="small"
                                     fullWidth
                                     autoComplete="off"
+                                    onChange={handleVolunteerNameChange}
+                                    value={volunteerName}
                                     sx={{ mt: 2 }}
                                 />
                             </Box>
