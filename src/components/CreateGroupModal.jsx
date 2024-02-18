@@ -1,8 +1,10 @@
 import React from 'react';
-import { Modal, Box, TextField } from '@mui/material';
-import RoundButton from './RoundButton';
+import { Modal, Box, TextField, Typography, Button } from '@mui/material';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import { usePost } from '../hooks/usePost';
 import { useSnackbar } from 'notistack';
+import RoundButton from './RoundButton';
 
 const styles = {
     position: 'absolute',
@@ -17,12 +19,33 @@ const styles = {
 
 const CreateGroupModal = ({ open, onClose, fetchGroups, handleAssociateVolunteer }) => {
     const { enqueueSnackbar } = useSnackbar();
-    const { loading, post} = usePost();
-    const [groupName, setGroupName] = React.useState('');
+    const { post } = usePost();
 
-    const handleCreateGroup = async () => {
+    React.useEffect(() => {
+        if (open) {
+            formik.resetForm();
+        }
+    }, [open])
+
+    const formik = useFormik({
+        initialValues: {
+            groupName: '',
+        },
+        validationSchema: Yup.object({
+            groupName: Yup.string().required('O nome do grupo é obrigatório'),
+        }),
+        onSubmit: async (values) => {
+            const payload = {
+                name: values.groupName,
+            };
+
+            handleSubmit(payload);
+        },
+    });
+
+    const handleSubmit = async (payload) => {
         try {
-            const response = await post('/groups/create', { name: groupName });
+            const response = await post(`/groups/create`, payload);
 
             if (response.status === 201) {
                 fetchGroups();
@@ -30,15 +53,9 @@ const CreateGroupModal = ({ open, onClose, fetchGroups, handleAssociateVolunteer
                 handleAssociateVolunteer(response.data.group);
                 enqueueSnackbar('Grupo criado, adicione os voluntários', { variant: 'success' });
             }
-
         } catch (error) {
-            console.log(error)
             enqueueSnackbar(error.response?.data?.message || "Erro geral - CreateGroupModal", { variant: 'error' });
         }
-    }
-
-    const handleOnGroupNameChange = ({ target: { value } }) => {
-        setGroupName(value)
     }
 
     return (
@@ -48,16 +65,29 @@ const CreateGroupModal = ({ open, onClose, fetchGroups, handleAssociateVolunteer
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={styles}>
+            <Box sx={styles} component="form" onSubmit={formik.handleSubmit}>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+                        Escolha o nome do grupo
+                    </Typography>
+                </Box>
                 <TextField
-                    label="Nome do grupo"
-                    fullWidth
-                    margin="normal"
+                    id="groupName"
+                    name="groupName"
+                    label="Nome do grupo *"
                     variant="standard"
-                    value={groupName}
-                    onChange={handleOnGroupNameChange}
+                    fullWidth
+                    value={formik.values.groupName}
+                    onChange={formik.handleChange}
+                    error={formik.touched.groupName && Boolean(formik.errors.groupName)}
+                    helperText={formik.touched.groupName && formik.errors.groupName}
+                    autoComplete="off"
                 />
-                <RoundButton value="CRIAR" onClick={handleCreateGroup} />
+
+
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                    <RoundButton type="submit" value="CRIAR" />
+                </Box>
             </Box>
         </Modal>
     );

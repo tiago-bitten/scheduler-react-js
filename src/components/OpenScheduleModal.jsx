@@ -49,28 +49,28 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
         onSubmit: async (values) => {
             try {
                 const { name, description, startDate, startTime, duration } = values;
-            const startDateTime = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
-            const endDateTime = startDateTime.clone().add(duration, 'minutes');
+                const startDateTime = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
+                const endDateTime = startDateTime.clone().add(duration, 'minutes');
 
-            const payload = {
-                name,
-                description,
-                startDate: startDateTime.toISOString(),
-                endDate: endDateTime.toISOString(),
-            };
+                const payload = {
+                    name,
+                    description,
+                    startDate: startDateTime.toISOString(),
+                    endDate: endDateTime.toISOString(),
+                };
 
-            const response = await post('/schedules/open', payload);
-            if (response.status === 204) {
-                enqueueSnackbar('Agenda aberta com sucesso', { variant: 'success' });
-                onClose();
-                fetchSchedules();
-            }
+                const response = await post('/schedules/open', payload);
+                if (response.status === 204) {
+                    enqueueSnackbar('Agenda aberta com sucesso', { variant: 'success' });
+                    onClose();
+                    fetchSchedules();
+                }
 
             } catch (error) {
                 if (error.response?.status === 422) {
                     enqueueSnackbar(error.response?.data?.message, { variant: 'warning' });
-                } 
-            } 
+                }
+            }
         },
     });
 
