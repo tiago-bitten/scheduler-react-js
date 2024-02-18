@@ -1,9 +1,10 @@
 import React from 'react';
 import { Person, Notifications } from '@mui/icons-material';
-import { Badge, IconButton, Tooltip, Box, AppBar, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography, Badge } from '@mui/material';
 import NacoesImg from '../assets/melhorada.png';
 import { useNavigate } from 'react-router-dom';
 import instance from '../config/axiosConfig';
+import { useSnackbar } from 'notistack';
 
 const itemsStyle = {
     cursor: 'pointer',
@@ -17,9 +18,12 @@ const itemsStyle = {
 };
 
 const Header = () => {
+    const { enqueueSnackbar } = useSnackbar();
     const [token] = React.useState(sessionStorage.getItem('token'));
     const user = JSON.parse(sessionStorage.getItem('user'));
     const [usersCount, setUsersCount] = React.useState(0);
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
 
     React.useEffect(() => {
         const fetchUsers = async () => {
@@ -45,6 +49,14 @@ const Header = () => {
 
     const navigate = useNavigate();
 
+    const handleMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
+
     const handleMinistries = () => {
         navigate('/ministerios');
     }
@@ -64,6 +76,14 @@ const Header = () => {
     const handleNotifications = () => {
         navigate('/aprovar-contas');
     }
+
+    const handleLogout = () => {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+        handleCloseMenu();
+        navigate('/entrar');
+        enqueueSnackbar('Para entrar, faça login novamente', { variant: 'warning' });
+    };
 
     return (
         <AppBar position="static" sx={{ display: 'flex', justyContent: 'center', bgcolor: '#4169E1', height: '100px' }}>
@@ -91,10 +111,30 @@ const Header = () => {
                     }
                     <Box sx={{ ml: 2 }}>
                         <Tooltip title="Perfil">
-                            <IconButton sx={{ color: 'white' }}>
+                            <IconButton sx={{ color: 'white' }} onClick={handleMenu}>
                                 <Person />
                             </IconButton>
                         </Tooltip>
+                        <Menu
+                            sx={{ top: '35px' }}
+                            id="menu-appbar"
+                            anchorEl={anchorEl}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={open}
+                            onClose={handleCloseMenu}
+                        >
+                            <MenuItem onClick={handleCloseMenu} sx={{ fontSize: '1rem' }}>Minha conta</MenuItem>
+                            <MenuItem onClick={handleCloseMenu} sx={{ fontSize: '1rem' }}>Meus ministérios</MenuItem>
+                            <MenuItem onClick={handleLogout} sx={{ fontSize: '1rem' }}>Sair</MenuItem>
+                        </Menu>
                     </Box>
                 </Box>
             </Toolbar>
