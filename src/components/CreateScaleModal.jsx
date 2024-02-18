@@ -6,6 +6,7 @@ import SwitchMinistry from "./SwitchMinistry";
 import RoundButton from "./RoundButton";
 import { usePost } from '../hooks/usePost';
 import { useSnackbar } from 'notistack';
+import GeneratedScaleModal from './GeneratedScaleModal';
 
 const modalStyle = {
     position: 'absolute',
@@ -20,10 +21,13 @@ const modalStyle = {
     overflow: 'hidden'
 };
 
-const CreateScaleModal = ({ open, onClose, ministries, schedule }) => {
+const CreateScaleModal = ({ open, onClose, ministries, schedule, fetchAppointments }) => {
     const { enqueueSnackbar } = useSnackbar();
     const { loading, post } = usePost();
     const [selectedMinistries, setSelectedMinistries] = React.useState([]);
+
+    const [scale, setScale] = React.useState([]);
+    const [openGeneratedScaleModal, setOpenGeneratedScaleModal] = React.useState(false);
 
     const handleSelectMinistry = (ministry, isChecked, maxVolunteers) => {
         if (isChecked) {
@@ -52,7 +56,10 @@ const CreateScaleModal = ({ open, onClose, ministries, schedule }) => {
             const response = await post(`/scales/create?scheduleId=${schedule?.id}`, payload);
 
             if (response.status === 201) {
-                console.log(response.data);
+                setScale(response.data.scale);
+                setOpenGeneratedScaleModal(true);
+                setSelectedMinistries([]);
+                onClose();
             }
         } catch (error) {
             enqueueSnackbar(error.response?.data?.message || "Erro geral - CreateScaleModal", { variant: 'error' });
@@ -61,37 +68,46 @@ const CreateScaleModal = ({ open, onClose, ministries, schedule }) => {
     }
 
     return (
-        <Modal open={open} onClose={onClose}>
-            <Box sx={modalStyle}>
-                <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
-                    <CloseIcon />
-                </IconButton>
-                <Typography variant="h5" gutterBottom>
-                    Selecione os ministérios
-                </Typography>
-                <Box sx={{ overflow: 'auto', maxHeight: 500 }}>
-                    <Grid container spacing={2}>
-                        {ministries.length > 0 ? (
-                            ministries.map(ministry => (
-                                <Grid item xs={12} sm={6} key={ministry.id}>
-                                    <SwitchMinistry
-                                        ministry={ministry}
-                                        onSelect={handleSelectMinistry}
-                                    />
-                                </Grid>
-                            ))
-                        ) : (
-                            <Typography variant="body2" gutterBottom>
-                                Não há ministérios cadastrados
-                            </Typography>
-                        )}
-                    </Grid>
+        <>
+            <Modal open={open} onClose={onClose}>
+                <Box sx={modalStyle}>
+                    <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
+                        <CloseIcon />
+                    </IconButton>
+                    <Typography variant="h5" gutterBottom>
+                        Selecione os ministérios
+                    </Typography>
+                    <Box sx={{ overflow: 'auto', maxHeight: 500 }}>
+                        <Grid container spacing={2}>
+                            {ministries.length > 0 ? (
+                                ministries.map(ministry => (
+                                    <Grid item xs={12} sm={6} key={ministry.id}>
+                                        <SwitchMinistry
+                                            ministry={ministry}
+                                            onSelect={handleSelectMinistry}
+                                        />
+                                    </Grid>
+                                ))
+                            ) : (
+                                <Typography variant="body2" gutterBottom>
+                                    Não há ministérios cadastrados
+                                </Typography>
+                            )}
+                        </Grid>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                        <RoundButton value="GERAR" onClick={handleGenerate} />
+                    </Box>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                    <RoundButton value="GERAR" onClick={handleGenerate} />
-                </Box>
-            </Box>
-        </Modal>
+            </Modal>
+            <GeneratedScaleModal
+                open={openGeneratedScaleModal}
+                onClose={() => setOpenGeneratedScaleModal(false)}
+                scale={scale}
+                schedule={schedule}
+                fetchAppointments={fetchAppointments}
+            />
+        </>
     );
 }
 
