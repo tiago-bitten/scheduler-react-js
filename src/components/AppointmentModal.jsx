@@ -12,6 +12,7 @@ import NotFoundItem from "./NotFoundItem";
 import CreateScaleModal from "./CreateScaleModal";
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { useDebounce } from '../hooks/useDebouce';
+import Tooltip from '@mui/material';
 
 const modalStyle = {
     position: 'absolute',
@@ -110,14 +111,16 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                                                 key={ministry.id}
                                                 label={ministry.name}
                                                 onClick={() => handleAppointment(ministry)}
-                                                style={{ backgroundColor: ministry.color, color: 'white', margin: '0.5rem 0.5rem 0 0.5rem', cursor: isSchedulePast ? 'not-allowed' : 'pointer'}}
+                                                style={{ backgroundColor: ministry.color, color: 'white', margin: '0.5rem 0.5rem 0 0.5rem', cursor: isSchedulePast ? 'not-allowed' : 'pointer' }}
                                             />
                                         ))}
                                     </Box>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <IconButton onClick={() => setOpenCreateScaleModal(true)} sx={{ mt: 2 }}>
-                                            <AssignmentIcon />
-                                        </IconButton>
+                                        <Tooltip title="Gerar escala">
+                                            <IconButton onClick={() => setOpenCreateScaleModal(true)} sx={{ mt: 2 }}>
+                                                <AssignmentIcon />
+                                            </IconButton>
+                                        </Tooltip>
                                         <IconButton onClick={handleDownloadImage} sx={{ mt: 2 }}>
                                             <DownloadIcon />
                                         </IconButton>
