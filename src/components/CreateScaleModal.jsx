@@ -1,6 +1,7 @@
 // eslint-disable-next-line
 import React from "react";
-import { Box, Typography, Modal, Grid } from "@mui/material";
+import { Box, Typography, Modal, Grid, IconButton } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 import SwitchMinistry from "./SwitchMinistry";
 import RoundButton from "./RoundButton";
 import { usePost } from '../hooks/usePost';
@@ -62,6 +63,9 @@ const CreateScaleModal = ({ open, onClose, ministries, schedule }) => {
     return (
         <Modal open={open} onClose={onClose}>
             <Box sx={modalStyle}>
+                <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
+                    <CloseIcon />
+                </IconButton>
                 <Typography variant="h5" gutterBottom>
                     Selecione os ministérios
                 </Typography>
