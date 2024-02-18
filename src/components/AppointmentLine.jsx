@@ -3,7 +3,7 @@ import React from "react";
 
 import instance from "../config/axiosConfig";
 import CloseIcon from '@mui/icons-material/Close';
-import { IconButton, Tooltip, Box, Typography } from "@mui/material";
+import { IconButton, Tooltip, Box, Typography, Avatar } from "@mui/material";
 
 import { useSnackbar } from "notistack";
 
@@ -27,7 +27,7 @@ const AppointmentLine = ({ appointment, userMinistries, fetchAppointments, isSch
         } catch (err) {
             enqueueSnackbar(err.response?.data?.message || 'Erro ao desagendar voluntário', { variant: 'error' });
         }
-    } 
+    }
 
     const isUserAllowedInMinistry = userMinistries.some(ministry =>
         ministry.id === appointment.volunteerMinistry.ministry.id
@@ -38,32 +38,25 @@ const AppointmentLine = ({ appointment, userMinistries, fetchAppointments, isSch
     const tooltipContent = isActive ? "" : `Não existe mais vinculo entre o voluntário ${appointment.volunteerMinistry.volunteer.name} e o ministério ${appointment.volunteerMinistry.ministry.name}`;
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2, borderBottom: 1, borderColor: 'grey.300', backgroundColor: 'grey.200' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1, borderBottom: 1, borderColor: 'grey.300', bgcolor: 'grey.200' }}>
             <Tooltip title={tooltipContent} disableHoverListener={isActive}>
                 <Box sx={{ display: 'flex', alignItems: 'center', opacity: !isActive ? 0.7 : 1 }}>
-                    <img
-                        src="https://thispersondoesnotexist.com/"
-                        alt="thispersondoesnotexists"
-                        className={`rounded-full w-14 h-14 mr-4 ${!isActive ? 'grayscale' : ''}`} />
+                    <Avatar src="https://thispersondoesnotexist.com/" sx={{ width: 50, height: 50, mr: 2 }} />
                     <Box>
-                        <Typography variant="h6" component="p" sx={{ color: !isActive ? 'grey.400' : 'grey.900', mb: 0.3 }}>
+                        <Typography sx={{ fontSize: '1rem', color: !isActive ? 'grey.400' : 'grey.900', mb: 0.3 }}>
                             {appointment.volunteerMinistry.volunteer.name} {appointment.volunteerMinistry.volunteer.lastName}
                         </Typography>
-                        <Typography variant="body2" component="p" sx={{ color: !isActive ? 'grey.400' : appointment.volunteerMinistry.ministry.color, fontWeight: 'bold' }}>
+                        <Typography sx={{ fontSize: '0.75rem', color: !isActive ? 'grey.400' : appointment.volunteerMinistry.ministry.color, fontWeight: 'bold' }}>
                             {appointment.volunteerMinistry.ministry.name}
                         </Typography>
                     </Box>
                 </Box>
             </Tooltip>
-            <Box>
-                {isUserAllowedInMinistry && !isSchedulePast ? (
-                    <IconButton
-                        onClick={() => handleDelete(appointment.id)}
-                    >
-                        <CloseIcon fontSize="large" />
-                    </IconButton>
-                ) : null}
-            </Box>
+            {isUserAllowedInMinistry && !isSchedulePast && (
+                <IconButton onClick={() => handleDelete(appointment.id)}>
+                    <CloseIcon fontSize="medium" />
+                </IconButton>
+            )}
         </Box>
     );
 };

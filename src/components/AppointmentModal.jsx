@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Modal, Box, Typography, IconButton, Grid, Card, CardContent, LinearProgress, Chip } from "@mui/material";
+import { Modal, Box, Typography, IconButton, Grid, Card, CardContent, LinearProgress, Chip, TextField } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import moment from "moment";
 import { useSnackbar } from "notistack";
@@ -10,6 +10,7 @@ import AppointmentLine from "./AppointmentLine";
 import AppointVolunteer from "./AppointVolunteer";
 import NotFoundItem from "./NotFoundItem";
 import CreateScaleModal from "./CreateScaleModal";
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 const modalStyle = {
     position: 'absolute',
@@ -17,7 +18,7 @@ const modalStyle = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '80%',
-    maxWidth: '600px',
+    maxWidth: '70%',
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
@@ -28,7 +29,6 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
     const { enqueueSnackbar } = useSnackbar();
     const appointmentsFetch = useFetch(`/schedules/appointments?scheduleId=${schedule?.id}`);
     const ministriesFetch = useFetch('/users/ministries');
-    const [appointments, setAppointments] = useState([]);
 
     const [showAppointVolunteerModal, setShowAppointVolunteerModal] = useState(false);
     const [selectedMinistry, setSelectedMinistry] = useState(null);
@@ -44,7 +44,7 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
         }
     }, [open]);
 
-    const isSchedulePast = schedule ? moment(schedule.end).isBefore(moment()) : false;
+    const isSchedulePast = schedule ? moment(schedule?.end).isBefore(moment()) : false;
 
     const handleDownloadImage = async () => {
         const canvas = await html2canvas(printRef.current);
@@ -66,7 +66,6 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
             enqueueSnackbar('Não é possível agendar voluntários para eventos passados', { variant: 'error' });
             return;
         }
-
         setShowAppointVolunteerModal(true);
         setSelectedMinistry(ministry);
     }
@@ -84,27 +83,44 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                     {appointmentsFetch.loading || ministriesFetch.loading ? (
                         <LinearProgress sx={{ width: '100%', my: 2 }} />
                     ) : (
-                        <Box sx={{ mt: 2 }}>
+                        <Box sx={{ mt: 2, overflow: 'auto', maxHeight: 500 }}>
                             <Card variant="outlined">
                                 <CardContent>
-                                    <Typography variant="body1">{moment(schedule?.start).format('DD/MM/YYYY')}</Typography>
-                                    <Typography variant="body1">{moment(schedule?.start).format('HH:mm')} - {moment(schedule?.end).format('HH:mm')}</Typography>
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', mt: 2 }}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <Typography variant="body1">{moment(schedule?.start).format('DD/MM/YYYY')}</Typography>
+                                        <Typography variant="body1">{moment(schedule?.start).format('HH:mm')} - {moment(schedule?.end).format('HH:mm')}</Typography>
+                                    </Box>
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', mt: 1 }}>
                                         {ministriesFetch.data?.ministries?.map((ministry) => (
                                             <Chip
                                                 key={ministry.id}
                                                 label={ministry.name}
                                                 onClick={() => handleAppointment(ministry)}
-                                                style={{ backgroundColor: ministry.color, color: 'white', margin: '0.5rem' }}
+                                                style={{ backgroundColor: ministry.color, color: 'white', margin: '0.5rem 0.5rem 0 0.5rem', cursor: isSchedulePast ? 'not-allowed' : 'pointer'}}
                                             />
                                         ))}
                                     </Box>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <IconButton onClick={() => setOpenCreateScaleModal(true)} sx={{ mt: 2 }}>
+                                            <AssignmentIcon />
+                                        </IconButton>
+                                        <IconButton onClick={handleDownloadImage} sx={{ mt: 2 }}>
+                                            <DownloadIcon />
+                                        </IconButton>
+                                    </Box>
                                 </CardContent>
                             </Card>
-                            <IconButton onClick={() => setOpenCreateScaleModal(true)} sx={{ mt: 2 }}>
-                                Criar escala
-                            </IconButton>
-                            <Box sx={{ mt: 2, overflowY: 'auto', maxHeight: 300 }} ref={printRef}>
+                            <Box>
+                                <TextField
+                                    label="Buscar"
+                                    variant="standard"
+                                    size="small"
+                                    fullWidth
+                                    autoComplete="off"
+                                    sx={{ mt: 2 }}
+                                />
+                            </Box>
+                            <Box sx={{ mt: 2 }} ref={printRef}>
                                 {appointmentsFetch.data?.schedule?.appointments?.length > 0 ? (
                                     appointmentsFetch.data?.schedule?.appointments?.map((appointment) => (
                                         <AppointmentLine
@@ -119,9 +135,6 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                                     <NotFoundItem entities="agendamentos" />
                                 )}
                             </Box>
-                            <IconButton onClick={handleDownloadImage} sx={{ mt: 2 }}>
-                                <DownloadIcon />
-                            </IconButton>
                         </Box>
                     )}
                 </Box>

@@ -64,8 +64,7 @@ const CreateScaleModal = ({ open, onClose, ministries, schedule, fetchAppointmen
         } catch (error) {
             enqueueSnackbar(error.response?.data?.message || "Erro geral - CreateScaleModal", { variant: 'error' });
         }
-
-    }
+    } 
 
     return (
         <>
