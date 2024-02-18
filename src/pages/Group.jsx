@@ -10,15 +10,21 @@ import CreateGroupModal from '../components/CreateGroupModal';
 import AssociateVolunteerGroupModal from '../components/AssociateVolunteerGroupModal';
 import { useSnackbar } from 'notistack';
 import ConfirmModal from '../components/ConfirmModal';
+import { useDebounce } from '../hooks/useDebouce';
 
 const Group = () => {
     const { deleteRequest } = useDelete();
-    const { data, error, loading, fetch } = useFetch('/groups');
+    const [groupName, setGroupName] = React.useState('');
+    const [volunteerName, setVolunteerName] = React.useState('');
+    const { data, error, loading, fetch } = useFetch(`/groups?groupName=${groupName}&volunteerName=${volunteerName}`);
     const { enqueueSnackbar } = useSnackbar();
     const [openCreateGroupModal, setOpenCreateGroupModal] = React.useState(false);
     const [openAssociateVolunteerGroupModal, setOpenAssociateVolunteerGroupModal] = React.useState(false);
     const [selectedGroup, setSelectedGroup] = React.useState({});
     const [confirmModalOpen, setConfirmModalOpen] = React.useState(false);
+
+    const debouncedGroupName = useDebounce(groupName, 500);
+    const debouncedVolunteerName = useDebounce(volunteerName, 500);
 
     React.useEffect(() => {
         document.title = 'Grupos';
@@ -28,6 +34,14 @@ const Group = () => {
     React.useEffect(() => {
         fetch();
     }, [fetch]);
+
+    React.useEffect(() => {
+        fetch();
+    }, [debouncedGroupName, debouncedVolunteerName]);
+
+    const handleGroupNameChange = (event) => {
+        setGroupName(event.target.value);
+    }
 
     const handleAssociateVolunteer = (group) => {
         setSelectedGroup(group);
@@ -66,6 +80,8 @@ const Group = () => {
                             fullWidth
                             margin="normal"
                             variant="standard"
+                            value={groupName}
+                            onChange={handleGroupNameChange}
                         />
                     </Grid>
                     <Grid item>
