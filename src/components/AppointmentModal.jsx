@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Modal, Box, Typography, IconButton, Grid, Card, CardContent, LinearProgress, Chip, TextField } from "@mui/material";
+import { Modal, Box, Typography, IconButton, Card, CardContent, LinearProgress, Chip, TextField, Tooltip } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import moment from "moment";
 import { useSnackbar } from "notistack";
@@ -12,7 +12,6 @@ import NotFoundItem from "./NotFoundItem";
 import CreateScaleModal from "./CreateScaleModal";
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { useDebounce } from '../hooks/useDebouce';
-import Tooltip from '@mui/material';
 
 const modalStyle = {
     position: 'absolute',
