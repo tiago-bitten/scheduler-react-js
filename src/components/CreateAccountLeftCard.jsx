@@ -1,6 +1,6 @@
 import React from 'react';
 
-import DefaultInput from './DefaultInput';
+import { TextField, Box } from '@mui/material';
 import RoundButton from './RoundButton';
 
 const CreateAccountLeftCard = ({ nextStep, setNextStep, setName, setEmail, setPassword }) => {
@@ -23,18 +23,40 @@ const CreateAccountLeftCard = ({ nextStep, setNextStep, setName, setEmail, setPa
 
     return (
         <div className="flex flex-col justify-center items-center w-full">
-            <div className="border-t-4 border-tertiary" style={{ width: '100%' }}> {/* Linha na cor tertiary */}
-                <h1 className="text-3xl mt-4 mb-16 text-center text-quinary">Dados cadastrais</h1>
+            <div className="border-t-4 border-tertiary" style={{ width: '100%' }}>
+                <h1 className="text-3xl mt-4 mb-8 text-center text-quinary">Dados cadastrais</h1>
             </div>
-            <div className="mb-8">
-                <DefaultInput label="Nome" id="name" type="text" onChange={handleNameChange} />
-            </div>
-            <div className="mb-8">
-                <DefaultInput label="Email" id="email" type="email" onChange={handleEmailChange} />
-            </div>
-            <div className="mb-8">
-                <DefaultInput label="Senha" id="password" type="password" onChange={handlePasswordChange} />
-            </div>
+            <Box sx={{ mb: 4, width: '70%' }}>
+                <TextField
+                    label="Nome"
+                    variant="standard"
+                    size="small"
+                    fullWidth
+                    autoComplete="off"
+                    onChange={handleNameChange}
+                />
+            </Box>
+            <Box sx={{ mb: 4, width: '70%' }}>
+                <TextField
+                    label="E-mail"
+                    variant="standard"
+                    size="small"
+                    fullWidth
+                    autoComplete="off"
+                    onChange={handleEmailChange}
+                />
+            </Box>
+            <Box sx={{ mb: 8, width: '70%' }}>
+                <TextField
+                    label="Senha"
+                    variant="standard"
+                    size="small"
+                    fullWidth
+                    autoComplete="off"
+                    type="password"
+                    onChange={handlePasswordChange}
+                />
+            </Box>
             <RoundButton value="PRÓXIMO" onClick={() => handleClick()} />
         </div>
     );
