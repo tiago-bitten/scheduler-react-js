@@ -38,6 +38,7 @@ const LoginVolunteerStep = ({ formik }) => {
                         error={formik.touched.cpf && Boolean(formik.errors.cpf)}
                         helperText={formik.touched.cpf && formik.errors.cpf}
                         margin="normal"
+                        autoComplete="off"
                     />
                 </Box>
                 <Box sx={{ width: '70%', mb: 2 }}>
@@ -56,6 +57,7 @@ const LoginVolunteerStep = ({ formik }) => {
                         helperText={formik.touched.birthDate && formik.errors.birthDate}
                         InputLabelProps={{ shrink: true }}
                         margin="normal"
+                        autoComplete="off"
                     />
                 </Box>
                 <Box sx={{ mt: 2, width: '100%', display: 'flex', justifyContent: 'center' }}>
