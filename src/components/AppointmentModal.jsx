@@ -94,67 +94,65 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                     <Typography variant="h6" component="h2" textAlign="center">
                         Agenda de {schedule?.title}
                     </Typography>
-                    {appointmentsFetch.loading || ministriesFetch.loading ? (
-                        <LinearProgress sx={{ width: '100%', my: 2 }} />
-                    ) : (
-                        <Box sx={{ mt: 2, overflow: 'auto', maxHeight: 500 }}>
-                            <Card variant="outlined">
-                                <CardContent>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <Typography variant="body1">{moment(schedule?.start).format('DD/MM/YYYY')}</Typography>
-                                        <Typography variant="body1">{moment(schedule?.start).format('HH:mm')} - {moment(schedule?.end).format('HH:mm')}</Typography>
-                                    </Box>
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', mt: 1 }}>
-                                        {ministriesFetch.data?.ministries?.map((ministry) => (
-                                            <Chip
-                                                key={ministry.id}
-                                                label={ministry.name}
-                                                onClick={() => handleAppointment(ministry)}
-                                                style={{ backgroundColor: ministry.color, color: 'white', margin: '0.5rem 0.5rem 0 0.5rem', cursor: isSchedulePast ? 'not-allowed' : 'pointer' }}
-                                            />
-                                        ))}
-                                    </Box>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <Tooltip title="Gerar escala">
-                                            <IconButton onClick={() => setOpenCreateScaleModal(true)} sx={{ mt: 2 }}>
-                                                <AssignmentIcon />
-                                            </IconButton>
-                                        </Tooltip>
+                    <Box sx={{ mt: 2, overflow: 'auto', maxHeight: 500 }}>
+                        <Card variant="outlined">
+                            <CardContent>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <Typography variant="body1">{moment(schedule?.start).format('DD/MM/YYYY')}</Typography>
+                                    <Typography variant="body1">{moment(schedule?.start).format('HH:mm')} - {moment(schedule?.end).format('HH:mm')}</Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', mt: 1 }}>
+                                    {ministriesFetch.data?.ministries?.map((ministry) => (
+                                        <Chip
+                                            key={ministry.id}
+                                            label={ministry.name}
+                                            onClick={() => handleAppointment(ministry)}
+                                            style={{ backgroundColor: ministry.color, color: 'white', margin: '0.5rem 0.5rem 0 0.5rem', cursor: isSchedulePast ? 'not-allowed' : 'pointer' }}
+                                        />
+                                    ))}
+                                </Box>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <Tooltip title="Gerar escalas">
+                                        <IconButton onClick={() => setOpenCreateScaleModal(true)} sx={{ mt: 2 }}>
+                                            <AssignmentIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Baixar escalas">
                                         <IconButton onClick={handleDownloadImage} sx={{ mt: 2 }}>
                                             <DownloadIcon />
                                         </IconButton>
-                                    </Box>
-                                </CardContent>
-                            </Card>
-                            <Box>
-                                <TextField
-                                    label="Buscar"
-                                    variant="standard"
-                                    size="small"
-                                    fullWidth
-                                    autoComplete="off"
-                                    onChange={handleVolunteerNameChange}
-                                    value={volunteerName}
-                                    sx={{ mt: 2 }}
-                                />
-                            </Box>
-                            <Box sx={{ mt: 2 }} ref={printRef}>
-                                {appointmentsFetch.data?.schedule?.appointments?.length > 0 ? (
-                                    appointmentsFetch.data?.schedule?.appointments?.map((appointment) => (
-                                        <AppointmentLine
-                                            key={appointment.id}
-                                            appointment={appointment}
-                                            userMinistries={ministriesFetch.data?.ministries || []}
-                                            fetchAppointments={appointmentsFetch.fetch}
-                                            isSchedulePast={isSchedulePast}
-                                        />
-                                    ))
-                                ) : (
-                                    <NotFoundItem entities="agendamentos" />
-                                )}
-                            </Box>
+                                    </Tooltip>
+                                </Box>
+                            </CardContent>
+                        </Card>
+                        <Box>
+                            <TextField
+                                label="Voluntários"
+                                variant="standard"
+                                size="small"
+                                fullWidth
+                                autoComplete="off"
+                                onChange={handleVolunteerNameChange}
+                                value={volunteerName}
+                                sx={{ mt: 2 }}
+                            />
                         </Box>
-                    )}
+                        <Box sx={{ mt: 2 }} ref={printRef}>
+                            {appointmentsFetch.data?.schedule?.appointments?.length > 0 ? (
+                                appointmentsFetch.data?.schedule?.appointments?.map((appointment) => (
+                                    <AppointmentLine
+                                        key={appointment.id}
+                                        appointment={appointment}
+                                        userMinistries={ministriesFetch.data?.ministries || []}
+                                        fetchAppointments={appointmentsFetch.fetch}
+                                        isSchedulePast={isSchedulePast}
+                                    />
+                                ))
+                            ) : (
+                                <NotFoundItem entities="agendamentos" />
+                            )}
+                        </Box>
+                    </Box>
                 </Box>
             </Modal>
             <AppointVolunteer
