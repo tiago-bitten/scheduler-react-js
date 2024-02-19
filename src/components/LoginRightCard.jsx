@@ -8,6 +8,7 @@ import RoundButton from '../components/RoundButton';
 import ForgotPassword from './ForgotPassword';
 import CreateAccountLink from './CreateAccountLink';
 import OrBar from './OrBar';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 import instance from '../config/axiosConfig';
 
@@ -19,6 +20,7 @@ const loginSchema = yup.object({
 const LoginRightCard = () => {
     const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
+    const [openForgotPassword, setOpenForgotPassword] = React.useState(false);
 
     const formik = useFormik({
         initialValues: {
@@ -50,50 +52,56 @@ const LoginRightCard = () => {
     });
 
     return (
-        <div className="flex flex-col justify-center items-center w-full">
-            <h1 className="text-4xl text-center mb-10 text-quinary">Bem-vindo</h1>
-            <div className="flex flex-col items-center justify-center w-full">
-                <form onSubmit={formik.handleSubmit} style={{ width: '60%' }}>
-                    <TextField
-                        label="Email"
-                        id="email"
-                        type="email"
-                        variant="standard"
-                        required
-                        fullWidth
-                        autoComplete="off"
-                        sx={{ mb: 4 }}
-                        {...formik.getFieldProps('email')}
-                        error={formik.touched.email && Boolean(formik.errors.email)}
-                        helperText={formik.touched.email && formik.errors.email}
-                    />
-                    <TextField
-                        label="Senha"
-                        id="password"
-                        type="password"
-                        variant="standard"
-                        required
-                        fullWidth
-                        autoComplete="off"
-                        {...formik.getFieldProps('password')}
-                        error={formik.touched.password && Boolean(formik.errors.password)}
-                        helperText={formik.touched.password && formik.errors.password}
-                    />
-                    <div className="mt-2 mb-10 text-right">
-                        <ForgotPassword />
-                    </div>
-                    <div className="flex justify-center w-full mb-8">
-                        <RoundButton value="ENTRAR" type="submit" />
-                    </div>
-                </form>
+        <>
+            <div className="flex flex-col justify-center items-center w-full">
+                <h1 className="text-4xl text-center mb-10 text-quinary">Bem-vindo</h1>
+                <div className="flex flex-col items-center justify-center w-full">
+                    <form onSubmit={formik.handleSubmit} style={{ width: '60%' }}>
+                        <TextField
+                            label="Email"
+                            id="email"
+                            type="email"
+                            variant="standard"
+                            required
+                            fullWidth
+                            autoComplete="off"
+                            sx={{ mb: 4 }}
+                            {...formik.getFieldProps('email')}
+                            error={formik.touched.email && Boolean(formik.errors.email)}
+                            helperText={formik.touched.email && formik.errors.email}
+                        />
+                        <TextField
+                            label="Senha"
+                            id="password"
+                            type="password"
+                            variant="standard"
+                            required
+                            fullWidth
+                            autoComplete="off"
+                            {...formik.getFieldProps('password')}
+                            error={formik.touched.password && Boolean(formik.errors.password)}
+                            helperText={formik.touched.password && formik.errors.password}
+                        />
+                        <div className="mt-2 mb-10 text-right">
+                            <ForgotPassword open={() => setOpenForgotPassword(true)} />
+                        </div>
+                        <div className="flex justify-center w-full mb-8">
+                            <RoundButton value="ENTRAR" type="submit" />
+                        </div>
+                    </form>
+                </div>
+                <div className="w-1/2">
+                    <OrBar />
+                </div>
+                <div className="mt-8">
+                    <CreateAccountLink />
+                </div>
             </div>
-            <div className="w-1/2">
-                <OrBar />
-            </div>
-            <div className="mt-8">
-                <CreateAccountLink />
-            </div>
-        </div>
+            <ForgotPasswordModal
+                open={openForgotPassword}
+                onClose={() => setOpenForgotPassword(false)}
+            />
+        </>
     );
 };
 

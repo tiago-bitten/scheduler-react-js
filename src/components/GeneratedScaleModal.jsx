@@ -22,10 +22,23 @@ const modalStyle = {
 const GeneratedScaleModal = ({ open, onClose, scale, schedule, fetchAppointments }) => {
     const { enqueueSnackbar } = useSnackbar();
     const { loading, post } = usePost();
+    const [currentScale, setCurrentScale] = React.useState([]);
+
+    React.useEffect(() => {
+        setCurrentScale(scale);
+    }, [scale]);
+
+    const handleRemoveFromScale = (volunteer, ministry) => {
+        const newScale = currentScale.filter(
+            item => !(item.volunteer.id === volunteer.id && item.ministry.id === ministry.id)
+        );
+        setCurrentScale(newScale);
+        enqueueSnackbar('Voluntário removido da escala', { variant: 'success' });
+    };
 
     const handleAppointment = async () => {
         try {
-            scale?.forEach(async ({ volunteer, ministry }) => {
+            currentScale?.forEach(async ({ volunteer, ministry }) => {
                 post(`/appointments/appoint?scheduleId=${schedule?.id}&volunteerId=${volunteer?.id}&ministryId=${ministry?.id}`)
             });
 
@@ -50,11 +63,12 @@ const GeneratedScaleModal = ({ open, onClose, scale, schedule, fetchAppointments
                     Escala gerada para o dia {schedule?.startDate}
                 </Typography>
                 <Box sx={{ overflow: 'auto', maxHeight: 500 }}>
-                    {scale?.map(({ volunteer, ministry }) => (
+                    {currentScale?.map(({ volunteer, ministry }) => (
                         <GeneratedScaleLine
                             key={volunteer.id}
                             volunteer={volunteer}
                             ministry={ministry}
+                            onRemove={handleRemoveFromScale}
                         />
                     ))}
                 </Box>
