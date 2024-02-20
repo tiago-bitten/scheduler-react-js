@@ -6,8 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 import instance from '../config/axiosConfig';
 import { CSSTransition } from 'react-transition-group';
+import { usePost } from '../hooks/usePost';
 
 const CreateAccountRightCard = ({ name, email, password }) => {
+    const { post } = usePost();
     const [ministries, setMinistries] = useState([]);
     const [selectedMinistries, setSelectedMinistries] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -46,18 +48,31 @@ const CreateAccountRightCard = ({ name, email, password }) => {
             const response = await instance.post('/auth/signup', {
                 name,
                 email,
-                password,
-                ministries: selectedMinistries.map((m) => m.id),
+                password
             });
 
             if (response.status === 201) {
-                enqueueSnackbar('Sua conta foi enviada para análise.', { variant: 'success' });
+                ministries.forEach(async ministry => {
+                    if (selectedMinistries.some(m => m.id === ministry.id)) {
+                        await handleAssociateUserMinistry(response.data.user, ministry);
+                    }
+                })
+
+                enqueueSnackbar('Conta criada com sucesso', { variant: 'success' });
                 navigate('/criar-conta/analise');
             }
         } catch (err) {
             enqueueSnackbar(err.response?.data?.message || 'Erro ao criar conta', { variant: 'error' });
         }
     };
+
+    const handleAssociateUserMinistry = async (user, ministry) => {
+        try {
+            const response = await post(`/user-ministries/associate?userId=${user.id}&ministryId=${ministry.id}`);
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message || 'Erro geral - CreateAccountRightCard', { variant: 'error' });
+        }
+    }
 
     return (
         <div className="flex flex-col justify-center items-center w-full">
