@@ -4,6 +4,7 @@ import { Close } from '@mui/icons-material';
 import { HexColorPicker } from 'react-colorful';
 import { useSnackbar } from 'notistack';
 import { usePost } from '../hooks/usePost';
+import CreateActivityModal from './CreateActivityModal';
 
 import RoundButton from './RoundButton';
 
@@ -13,6 +14,8 @@ const CreateMinistryModal = ({ open, handleClose, fetchMinistries }) => {
     const [description, setDescription] = useState('');
     const [color, setColor] = useState('#000000');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [openCreateActivityModal, setOpenCreateActivityModal] = useState(false);
+    const [ministry, setMinistry] = useState('');
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -22,9 +25,12 @@ const CreateMinistryModal = ({ open, handleClose, fetchMinistries }) => {
 
             const response = await post('/ministries/create', payload);
 
-            if (response.status === 204) {
+            if (response.status === 201) {
                 enqueueSnackbar('Ministério cadastrado com sucesso!', { variant: 'success' });
-                fetchMinistries();            }
+                fetchMinistries();
+                setOpenCreateActivityModal(true);
+                setMinistry(response.data.ministry);
+            }
 
         } catch (error) {
             enqueueSnackbar(error.response?.data?.message || 'Error geral - CreateMinistryModal', { variant: 'error' });
@@ -44,11 +50,12 @@ const CreateMinistryModal = ({ open, handleClose, fetchMinistries }) => {
     };
 
     const handleSubmit = async () => {
-        setIsSubmitting(true); 
+        setIsSubmitting(true);
         try {
             await handleCreateMinistry();
 
-            fetchMinistries();        } catch (err) {
+            fetchMinistries();
+        } catch (err) {
             enqueueSnackbar(err.response?.data?.message || 'Erro interno', { variant: 'error' });
         } finally {
             setIsSubmitting(false);
@@ -64,66 +71,76 @@ const CreateMinistryModal = ({ open, handleClose, fetchMinistries }) => {
     };
 
     return (
-        <Modal open={open} onClose={handleClose}>
-            <Box sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 400,
-                bgcolor: 'background.paper',
-                boxShadow: 24,
-                p: 4,
-            }}>
-                {isSubmitting && (
-                    <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-white bg-opacity-80">
-                        <CircularProgress size={80} />
-                    </div>
-                )}
-                <>
-                    <IconButton
-                        aria-label="close"
-                        onClick={handleClose}
-                        sx={{
-                            position: 'absolute',
-                            right: 8,
-                            top: 8,
-                        }}
-                    >
-                        <Close />
-                    </IconButton>
-                    <h1 className="text-3xl text-center text-quinary mb-10">Dados do ministério</h1>
-                    <div className="mb-8">
-                        <TextField
-                            label="Nome"
-                            variant="standard"
-                            size="small"
-                            value={name}
-                            onChange={handleNameChange}
-                            autoComplete="off"
-                            sx={{ width: '100%' }}
-                        />
-                    </div>
-                    <div className="mb-8">
-                        <TextField 
-                            label="Descrição"
-                            variant="standard"
-                            size="small"
-                            value={description}
-                            onChange={handleDescriptionChange}
-                            autoComplete="off"
-                            sx={{ width: '100%' }}
-                        />
-                    </div>
-                    <div className="mb-8 flex flex-col items-center w-full">
-                        <HexColorPicker color={color} onChange={handleColorChange} />
-                    </div>
-                    <div className="flex flex-col items-center w-full">
-                        <RoundButton value="CADASTRAR" onClick={handleSubmit} />
-                    </div>
-                </>
-            </Box>
-        </Modal>
+        <>
+            <Modal open={open} onClose={handleClose}>
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 400,
+                    bgcolor: 'background.paper',
+                    boxShadow: 24,
+                    borderRadius: 2,
+                    p: 4,
+                }}>
+                    {isSubmitting && (
+                        <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-white bg-opacity-80">
+                            <CircularProgress size={80} />
+                        </div>
+                    )}
+                    <>
+                        <IconButton
+                            aria-label="close"
+                            onClick={handleClose}
+                            sx={{
+                                position: 'absolute',
+                                right: 8,
+                                top: 8,
+                            }}
+                        >
+                            <Close />
+                        </IconButton>
+                        <h1 className="text-3xl text-center text-quinary mb-10">Dados do ministério</h1>
+                        <div className="mb-8">
+                            <TextField
+                                label="Nome"
+                                variant="filled"
+                                size="small"
+                                value={name}
+                                onChange={handleNameChange}
+                                autoComplete="off"
+                                sx={{ width: '100%' }}
+                            />
+                        </div>
+                        <div className="mb-8">
+                            <TextField
+                                label="Descrição"
+                                variant="filled"
+                                size="small"
+                                value={description}
+                                onChange={handleDescriptionChange}
+                                autoComplete="off"
+                                sx={{ width: '100%' }}
+                            />
+                        </div>
+                        <div className="mb-8 flex flex-col items-center w-full">
+                            <HexColorPicker color={color} onChange={handleColorChange} />
+                        </div>
+                        <div className="flex flex-col items-center w-full">
+                            <RoundButton value="CADASTRAR" onClick={handleSubmit} />
+                        </div>
+                    </>
+                </Box>
+            </Modal>
+            {openCreateActivityModal && ministry && (
+                <CreateActivityModal
+                    open={openCreateActivityModal}
+                    handleClose={() => setOpenCreateActivityModal(false)}
+                    ministry={ministry}
+                />
+            )}
+        </>
     );
 };
 
