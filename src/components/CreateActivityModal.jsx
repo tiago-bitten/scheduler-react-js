@@ -3,6 +3,7 @@ import { Modal, Box, TextField, Typography, Grid, IconButton } from "@mui/materi
 import RoundButton from "./RoundButton";
 import CloseModal from "./CloseModal";
 import AddIcon from '@mui/icons-material/Add';
+import ActivityLine from "./ActivityLine";
 
 const boxStyle = {
     position: "absolute",
@@ -18,6 +19,7 @@ const boxStyle = {
 };
 
 const CreateActivityModal = ({ open, handleClose, ministry }) => {
+    const activity = { name: "cagar", defaultTotalVolunteers: 10 }
 
     return (
         <Modal
@@ -44,6 +46,7 @@ const CreateActivityModal = ({ open, handleClose, ministry }) => {
                             label="Total de voluntários"
                             variant="filled"
                             fullWidth
+                            type="number"
                         />
                     </Grid>
                     <Grid item>
@@ -52,8 +55,13 @@ const CreateActivityModal = ({ open, handleClose, ministry }) => {
                         </IconButton>
                     </Grid>
                 </Grid>
+                <Box sx={{ mt: 4 }}>
+                    {Array(3).fill(activity).map((activity, index) => (
+                        <ActivityLine key={index} activity={activity} />
+                    ))}
+                </Box>
                 <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-                    <RoundButton value="CADASTRAR" />
+                    <RoundButton value="SALVAR" />
                 </Box>
             </Box>
         </Modal>
