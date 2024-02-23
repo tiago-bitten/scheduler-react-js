@@ -10,6 +10,7 @@ import AppointVolunteerLine from "./AppointVolunteerLine";
 import { usePost } from "../hooks/usePost";
 import { useFetch } from "../hooks/useFetch";
 import { useDebounce } from '../hooks/useDebouce';
+import IndicateActivity from "./IndicateActivity";
 
 const style = {
     position: 'absolute',
@@ -30,6 +31,9 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
 
     const volunteersFetch = useFetch(`/volunteers/not-in-schedule/${schedule?.id}/ministry/${ministry?.id}?volunteerName=${volunteerName}`);
     const { post } = usePost();
+    const [volunteer, setVolunteer] = useState({});
+
+    const [openIndicateActivity, setOpenIndicateActivity] = useState(false);
 
     const debouncedVolunteerName = useDebounce(volunteerName, 500);
 
@@ -46,19 +50,9 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
         }
     }, [open]);
 
-    const handleAppointment = async (volunteerId) => {
-        try {
-            const response = await post(`/appointments/appoint?scheduleId=${schedule?.id}&volunteerId=${volunteerId}&ministryId=${ministry?.id}`);
-
-            if (response.status === 204) {
-                enqueueSnackbar('Voluntário agendado com sucesso', { variant: 'success' });
-                fetchAppointments();
-                volunteersFetch.fetch();
-            }
-
-        } catch (error) {
-            enqueueSnackbar(error.response?.data?.message || "Erro geral", { variant: 'error' });
-        }
+    const handleAppointment = async (volunteer) => {
+        setVolunteer(volunteer);
+        setOpenIndicateActivity(true);
     };
 
     const handleVolunteerNameChange = (event) => {
@@ -66,59 +60,68 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     }
 
     return (
-        <Modal open={open} onClose={onClose}>
-            <Box sx={style}>
-                <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
-                    <CloseIcon />
-                </IconButton>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Typography variant="h6" component="h2" gutterBottom>
-                            Agendar para {schedule?.title}
-                        </Typography>
+        <>
+            <Modal open={open} onClose={onClose}>
+                <Box sx={style}>
+                    <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
+                        <CloseIcon />
+                    </IconButton>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <Typography variant="h6" component="h2" gutterBottom>
+                                Agendar para {schedule?.title}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="subtitle1" gutterBottom>Voluntários</Typography>
+                            <TextField
+                                label="Buscar"
+                                variant="standard"
+                                size="small"
+                                fullWidth
+                                autoComplete="off"
+                                onChange={handleVolunteerNameChange}
+                                value={volunteerName}
+                                sx={{ mb: 2 }}
+                            />
+                            <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
+                                {volunteersFetch.data?.volunteers?.length > 0 ? (
+                                    volunteersFetch.data?.volunteers?.map(volunteer => (
+                                        <AppointVolunteerLine
+                                            key={volunteer.id}
+                                            volunteer={volunteer}
+                                            handleAppointment={handleAppointment}
+                                        />
+                                    ))) : (
+                                    <NotFoundItem entities="voluntários" />
+                                )}
+                            </List>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="subtitle1" gutterBottom>Grupos</Typography>
+                            <TextField
+                                label="Buscar"
+                                variant="standard"
+                                size="small"
+                                fullWidth
+                                autoComplete="off"
+                                sx={{ mb: 2 }}
+                            />
+                            <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
+                                <NotFoundItem entities="grupos" />
+                            </List>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={6}>
-                        <Typography variant="subtitle1" gutterBottom>Voluntários</Typography>
-                        <TextField
-                            label="Buscar"
-                            variant="standard"
-                            size="small"
-                            fullWidth
-                            autoComplete="off"
-                            onChange={handleVolunteerNameChange}
-                            value={volunteerName}
-                            sx={{ mb: 2 }}
-                        />
-                        <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
-                            {volunteersFetch.data?.volunteers?.length > 0 ? (
-                                volunteersFetch.data?.volunteers?.map(volunteer => (
-                                    <AppointVolunteerLine
-                                        key={volunteer.id}
-                                        volunteer={volunteer}
-                                        handleAppointment={handleAppointment}
-                                    />
-                                ))) : (
-                                <NotFoundItem entities="voluntários" />
-                            )}
-                        </List>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Typography variant="subtitle1" gutterBottom>Grupos</Typography>
-                        <TextField
-                            label="Buscar"
-                            variant="standard"
-                            size="small"
-                            fullWidth
-                            autoComplete="off"
-                            sx={{ mb: 2 }}
-                        />
-                        <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
-                            <NotFoundItem entities="grupos" />
-                        </List>
-                    </Grid>
-                </Grid>
-            </Box>
-        </Modal>
+                </Box>
+            </Modal>
+            <IndicateActivity
+                open={openIndicateActivity}
+                handleClose={() => setOpenIndicateActivity(false)}
+                volunteer={volunteer}
+                ministry={ministry}
+                schedule={schedule}
+            />
+        </>
     );
 }
 

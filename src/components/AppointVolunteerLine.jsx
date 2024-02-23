@@ -24,7 +24,7 @@ const AppointVolunteerLine = ({ volunteer, handleAppointment }) => {
                 {!isUnavailable && (
                     <Tooltip title="Agendar">
                         <Box>
-                            <IconButton onClick={() => handleAppointment(volunteer.id)}>
+                            <IconButton onClick={() => handleAppointment(volunteer)}>
                                 <DoneIcon fontSize="medium" />
                             </IconButton>
                         </Box>
