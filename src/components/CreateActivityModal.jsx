@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Modal, Box, TextField, Typography, Grid, IconButton } from "@mui/material";
 import RoundButton from "./RoundButton";
 import CloseModal from "./CloseModal";
 import AddIcon from '@mui/icons-material/Add';
 import ActivityLine from "./ActivityLine";
+import { useFetch } from "../hooks/useFetch";
+import { usePost } from "../hooks/usePost";
+import { useSnackbar } from "notistack";
+import { RepeatOneSharp } from "@mui/icons-material";
 
 const boxStyle = {
     position: "absolute",
@@ -19,7 +23,35 @@ const boxStyle = {
 };
 
 const CreateActivityModal = ({ open, handleClose, ministry }) => {
-    const activity = { name: "cagar", defaultTotalVolunteers: 10 }
+    const { enqueueSnackbar } = useSnackbar();
+    const { data: activitiesFetch, fetch } = useFetch(`/activities/ministry/${ministry.id}`);
+    const { loading, post } = usePost();
+    const [activityName, setActivityName] = useState("");
+    const [activityVolunteers, setActivityVolunteers] = useState(0);
+    
+    React.useEffect(() => {
+        if (open) {
+            fetch();
+        }
+    }, [ministry, open]);
+
+    const handleCreateActivity = async () => {
+        const payload = { name: activityName, totalVolunteers: activityVolunteers };
+
+        try {
+            const response = await post(`/activities/create?ministryId=${ministry?.id}`, payload);
+            
+            if (response.status === 201) {
+                enqueueSnackbar('Atividade cadastrada com sucesso', { variant: 'success' });
+                fetch();
+                setActivityName("");
+                setActivityVolunteers(0);
+            }
+
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message || 'Error geral - CreateActivityModal', { variant: 'error' });
+        }
+    };
 
     return (
         <Modal
@@ -38,6 +70,8 @@ const CreateActivityModal = ({ open, handleClose, ministry }) => {
                             label="Nome da atividade"
                             variant="filled"
                             fullWidth
+                            value={activityName}
+                            onChange={(e) => setActivityName(e.target.value)}
                         />
                     </Grid>
                     <Grid item xs>
@@ -47,17 +81,19 @@ const CreateActivityModal = ({ open, handleClose, ministry }) => {
                             variant="filled"
                             fullWidth
                             type="number"
+                            value={activityVolunteers}
+                            onChange={(e) => setActivityVolunteers(e.target.value)}
                         />
                     </Grid>
                     <Grid item>
-                        <IconButton aria-label="add">
+                        <IconButton aria-label="add" onClick={handleCreateActivity}>
                             <AddIcon />
                         </IconButton>
                     </Grid>
                 </Grid>
                 <Box sx={{ mt: 4 }}>
-                    {Array(3).fill(activity).map((activity, index) => (
-                        <ActivityLine key={index} activity={activity} />
+                    {activitiesFetch?.activities && activitiesFetch?.activities.length > 0 && activitiesFetch?.activities.map((activity) => (
+                        <ActivityLine key={activity.id} activity={activity} />
                     ))}
                 </Box>
                 <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
