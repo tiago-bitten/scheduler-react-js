@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { Modal, Box, TextField, Typography, Grid, IconButton } from "@mui/material";
-import RoundButton from "./RoundButton";
 import CloseModal from "./CloseModal";
 import AddIcon from '@mui/icons-material/Add';
 import ActivityLine from "./ActivityLine";
 import { useFetch } from "../hooks/useFetch";
 import { usePost } from "../hooks/usePost";
 import { useSnackbar } from "notistack";
-import { RepeatOneSharp } from "@mui/icons-material";
 
 const boxStyle = {
     position: "absolute",
@@ -72,6 +70,7 @@ const CreateActivityModal = ({ open, handleClose, ministry }) => {
                             fullWidth
                             value={activityName}
                             onChange={(e) => setActivityName(e.target.value)}
+                            autoComplete="off"
                         />
                     </Grid>
                     <Grid item xs>
@@ -95,9 +94,6 @@ const CreateActivityModal = ({ open, handleClose, ministry }) => {
                     {activitiesFetch?.activities && activitiesFetch?.activities.length > 0 && activitiesFetch?.activities.map((activity) => (
                         <ActivityLine key={activity.id} activity={activity} />
                     ))}
-                </Box>
-                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-                    <RoundButton value="SALVAR" />
                 </Box>
             </Box>
         </Modal>
