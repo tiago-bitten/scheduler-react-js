@@ -18,9 +18,8 @@ const boxStyle = {
     textAlign: "center",
 };
 
-const GenerateScaleModal = ({ open, onClose, ministry }) => {
+const GenerateScaleModal = ({ open, onClose, ministry, activities, setActivities, handleGenerateScale }) => {
     const { data, loading, fetch } = useFetch(`/activities/ministry/${ministry?.id}`);
-    const [activities, setActivities] = useState([]);
 
     useEffect(() => {
         if (open) {
@@ -42,10 +41,6 @@ const GenerateScaleModal = ({ open, onClose, ministry }) => {
             return activity;
         });
         setActivities(updatedActivities);
-    };
-
-    const handleGenerateScale = () => {
-        console.log(activities);
     };
 
     return (

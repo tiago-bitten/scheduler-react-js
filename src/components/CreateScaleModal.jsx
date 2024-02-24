@@ -2,8 +2,6 @@
 import React from "react";
 import { Box, Typography, Modal, Grid, IconButton } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import SwitchMinistry from "./SwitchMinistry";
-import RoundButton from "./RoundButton";
 import { usePost } from '../hooks/usePost';
 import { useSnackbar } from 'notistack';
 import GeneratedScaleModal from './GeneratedScaleModal';
@@ -28,6 +26,7 @@ const CreateScaleModal = ({ open, onClose, ministries, schedule, fetchAppointmen
     const { loading, post } = usePost();
 
     const [ministry, setMinistry] = React.useState({});
+    const [activities, setActivities] = React.useState([]);
     const [scale, setScale] = React.useState([]);
     const [openGeneratedScaleModal, setOpenGeneratedScaleModal] = React.useState(false);
     const [openGenerateScaleModal, setOpenGenerateScaleModal] = React.useState(false);
@@ -36,6 +35,34 @@ const CreateScaleModal = ({ open, onClose, ministries, schedule, fetchAppointmen
         setMinistry(ministry);
         setOpenGenerateScaleModal(true);
     }
+
+    const handleGenerateScale = async () => {
+        if (activities.length === 0) {
+            enqueueSnackbar('Primeiro, crie as atividades do ministério', { variant: 'warning' });
+            return;
+        }
+
+        const activityIdVolunteers = activities.reduce((acc, { id, total }) => {
+            acc[id] = total;
+            return acc;
+        }, {});
+
+        const payload = { activityIdVolunteers }
+
+        try {   
+            const response = await post(`/scales/create?scheduleId=${schedule.id}&ministryId=${ministry.id}`, payload);
+
+            if (response.status === 201) {
+                setScale(response.data.scale);
+                setOpenGenerateScaleModal(false);
+                setOpenGeneratedScaleModal(true);
+            }
+
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message || 'Erro ao gerar escala', { variant: 'error' });
+            console.error(error);
+        }
+    };
 
     return (
         <>
@@ -74,6 +101,9 @@ const CreateScaleModal = ({ open, onClose, ministries, schedule, fetchAppointmen
                 open={openGenerateScaleModal}
                 onClose={() => setOpenGenerateScaleModal(false)}
                 ministry={ministry}
+                activities={activities}
+                setActivities={setActivities}
+                handleGenerateScale={handleGenerateScale}
             />
             <GeneratedScaleModal
                 open={openGeneratedScaleModal}
