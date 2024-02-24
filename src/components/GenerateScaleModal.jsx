@@ -3,6 +3,7 @@ import { Box, Typography, Modal } from "@mui/material";
 import RoundButton from "./RoundButton";
 import { useFetch } from "../hooks/useFetch";
 import ActivityField from "./ActivityField";
+import CloseModal from "./CloseModal";
 
 const boxStyle = {
     position: "absolute",
@@ -55,6 +56,7 @@ const GenerateScaleModal = ({ open, onClose, ministry }) => {
             aria-describedby="modal-modal-description"
         >
             <Box sx={{ ...boxStyle, overflow: 'auto', maxHeight: '60vh' }}>
+                <CloseModal onClose={onClose} />
                 {loading ? (
                     <Typography>Carregando...</Typography>
                 ) : (
@@ -70,7 +72,9 @@ const GenerateScaleModal = ({ open, onClose, ministry }) => {
                 {!loading && activities.length === 0 && (
                     <Typography>Primeiro registre uma atividade antes de agendar o voluntário</Typography>
                 )}
-                <RoundButton value="AGENDAR" onClick={handleGenerateScale} sx={{ mt: 2 }} />
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                    <RoundButton value="GERAR" onClick={handleGenerateScale} sx={{ mt: 2 }} />
+                </Box>
             </Box>
 
         </Modal>
