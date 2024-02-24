@@ -8,6 +8,7 @@ import { usePost } from '../hooks/usePost';
 import { useSnackbar } from 'notistack';
 import GeneratedScaleModal from './GeneratedScaleModal';
 import MinistryBox from "./MinistryBox";
+import GenerateScaleModal from "./GenerateScaleModal";
 
 const modalStyle = {
     position: 'absolute',
@@ -25,46 +26,15 @@ const modalStyle = {
 const CreateScaleModal = ({ open, onClose, ministries, schedule, fetchAppointments }) => {
     const { enqueueSnackbar } = useSnackbar();
     const { loading, post } = usePost();
-    const [selectedMinistries, setSelectedMinistries] = React.useState([]);
 
+    const [ministry, setMinistry] = React.useState({});
     const [scale, setScale] = React.useState([]);
     const [openGeneratedScaleModal, setOpenGeneratedScaleModal] = React.useState(false);
+    const [openGenerateScaleModal, setOpenGenerateScaleModal] = React.useState(false);
 
-    const handleSelectMinistry = (ministry, isChecked, maxVolunteers) => {
-        if (isChecked) {
-            const updatedMinistries = selectedMinistries.filter(m => m.ministry.id !== ministry.id);
-            setSelectedMinistries([...updatedMinistries, { ministry, maxVolunteers }]);
-        } else {
-            setSelectedMinistries(selectedMinistries.filter(m => m.ministry.id !== ministry.id));
-        }
-    }
-
-    const handleGenerate = async () => {
-        if (selectedMinistries.length === 0) {
-            enqueueSnackbar("Selecione ao menos um ministério", { variant: 'warning' });
-            return;
-        }
-        const ministryIdMaxVolunteers = selectedMinistries.reduce((acc, { ministry, maxVolunteers }) => {
-            acc[ministry.id] = Number(maxVolunteers);
-            return acc;
-        }, {});
-
-        const payload = {
-            ministryIdMaxVolunteers
-        };
-
-        try {
-            const response = await post(`/scales/create?scheduleId=${schedule?.id}`, payload);
-
-            if (response.status === 201) {
-                setScale(response.data.scale);
-                setOpenGeneratedScaleModal(true);
-                setSelectedMinistries([]);
-                onClose();
-            }
-        } catch (error) {
-            enqueueSnackbar(error.response?.data?.message || "Erro geral - CreateScaleModal", { variant: 'error' });
-        }
+    const handleSelectMinistry = (ministry) => {
+        setMinistry(ministry);
+        setOpenGenerateScaleModal(true);
     }
 
     return (
@@ -87,7 +57,7 @@ const CreateScaleModal = ({ open, onClose, ministries, schedule, fetchAppointmen
                                         <MinistryBox
                                             name={ministry.name}
                                             color={ministry.color}
-                                            onClick={handleSelectMinistry}
+                                            onClick={() => handleSelectMinistry(ministry)}
                                         />
                                     </Grid>
                                 ))
@@ -100,6 +70,11 @@ const CreateScaleModal = ({ open, onClose, ministries, schedule, fetchAppointmen
                     </Box>
                 </Box>
             </Modal>
+            <GenerateScaleModal
+                open={openGenerateScaleModal}
+                onClose={() => setOpenGenerateScaleModal(false)}
+                ministry={ministry}
+            />
             <GeneratedScaleModal
                 open={openGeneratedScaleModal}
                 onClose={() => setOpenGeneratedScaleModal(false)}
