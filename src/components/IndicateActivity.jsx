@@ -18,7 +18,7 @@ const boxStyle = {
     textAlign: "center",
 };
 
-const IndicateActivity = ({ open, handleClose, volunteer, ministry, schedule }) => {
+const IndicateActivity = ({ open, onClose, volunteer, ministry, schedule, fetchAppointments, fetchVolunteers }) => {
     const { enqueueSnackbar } = useSnackbar();
     const { data: activitiesFetch, fetch } = useFetch(`/activities/ministry/${ministry?.id}`);
     const { loading, post } = usePost();
@@ -34,6 +34,9 @@ const IndicateActivity = ({ open, handleClose, volunteer, ministry, schedule }) 
             const response = await post(`/appointments/appoint?scheduleId=${schedule?.id}&volunteerId=${volunteer?.id}&ministryId=${ministry?.id}&activityId=${activity?.id}`);
             if (response.status === 204) {
                 enqueueSnackbar(`Voluntário ${volunteer.name} indicado para a atividade ${activity.name}`, { variant: "success" });
+                fetchAppointments();
+                fetchVolunteers();
+                onClose();
             }
         } catch (error) {
             enqueueSnackbar(error.response?.data?.message || "Error geral - IndicateActivity", { variant: "error" });
@@ -44,7 +47,7 @@ const IndicateActivity = ({ open, handleClose, volunteer, ministry, schedule }) 
     return (
         <Modal
             open={open}
-            onClose={handleClose}
+            onClose={onClose}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
@@ -52,8 +55,9 @@ const IndicateActivity = ({ open, handleClose, volunteer, ministry, schedule }) 
                 <Typography id="modal-modal-title" variant="h6" component="h2">
                     Selecione uma atividade
                 </Typography>
+                {activitiesFetch?.activities.length === 0 && !loading && <Typography>Primeiro registre uma atividade antes de agentar o voluntario</Typography>}
                 {activitiesFetch?.activities.map((activity) => (
-                    <Box>
+                    <Box id={activity.id}>
                         {activity.name}
                         <IconButton onClick={() => handleIndicateActivity(activity)}>
                             <DoneIcon />

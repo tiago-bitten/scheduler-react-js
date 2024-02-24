@@ -116,10 +116,12 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
             </Modal>
             <IndicateActivity
                 open={openIndicateActivity}
-                handleClose={() => setOpenIndicateActivity(false)}
+                onClose={() => setOpenIndicateActivity(false)}
                 volunteer={volunteer}
                 ministry={ministry}
                 schedule={schedule}
+                fetchAppointments={fetchAppointments}
+                fetchVolunteers={volunteersFetch.fetch}
             />
         </>
     );
