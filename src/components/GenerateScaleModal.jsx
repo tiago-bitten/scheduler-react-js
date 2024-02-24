@@ -1,7 +1,8 @@
-import React from "react";
-import { Box, Typography, Modal, TextField } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Typography, Modal } from "@mui/material";
 import RoundButton from "./RoundButton";
 import { useFetch } from "../hooks/useFetch";
+import ActivityField from "./ActivityField";
 
 const boxStyle = {
     position: "absolute",
@@ -17,41 +18,34 @@ const boxStyle = {
 };
 
 const GenerateScaleModal = ({ open, onClose, ministry }) => {
-    const { data, error, loading: loadingActivities, fetch: fetchActivities } = useFetch(`/activities/ministry/${ministry?.id}`);
-    const [totalVolunteers, setTotalVolunteers] = React.useState([]);
+    const { data, loading, fetch } = useFetch(`/activities/ministry/${ministry?.id}`);
+    const [activities, setActivities] = useState([]);
 
-    React.useEffect(() => {
+    useEffect(() => {
+        if (open) {
+            fetch();
+        }
+    }, [ministry, open, fetch]);
+
+    useEffect(() => {
         if (open && data?.activities) {
-            setTotalVolunteers(data.activities.map(activity => ({ id: activity.id, total: activity.defaultTotalVolunteers })));
+            setActivities(data.activities.map(activity => ({ id: activity.id, name: activity.name, total: activity.defaultTotalVolunteers })));
         }
     }, [data?.activities, open]);
 
-    React.useEffect(() => {
-        if (open) {
-            fetchActivities();
-        }
-    }, [ministry, open]);
-
     const handleTotalVolunteersChange = (event, id) => {
-        const newTotalVolunteers = totalVolunteers.map(volunteer => {
-            if (volunteer.id === id) {
-                return { ...volunteer, total: Number(event.target.value) };
+        const updatedActivities = activities.map(activity => {
+            if (activity.id === id) {
+                return { ...activity, total: Number(event.target.value) };
             }
-            return volunteer;
+            return activity;
         });
-        setTotalVolunteers(newTotalVolunteers);
-    }
+        setActivities(updatedActivities);
+    };
 
     const handleGenerateScale = () => {
-        console.log(totalVolunteers);
-    }
-
-    const defaultTotalVolunteersValue = (value) => {
-        if (value === 0) {
-            return '';
-        }
-        return value;
-    }
+        console.log(activities);
+    };
 
     return (
         <Modal
@@ -60,30 +54,25 @@ const GenerateScaleModal = ({ open, onClose, ministry }) => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={boxStyle}>
-                {loadingActivities && <Typography>Carregando...</Typography>}
-                {!loadingActivities && totalVolunteers.length > 0 && totalVolunteers.map((volunteer) => (
-                    <Box key={volunteer.id}>
-                        <TextField
-                            id={`textfield${volunteer.id}`}
-                            variant="filled"
-                            value={data?.activities.find(activity => activity.id === volunteer.id)?.name || 'Erro interno'}
-                            disabled
-                            sx={{ mr: 2 }}
+            <Box sx={{ ...boxStyle, overflow: 'auto', maxHeight: '60vh' }}>
+                {loading ? (
+                    <Typography>Carregando...</Typography>
+                ) : (
+                    activities.map(activity => (
+                        <ActivityField
+                            key={activity.id}
+                            activity={activity}
+                            totalVolunteers={activity.total}
+                            onTotalChange={(event) => handleTotalVolunteersChange(event, activity.id)}
                         />
-                        <TextField
-                            id={`textfieldMAX${volunteer.id}`}
-                            variant="filled"
-                            value={defaultTotalVolunteersValue(volunteer.total)}
-                            onChange={(event) => handleTotalVolunteersChange(event, volunteer.id)}
-                            autoComplete="off"
-                            type="number"
-                        />
-                    </Box>
-                ))}
-                {!loadingActivities && totalVolunteers.length === 0 && <Typography>Primeiro registre uma atividade antes de agendar o voluntário</Typography>}
+                    ))
+                )}
+                {!loading && activities.length === 0 && (
+                    <Typography>Primeiro registre uma atividade antes de agendar o voluntário</Typography>
+                )}
                 <RoundButton value="AGENDAR" onClick={handleGenerateScale} sx={{ mt: 2 }} />
             </Box>
+
         </Modal>
     );
 };
