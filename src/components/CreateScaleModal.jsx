@@ -31,6 +31,14 @@ const CreateScaleModal = ({ open, onClose, ministries, schedule, fetchAppointmen
     const [openGeneratedScaleModal, setOpenGeneratedScaleModal] = React.useState(false);
     const [openGenerateScaleModal, setOpenGenerateScaleModal] = React.useState(false);
 
+    React.useEffect(() => {
+        if (open) {
+            setMinistry({});
+            setActivities([]);
+            setScale([]);
+        }
+    }, [open]);
+
     const handleSelectMinistry = (ministry) => {
         setMinistry(ministry);
         setOpenGenerateScaleModal(true);
@@ -53,7 +61,7 @@ const CreateScaleModal = ({ open, onClose, ministries, schedule, fetchAppointmen
             const response = await post(`/scales/create?scheduleId=${schedule.id}&ministryId=${ministry.id}`, payload);
 
             if (response.status === 201) {
-                setScale(response.data.scale);
+                setScale(response.data.scales);
                 setOpenGenerateScaleModal(false);
                 setOpenGeneratedScaleModal(true);
             }

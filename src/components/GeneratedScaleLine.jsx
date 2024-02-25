@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-const GeneratedScaleLine = ({ volunteer, ministry, onRemove }) => {
+const GeneratedScaleLine = ({ volunteer, ministry, activity, onRemove }) => {
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2, borderBottom: 1, borderColor: 'grey.300', backgroundColor: 'grey.200' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -15,7 +15,7 @@ const GeneratedScaleLine = ({ volunteer, ministry, onRemove }) => {
                         {volunteer.name} {volunteer.lastName}
                     </Typography>
                     <Typography variant="body2" component="p" sx={{ color: ministry.color, fontWeight: 'bold' }}>
-                        {ministry.name}
+                        {ministry.name} - {activity.name}
                     </Typography>
                 </Box>
             </Box>

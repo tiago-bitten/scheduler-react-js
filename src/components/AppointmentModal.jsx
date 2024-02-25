@@ -136,6 +136,9 @@ const AppointmentModal = ({ open, onClose, schedule }) => {
                                 value={volunteerName}
                                 sx={{ mt: 2 }}
                             />
+                            <Typography variant="body2" sx={{ mt: 1 }}>
+                                Total: {appointmentsFetch.data?.schedule?.appointments?.length || 0}
+                            </Typography>
                         </Box>
                         <Box sx={{ mt: 2 }} ref={printRef}>
                             {appointmentsFetch.data?.schedule?.appointments?.length > 0 ? (

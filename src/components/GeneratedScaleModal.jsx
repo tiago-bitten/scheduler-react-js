@@ -38,17 +38,19 @@ const GeneratedScaleModal = ({ open, onClose, scale, schedule, fetchAppointments
 
     const handleAppointment = async () => {
         try {
-            currentScale?.forEach(async ({ volunteer, ministry }) => {
-                post(`/appointments/appoint?scheduleId=${schedule?.id}&volunteerId=${volunteer?.id}&ministryId=${ministry?.id}`)
+            const appointmentPromises = currentScale?.map(({ volunteer, ministry, activity }) => {
+                return post(`/appointments/appoint?scheduleId=${schedule?.id}&volunteerId=${volunteer?.id}&ministryId=${ministry?.id}&activityId=${activity?.id}`);
             });
-
+    
+            await Promise.all(appointmentPromises);
+    
             enqueueSnackbar('Voluntários agendados com sucesso', { variant: 'success' });
             fetchAppointments();
             onClose();
         } catch (error) {
             enqueueSnackbar(error.response?.data?.message || 'Erro ao agendar voluntário', { variant: 'error' });
         }
-    }
+    };
 
     return (
         <Modal
@@ -63,11 +65,12 @@ const GeneratedScaleModal = ({ open, onClose, scale, schedule, fetchAppointments
                     Escala gerada para o dia {schedule?.startDate}
                 </Typography>
                 <Box sx={{ overflow: 'auto', maxHeight: 500 }}>
-                    {currentScale?.map(({ volunteer, ministry }) => (
+                    {currentScale?.map(({ volunteer, ministry, activity }) => (
                         <GeneratedScaleLine
                             key={volunteer.id}
                             volunteer={volunteer}
                             ministry={ministry}
+                            activity={activity}
                             onRemove={handleRemoveFromScale}
                         />
                     ))}
