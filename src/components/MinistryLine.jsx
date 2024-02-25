@@ -4,7 +4,7 @@ import { IconButton, Tooltip, TableRow, TableCell } from '@mui/material';
 
 import MinistryBox from './MinistryBox';
 
-const MinistryLine = ({ ministry, onMinistryNameClick, handleEdit }) => {
+const MinistryLine = ({ ministry, onMinistryNameClick, handleEdit, handleDelete }) => {
     return (
         <TableRow>
             <TableCell align="center">
@@ -21,7 +21,7 @@ const MinistryLine = ({ ministry, onMinistryNameClick, handleEdit }) => {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title="Excluir">
-                    <IconButton>
+                    <IconButton onClick={handleDelete}>
                         <Delete />
                     </IconButton>
                 </Tooltip>

@@ -11,12 +11,14 @@ import CreateMinistryModal from '../components/CreateMinistryModal';
 import VolunteerMinistryModal from '../components/VolunteerMinistryModal';
 import NotFoundItem from '../components/NotFoundItem';
 import EditMinistryModal from '../components/EditMinistryModal';
-import { Box, Container, Table, TableHead, TableRow, TableCell, TableBody, TextField } from '@mui/material';
+import { Box, Table, TableHead, TableRow, TableCell, TableBody, TextField } from '@mui/material';
 import { useFetch } from '../hooks/useFetch';
+import { useDelete } from '../hooks/useDelete';
 
 import Header from '../components/Header';
 
 const Ministries = () => {
+    const { deleteRequest } = useDelete();
     const [token] = React.useState(sessionStorage.getItem('token'));
     const [ministries, setMinistries] = React.useState([]);
     const [open, setOpen] = React.useState(false);
@@ -180,6 +182,21 @@ const Ministries = () => {
         setOpenEditModal(true);
     }
 
+    const handleDeteleClick = async (ministry) => {
+        try {
+            const response = await deleteRequest(`/ministries/delete/${ministry.id}`);
+
+            if (response.status === 204) {
+                fetchMinistries();
+                enqueueSnackbar("Ministério excluído com sucesso", { variant: "success" });
+            }
+
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message, { variant: "error" });
+            console.error(error);
+        }
+    }
+
     return (
         <>
             <Header />
@@ -203,7 +220,7 @@ const Ministries = () => {
                         sx={{ width: '300px' }}
                         autoComplete="off"
                     />
-                    <RoundButton value="CRIAR MINISTÉRIO" />
+                    <RoundButton value="CRIAR MINISTÉRIO" onClick={handleClick} />
                 </Box>
                 <Table>
                     <TableHead>
@@ -221,6 +238,7 @@ const Ministries = () => {
                                     key={ministry.id}
                                     ministry={ministry}
                                     handleEdit={() => handleEditClick(ministry)}
+                                    handleDelete={() => handleDeteleClick(ministry)}
                                     onMinistryNameClick={() => handleVolunteerMinistryModal(ministry.id)}
                                 />
                             ))
