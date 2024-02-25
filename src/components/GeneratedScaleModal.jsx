@@ -62,7 +62,10 @@ const GeneratedScaleModal = ({ open, onClose, scale, schedule, fetchAppointments
                     <CloseIcon />
                 </IconButton>
                 <Typography variant="h5" component="h2" sx={{ mb: 2 }}>
-                    Escala gerada para o dia {schedule?.startDate}
+                    Escala gerada para {schedule?.title}
+                </Typography>
+                <Typography variant="body1" component="p" sx={{ mb: 2 }}>
+                    Total: {currentScale?.length}
                 </Typography>
                 <Box sx={{ overflow: 'auto', maxHeight: 500 }}>
                     {currentScale?.map(({ volunteer, ministry, activity }) => (
