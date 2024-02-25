@@ -47,7 +47,7 @@ const AppointmentLine = ({ appointment, userMinistries, fetchAppointments, isSch
                             {appointment.volunteerMinistry.volunteer.name} {appointment.volunteerMinistry.volunteer.lastName}
                         </Typography>
                         <Typography sx={{ fontSize: '0.75rem', color: !isActive ? 'grey.400' : appointment.volunteerMinistry.ministry.color, fontWeight: 'bold' }}>
-                            {appointment.volunteerMinistry.ministry.name}
+                            {appointment.volunteerMinistry.ministry.name} | {appointment.activity.name}
                         </Typography>
                     </Box>
                 </Box>

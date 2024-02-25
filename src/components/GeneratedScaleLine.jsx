@@ -15,7 +15,7 @@ const GeneratedScaleLine = ({ volunteer, ministry, activity, onRemove }) => {
                         {volunteer.name} {volunteer.lastName}
                     </Typography>
                     <Typography variant="body2" component="p" sx={{ color: ministry.color, fontWeight: 'bold' }}>
-                        {ministry.name} - {activity.name}
+                        {ministry.name} | {activity.name}
                     </Typography>
                 </Box>
             </Box>
