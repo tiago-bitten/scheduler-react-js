@@ -9,10 +9,9 @@ import RoundButton from '../components/RoundButton';
 import MinistryLine from '../components/MinistryLine';
 import CreateMinistryModal from '../components/CreateMinistryModal';
 import VolunteerMinistryModal from '../components/VolunteerMinistryModal';
-import MinistriesSkeleton from '../components/MinistriesSkeleton';
 import NotFoundItem from '../components/NotFoundItem';
 import EditMinistryModal from '../components/EditMinistryModal';
-import { TextField } from '@mui/material';
+import { Box, Container, Table, TableHead, TableRow, TableCell, TableBody, TextField } from '@mui/material';
 import { useFetch } from '../hooks/useFetch';
 
 import Header from '../components/Header';
@@ -103,7 +102,8 @@ const Ministries = () => {
             if (response.status === 204) {
                 fetchVolunteerNotInMinistry(ministryId);
                 enqueueSnackbar("Voluntário associado com sucesso ao ministério", { variant: "success" });
-                fetchMinistries();            }
+                fetchMinistries();
+            }
 
         } catch (err) {
             enqueueSnackbar(err.response.data.message, { variant: "error" });
@@ -121,7 +121,8 @@ const Ministries = () => {
             if (response.status === 204) {
                 fetchVolunteerMinistry(ministryId);
                 enqueueSnackbar("Voluntário desassociado com sucesso do ministério", { variant: "success" });
-                fetchMinistries();            }
+                fetchMinistries();
+            }
 
         } catch (err) {
             enqueueSnackbar(err.response.data.message, { variant: "error" });
@@ -182,59 +183,53 @@ const Ministries = () => {
     return (
         <>
             <Header />
-            <div className="flex justify-between items-center mt-16 mx-12">
-                <div className="flex flex-1 gap-4">
+            <Box sx={{ mt: 4, mb: 4, mx: 6 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
                     <TextField
                         label="Ministério"
                         variant="standard"
                         size="small"
-                        fullWidth
                         value={ministryName}
                         onChange={handleMinistryNameChange}
+                        sx={{ width: '300px', mr: 2 }}
                         autoComplete="off"
-                        sx={{ width: '300px' }}
                     />
-
                     <TextField
                         label="Voluntário"
                         variant="standard"
                         size="small"
-                        fullWidth
                         value={volunteerName}
                         onChange={handleVolunteerNameChange}
-                        autoComplete="off"
                         sx={{ width: '300px' }}
+                        autoComplete="off"
                     />
-                </div>
-                <div>
-                    <RoundButton value="CRIAR MINISTÉRIO" onClick={handleClick} />
-                </div>
-            </div>
-            <div className="bg-septenary p-4 mx-12 mt-12">
-                <table className="min-w-full">
-                    <thead>
-                        <tr className="border-b text-left">
-                            <th className="w-1/4 font-normal text-center px-4 py-2 text-quinary">Nome</th>
-                            <th className="w-2/4 font-normal text-left px-10 py-2 text-quinary">Descrição</th>
-                            <th className="text-center font-normal px-4 py-2 text-quinary">Voluntários</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                    <RoundButton value="CRIAR MINISTÉRIO" />
+                </Box>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                        <TableCell align="center" sx={{ width: '25%', pr: 10 }}>Nome</TableCell>
+                            <TableCell align="left">Descrição</TableCell>
+                            <TableCell align="right" sx={{ width: '25%', textAlign: 'right' }}>Voluntários</TableCell>
+                            <TableCell></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
                         {data?.ministries.length > 0 ? (
-                            data?.ministries.map((ministry) => (
+                            data.ministries.map((ministry) => (
                                 <MinistryLine
                                     key={ministry.id}
                                     ministry={ministry}
-                                    onMinistryNameClick={() => handleVolunteerMinistryModal(ministry.id)}
                                     handleEdit={() => handleEditClick(ministry)}
+                                    onMinistryNameClick={() => handleVolunteerMinistryModal(ministry.id)}
                                 />
                             ))
                         ) : (
                             <NotFoundItem entities="ministérios" />
                         )}
-                    </tbody>
-                </table>
-            </div>
+                    </TableBody>
+                </Table>
+            </Box>
             <CreateMinistryModal
                 open={open}
                 handleClose={handleClose}

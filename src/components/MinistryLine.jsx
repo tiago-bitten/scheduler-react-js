@@ -11,7 +11,7 @@ const MinistryLine = ({ ministry, onMinistryNameClick, handleEdit }) => {
                 <MinistryBox name={ministry.name} color={ministry.color} onClick={onMinistryNameClick} />
             </TableCell>
             <TableCell sx={{ fontSize: '1rem' }}>{ministry.description}</TableCell>
-            <TableCell align="center" sx={{ fontWeight: 'bold', color: '#454545', '&:hover': { textDecoration: 'underline', cursor: 'pointer' } }} onClick={onMinistryNameClick}>
+            <TableCell align="right" sx={{ fontWeight: 'bold', color: '#454545', '&:hover': { textDecoration: 'underline', cursor: 'pointer' } }} onClick={onMinistryNameClick}>
                 {ministry.totalVolunteers}
             </TableCell>
             <TableCell align="right">
