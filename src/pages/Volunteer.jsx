@@ -23,15 +23,15 @@ const Volunteer = () => {
     const [size, setSize] = React.useState(10);
     const [confirmModalOpen, setConfirmModalOpen] = React.useState(false);
     const [selectedVolunteer, setSelectedVolunteer] = React.useState({});
-    const [volunteerName, setVolunteerName] = React.useState('');
+    const [volunteerCompleteName, setVolunteerCompleteName] = React.useState('');
     const [ministryName, setMinistryName] = React.useState('');
     const [isLinkedToAnyMinistry, setIsLinkedToAnyMinistry] = React.useState(false);
 
-    const debouncedVolunteerName = useDebounce(volunteerName, 500);
+    const debouncedVolunteerName = useDebounce(volunteerCompleteName, 500);
     const debouncedMinistryName = useDebounce(ministryName, 500);
     const debouncedIsLinkedToAnyMinistry = useDebounce(isLinkedToAnyMinistry, 120);
 
-    const { data, error, loading, fetch } = useFetch(`/volunteers?volunteerName=${volunteerName}&ministryName=${ministryName}&isLinkedToAnyMinistry=${isLinkedToAnyMinistry}&page=${page}&size=${size}`);
+    const { data, error, loading, fetch } = useFetch(`/volunteers?volunteerName=${volunteerCompleteName.split(" ")[0]}&volunteerLastName=${volunteerCompleteName.split(" ")[1]}&ministryName=${ministryName}&isLinkedToAnyMinistry=${isLinkedToAnyMinistry}&page=${page}&size=${size}`);
     const [open, setOpen] = React.useState(false);
 
     React.useEffect(() => {
@@ -49,7 +49,7 @@ const Volunteer = () => {
     }, [page, size]);
 
     const handleVolunteerNameChange = (event) => {
-        setVolunteerName(event.target.value);
+        setVolunteerCompleteName(event.target.value);
     };
 
     const handleMinistryNameChange = (event) => {
@@ -108,7 +108,7 @@ const Volunteer = () => {
                             label="Voluntários"
                             variant="standard"
                             size="small"
-                            value={volunteerName}
+                            value={volunteerCompleteName}
                             onChange={handleVolunteerNameChange}
                             sx={{ width: '300px' }}
                         />

@@ -4,6 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { HexColorPicker } from 'react-colorful';
 import { usePut } from '../hooks/usePut';
 import { useSnackbar } from 'notistack';
+import { useFetch } from '../hooks/useFetch';
 import RoundButton from './RoundButton';
 
 const boxStyle = {
@@ -22,11 +23,18 @@ const boxStyle = {
 }
 
 const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
+    const {data: dataActivities, fetch: fetchActivities } = useFetch(`/activities/ministry/${ministry?.id}`)
     const { loading, put } = usePut();
     const { enqueueSnackbar } = useSnackbar();
     const [name, setName] = React.useState(ministry?.name);
     const [description, setDescription] = React.useState(ministry?.description);
     const [color, setColor] = React.useState(ministry?.color);
+
+    React.useEffect(() => {
+        if (open) {
+            fetchActivities();
+        }
+    } , [open])
 
     const handleNameChange = (event) => {
         setName(event.target.value);
@@ -103,6 +111,34 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
 
                 <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: 4 }}>
                     <RoundButton value="SALVAR" onClick={handleEditMinistry} />
+                </Box>
+                <Box>
+                    {dataActivities?.activities.length > 0 ? (
+                        <Typography variant="h6" gutterBottom>
+                            Atividades vinculadas
+                        </Typography>
+                    ) : null}
+                    {dataActivities?.activities.map((activity) => (
+                        <Box key={activity.id}>
+                            <TextField
+                                label="Nome"
+                                variant="filled"
+                                defaultValue={activity.name}
+                                fullWidth
+                                margin="normal"
+                                disabled
+                            />
+
+                            <TextField
+                                label="Total de voluntários"
+                                variant='filled'
+                                defaultValue={activity.defaultTotalVolunteers}
+                                fullWidth
+                                margin="normal"
+                                disabled
+                            />
+                        </Box>
+                    ))}
                 </Box>
             </Box>
         </Modal>
