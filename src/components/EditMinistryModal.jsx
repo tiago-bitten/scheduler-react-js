@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Box, Typography, TextField, IconButton } from '@mui/material';
+import { Modal, Box, Typography, TextField, IconButton, Grid } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { HexColorPicker } from 'react-colorful';
 import { usePut } from '../hooks/usePut';
@@ -12,8 +12,8 @@ const boxStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '400px',
-    maxWidth: '600px',
+    width: '600px',
+    maxWidth: '900px',
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 3,
@@ -23,7 +23,7 @@ const boxStyle = {
 }
 
 const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
-    const {data: dataActivities, fetch: fetchActivities } = useFetch(`/activities/ministry/${ministry?.id}`)
+    const { data: dataActivities, fetch: fetchActivities } = useFetch(`/activities/ministry/${ministry?.id}`)
     const { loading, put } = usePut();
     const { enqueueSnackbar } = useSnackbar();
     const [name, setName] = React.useState(ministry?.name);
@@ -34,7 +34,7 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
         if (open) {
             fetchActivities();
         }
-    } , [open])
+    }, [open])
 
     const handleNameChange = (event) => {
         setName(event.target.value);
@@ -73,7 +73,7 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={boxStyle}>
+            <Box sx={{ ...boxStyle, overflow: 'auto', maxHeight: '80vh', width: '80vw', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
                 <IconButton
                     aria-label="close"
                     onClick={onClose}
@@ -86,62 +86,73 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
                 >
                     <CloseIcon />
                 </IconButton>
-                <Typography variant="h5" gutterBottom>
-                    Editar Ministério {ministry?.name}
-                </Typography>
-                <TextField
-                    label="Nome"
-                    variant="filled"
-                    defaultValue={ministry?.name}
-                    onChange={handleNameChange}
-                    fullWidth
-                    margin="normal"
-                />
-                <TextField
-                    label="Descrição"
-                    variant="filled"
-                    defaultValue={ministry?.description}
-                    onChange={handleDescriptionChange}
-                    fullWidth
-                    margin="normal"
-                />
-                <Box sx={{ marginTop: 4 }}>
-                    <HexColorPicker color={ministry?.color} onChange={handleColorChange} />
-                </Box>
-
-                <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: 4 }}>
-                    <RoundButton value="SALVAR" onClick={handleEditMinistry} />
-                </Box>
-                <Box>
-                    {dataActivities?.activities.length > 0 ? (
-                        <Typography variant="h6" gutterBottom>
-                            Atividades vinculadas
-                        </Typography>
-                    ) : null}
-                    {dataActivities?.activities.map((activity) => (
-                        <Box key={activity.id}>
+                <Grid container spacing={4} justifyContent="center" alignItems="flex-start" marginTop="5px">
+                    <Grid item xs={12} md={6}>
+                        <Box display="flex" flexDirection="column" alignItems="center" sx={{ width: '100%' }}>
+                            <Typography variant="h5" gutterBottom component="div">
+                                Editar Ministério {ministry?.name}
+                            </Typography>
                             <TextField
                                 label="Nome"
                                 variant="filled"
-                                defaultValue={activity.name}
+                                value={name}
+                                onChange={handleNameChange}
                                 fullWidth
                                 margin="normal"
-                                disabled
                             />
-
                             <TextField
-                                label="Total de voluntários"
-                                variant='filled'
-                                defaultValue={activity.defaultTotalVolunteers}
+                                label="Descrição"
+                                variant="filled"
+                                value={description}
+                                onChange={handleDescriptionChange}
                                 fullWidth
                                 margin="normal"
-                                disabled
                             />
+                            <Box sx={{ mt: '15px' }}>
+                                <HexColorPicker color={color} onChange={handleColorChange} />
+                            </Box>
                         </Box>
-                    ))}
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Box display="flex" flexDirection="column" alignItems="center" sx={{ width: '100%' }}>
+                            <Typography variant="h5" gutterBottom component="div">
+                                Atividades vinculadas
+                            </Typography>
+                            <Grid item xs={12} md={10}>
+                                {dataActivities?.activities.length > 0 ? (
+                                    dataActivities.activities.map((activity) => (
+                                        <Grid container key={activity.id} spacing={2} alignItems="center">
+                                            <Grid item xs={8}>
+                                                <TextField
+                                                    variant="filled"
+                                                    defaultValue={activity.name}
+                                                    fullWidth
+                                                    margin="normal"
+                                                />
+                                            </Grid>
+                                            <Grid item xs={4}>
+                                                <TextField
+                                                    variant='filled'
+                                                    defaultValue={activity.defaultTotalVolunteers}
+                                                    fullWidth
+                                                    margin="normal"
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    ))
+                                ) : (
+                                    <Typography>Nenhuma atividade vinculada.</Typography>
+                                )}
+                            </Grid>
+                        </Box>
+                    </Grid>
+                </Grid>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', mt: '15px' }}>
+                    <RoundButton value="SALVAR" onClick={handleEditMinistry} sx={{ mt: 4 }} />
                 </Box>
             </Box>
         </Modal>
+
     );
 };
 
