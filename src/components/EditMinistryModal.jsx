@@ -29,10 +29,12 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
     const [name, setName] = React.useState(ministry?.name);
     const [description, setDescription] = React.useState(ministry?.description);
     const [color, setColor] = React.useState(ministry?.color);
+    const [activities, setActivities] = React.useState([]);
 
     React.useEffect(() => {
         if (open) {
             fetchActivities();
+            setActivities(dataActivities?.activities);
         }
     }, [open])
 
@@ -46,6 +48,26 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
 
     const handleColorChange = (color) => {
         setColor(color);
+    }
+
+    const handleActivityNameChange = (event, id) => {
+        const updatedActivities = activities?.map(activity => {
+            if (activity.id === id) {
+                return { ...activity, name: event.target.value };
+            }
+            return activity;
+        });
+        setActivities(updatedActivities);
+    }
+
+    const handleActivityTotalVolunteersChange = (event, id) => {
+        const updatedActivities = activities?.map(activity => {
+            if (activity.id === id) {
+                return { ...activity, defaultTotalVolunteers: Number(event.target.value) };
+            }
+            return activity;
+        });
+        setActivities(updatedActivities);
     }
 
     const handleEditMinistry = async () => {
@@ -64,6 +86,30 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
         } catch (error) {
             enqueueSnackbar(error.response?.data?.message || "Erro geral - EditMinistryModal", { variant: 'error' });
         }
+    }
+
+    const handleActivityEdit = async (activity) => {
+        const payload = { name: activity.name, defaultTotalVolunteers: activity.defaultTotalVolunteers };
+
+        try {
+            const response = await put(`/activities/${activity.id}`, payload);
+
+            if (response.status === 200) {
+                fetchActivities();
+            }
+
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message || "Erro geral - EditMinistryModal", { variant: 'error' });
+        }
+    }
+
+    const handleSave = async () => {
+        handleEditMinistry();
+        activities.forEach(activity => {
+            handleActivityEdit(activity);
+        });
+
+        onClose();
     }
 
     return (
@@ -126,6 +172,7 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
                                                 <TextField
                                                     variant="filled"
                                                     defaultValue={activity.name}
+                                                    onChange={(event) => handleActivityNameChange(event, activity.id)}
                                                     fullWidth
                                                     margin="normal"
                                                 />
@@ -134,6 +181,7 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
                                                 <TextField
                                                     variant='filled'
                                                     defaultValue={activity.defaultTotalVolunteers}
+                                                    onChange={(event) => handleActivityTotalVolunteersChange(event, activity.id)}
                                                     fullWidth
                                                     margin="normal"
                                                 />
@@ -148,7 +196,7 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
                     </Grid>
                 </Grid>
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', mt: '15px' }}>
-                    <RoundButton value="SALVAR" onClick={handleEditMinistry} sx={{ mt: 4 }} />
+                    <RoundButton value="SALVAR" onClick={handleSave} sx={{ mt: 4 }} />
                 </Box>
             </Box>
         </Modal>
