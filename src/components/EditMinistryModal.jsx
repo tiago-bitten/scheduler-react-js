@@ -34,9 +34,14 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
     useEffect(() => {
         if (open && ministry?.id) {
             fetchActivities();
-            setActivities(dataActivities?.activities || []);
         }
     }, [open, ministry?.id]);
+
+    useEffect(() => {
+        if (dataActivities && dataActivities.activities) {
+            setActivities(dataActivities.activities);
+        }
+    }, [dataActivities]);
 
     const handleEditMinistry = async () => {
         const payload = { name, description, color };
@@ -46,7 +51,7 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
 
             if (response.status === 204) {
                 fetchMinistries();
-                enqueueSnackbar('Ministério editado com sucesso', { variant: 'success' });
+                //enqueueSnackbar('Ministério editado com sucesso', { variant: 'success' });
             }
         } catch (error) {
             enqueueSnackbar(error.response?.data?.message || "Erro ao editar ministério", { variant: 'error' });
@@ -82,7 +87,7 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
 
             if (response.status === 200) {
                 fetchActivities();
-                enqueueSnackbar('Atividade editada com sucesso', { variant: 'success' });
+                //enqueueSnackbar('Atividade editada com sucesso', { variant: 'success' });
             }
         } catch (error) {
             enqueueSnackbar(error.response?.data?.message || "Erro ao editar atividade", { variant: 'error' });
@@ -95,6 +100,8 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
         for (const activity of activities) {
             await handleActivityEdit(activity);
         }
+
+        enqueueSnackbar('Ministério editado com sucesso', { variant: 'success' });
 
         onClose();
     };
