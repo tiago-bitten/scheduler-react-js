@@ -62,7 +62,7 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                 const response = await post('/schedules/open', payload);
                 if (response.status === 204) {
                     enqueueSnackbar('Agenda aberta com sucesso', { variant: 'success' });
-                    onClose();
+                    handleClose();
                     fetchSchedules();
                 }
 
@@ -86,9 +86,22 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
         // eslint-disable-next-line
     }, [open, selectedDate, formik.setValues]);
 
+    function handleClose() {
+        formik.resetForm({
+            values: {
+                name: '',
+                description: '',
+                startDate: '',
+                startTime: '',
+                duration: 60,
+            },
+        })
+
+        onClose();
+    }
 
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal open={open} onClose={handleClose}>
             <Box sx={style}>
                 <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
                     <CloseIcon />
