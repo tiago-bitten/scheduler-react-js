@@ -200,40 +200,45 @@ const Ministries = () => {
     return (
         <>
             <Header />
-            <Box sx={{ mt: 4, mb: 4, mx: 6 }}>
+            <Box sx={{ mt: 4, mx: 6 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-                    <TextField
-                        label="Ministério"
-                        variant="standard"
-                        size="small"
-                        value={ministryName}
-                        onChange={handleMinistryNameChange}
-                        sx={{ width: '300px', mr: 2 }}
-                        autoComplete="off"
-                    />
-                    <TextField
-                        label="Voluntário"
-                        variant="standard"
-                        size="small"
-                        value={volunteerName}
-                        onChange={handleVolunteerNameChange}
-                        sx={{ width: '300px' }}
-                        autoComplete="off"
-                    />
-                    <RoundButton value="CRIAR MINISTÉRIO" onClick={handleClick} />
+                    <Box  sx={{ display: 'flex', gap: 2 }}>
+                        <TextField
+                            label="Ministério"
+                            variant="standard"
+                            size="small"
+                            value={ministryName}
+                            onChange={handleMinistryNameChange}
+                            sx={{ width: '300px', mr: 2 }}
+                            autoComplete="off"
+                        />
+                        <TextField
+                            label="Voluntário"
+                            variant="standard"
+                            size="small"
+                            value={volunteerName}
+                            onChange={handleVolunteerNameChange}
+                            sx={{ width: '300px' }}
+                            autoComplete="off"
+                        />
+                    </Box>
+                    <Box>
+                        <RoundButton value="CRIAR MINISTÉRIO" onClick={handleClick} />
+
+                    </Box>
                 </Box>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                        <TableCell align="center" sx={{ width: '25%', pr: 10 }}>Nome</TableCell>
-                            <TableCell align="left">Descrição</TableCell>
-                            <TableCell align="right" sx={{ width: '25%', textAlign: 'right' }}>Voluntários</TableCell>
-                            <TableCell></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {data?.ministries.length > 0 ? (
-                            data.ministries.map((ministry) => (
+                {data && data.ministries.length > 0 ? (
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align="center" sx={{ width: '25%', pr: 10 }}>Nome</TableCell>
+                                <TableCell align="left">Descrição</TableCell>
+                                <TableCell align="right" sx={{ width: '25%', textAlign: 'right' }}>Voluntários</TableCell>
+                                <TableCell></TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {data.ministries.map((ministry) => (
                                 <MinistryLine
                                     key={ministry.id}
                                     ministry={ministry}
@@ -241,12 +246,12 @@ const Ministries = () => {
                                     handleDelete={() => handleDeteleClick(ministry)}
                                     onMinistryNameClick={() => handleVolunteerMinistryModal(ministry.id)}
                                 />
-                            ))
-                        ) : (
-                            <NotFoundItem entities="ministérios" />
-                        )}
-                    </TableBody>
-                </Table>
+                            ))}
+                        </TableBody>
+                    </Table>
+                ) : (
+                    <NotFoundItem entities="ministérios" />
+                )}
             </Box>
             <CreateMinistryModal
                 open={open}
