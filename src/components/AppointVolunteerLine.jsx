@@ -6,7 +6,7 @@ const AppointVolunteerLine = ({ volunteer, handleAppointment }) => {
     const isUnavailable = volunteer.isUnavailable;
 
     return (
-        <Tooltip title={isUnavailable ? 'Voluntário não pode ser agendado nesta data' : ''}>
+        <Tooltip title={isUnavailable ? 'Voluntário não pode ser agendado nesta data' : ''} disableInteractive>
             <ListItem
                 key={volunteer.id}
                 divider
@@ -16,13 +16,13 @@ const AppointVolunteerLine = ({ volunteer, handleAppointment }) => {
                 }}
             >
                 <ListItemAvatar>
-                    <Avatar src="https://thispersondoesnotexist.com/" alt={volunteer.name} />
+                    <Avatar alt={volunteer.name} />
                 </ListItemAvatar>
                 <ListItemText
                     primary={volunteer.name + ' ' + volunteer.lastName}
                 />
                 {!isUnavailable && (
-                    <Tooltip title="Agendar">
+                    <Tooltip title="Agendar" disableInteractive>
                         <Box>
                             <IconButton onClick={() => handleAppointment(volunteer)}>
                                 <DoneIcon fontSize="medium" />

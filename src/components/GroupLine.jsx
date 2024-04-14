@@ -18,12 +18,12 @@ const GroupLine = ({ group, handleAssociateVolunteer, handleDeleteClick }) => {
                     </Typography>
                 </Box>
                 <Box>
-                    <Tooltip title="Editar">
+                    <Tooltip title="Editar" disableInteractive>
                         <IconButton onClick={handleAssociateVolunteer}>
                             <EditIcon />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="Excluir">
+                    <Tooltip title="Excluir" disableInteractive>
                         <IconButton onClick={handleDeleteClick}>
                             <DeleteIcon />
                         </IconButton>

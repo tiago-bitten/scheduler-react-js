@@ -20,12 +20,12 @@ const VolunteerBox = ({ volunteer, ministries, handleDeleteClick }) => {
                     </div>
                 </div>
                 <div className="flex items-center">
-                    <Tooltip title="Editar">
+                    <Tooltip title="Editar" disableInteractive>
                         <IconButton>
                             <Edit className="cursor-pointer mx-2" />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="Excluir">
+                    <Tooltip title="Excluir" disableInteractive>
                         <IconButton onClick={handleDeleteClick}>
                             <Delete className="cursor-pointer" />
                         </IconButton>

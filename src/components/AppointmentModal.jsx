@@ -1,5 +1,5 @@
     import React, { useEffect, useRef, useState } from "react";
-    import { Modal, Box, Typography, IconButton, Card, CardContent, LinearProgress, Chip, TextField, Tooltip } from "@mui/material";
+    import { Modal, Box, Typography, IconButton, Card, CardContent, Chip, TextField, Tooltip } from "@mui/material";
     import CloseIcon from '@mui/icons-material/Close';
     import moment from "moment";
     import { useSnackbar } from "notistack";
@@ -18,10 +18,10 @@
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '80%',
-        maxWidth: '70%',
+        width: '65%',
         bgcolor: 'background.paper',
         boxShadow: 24,
+        borderRadius: 2,
         p: 4,
         overflow: 'hidden'
     };
@@ -98,8 +98,7 @@
                             <Card variant="outlined">
                                 <CardContent>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <Typography variant="body1">{moment(schedule?.start).format('DD/MM/YYYY')}</Typography>
-                                        <Typography variant="body1">{moment(schedule?.start).format('HH:mm')} - {moment(schedule?.end).format('HH:mm')}</Typography>
+                                        <Typography variant="body1">Dia {moment(schedule?.start).format('DD/MM/YYYY')} das {moment(schedule?.start).format('HH:mm')} até às {moment(schedule?.end).format('HH:mm')}</Typography>
                                     </Box>
                                     <Box sx={{ display: 'flex', flexWrap: 'wrap', mt: 1 }}>
                                         {ministriesFetch.data?.ministries?.map((ministry) => (
@@ -112,12 +111,12 @@
                                         ))}
                                     </Box>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <Tooltip title="Gerar escalas">
+                                        <Tooltip title="Gerar escalas" disableInteractive>
                                             <IconButton onClick={() => setOpenCreateScaleModal(true)} sx={{ mt: 2 }}>
                                                 <AssignmentIcon />
                                             </IconButton>
                                         </Tooltip>
-                                        <Tooltip title="Baixar escalas">
+                                        <Tooltip title="Baixar escalas" disableInteractive>
                                             <IconButton onClick={handleDownloadImage} sx={{ mt: 2 }}>
                                                 <DownloadIcon />
                                             </IconButton>

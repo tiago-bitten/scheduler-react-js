@@ -38,10 +38,10 @@ const AppointmentLine = ({ appointment, userMinistries, fetchAppointments, isSch
     const tooltipContent = isActive ? "" : `Não existe mais vinculo entre o voluntário ${appointment.volunteerMinistry.volunteer.name} e o ministério ${appointment.volunteerMinistry.ministry.name}`;
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1, borderBottom: 1, borderColor: 'grey.300', bgcolor: 'grey.200' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2, borderBottom: 1, borderColor: 'grey.300', bgcolor: 'grey.200' }}>
             <Tooltip title={tooltipContent} disableHoverListener={isActive}>
                 <Box sx={{ display: 'flex', alignItems: 'center', opacity: !isActive ? 0.7 : 1 }}>
-                    <Avatar src="https://thispersondoesnotexist.com/" sx={{ width: 50, height: 50, mr: 2 }} />
+                    <Avatar sx={{ width: 50, height: 50, mr: 2 }} />
                     <Box>
                         <Typography sx={{ fontSize: '1rem', color: !isActive ? 'grey.400' : 'grey.900', mb: 0.3 }}>
                             {appointment.volunteerMinistry.volunteer.name} {appointment.volunteerMinistry.volunteer.lastName}
@@ -53,9 +53,11 @@ const AppointmentLine = ({ appointment, userMinistries, fetchAppointments, isSch
                 </Box>
             </Tooltip>
             {isUserAllowedInMinistry && !isSchedulePast && (
-                <IconButton onClick={() => handleDelete(appointment.id)}>
-                    <CloseIcon fontSize="medium" />
-                </IconButton>
+                <Tooltip title="Desagendar" disableInteractive>
+                    <IconButton onClick={() => handleDelete(appointment.id)}>
+                        <CloseIcon fontSize="medium" />
+                    </IconButton>
+                </Tooltip>
             )}
         </Box>
     );

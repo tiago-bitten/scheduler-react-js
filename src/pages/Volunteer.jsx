@@ -126,7 +126,7 @@ const Volunteer = () => {
                     </Box>
                     <Box>
                         <RoundButton value="CADASTRAR VOLUNTÁRIO" onClick={handleClick} />
-                        <Tooltip title="Copiar link de autocadastro" arrow>
+                        <Tooltip title="Copiar link de autocadastro" disableInteractive>
                             <IconButton onClick={copyAutocadastroLink} sx={{ ml: '5px' }}>
                                 <AddLinkIcon />
                             </IconButton>

@@ -103,7 +103,7 @@ const Header = () => {
                 <Box sx={{ display: 'flex' }}>
                     {user?.isSuperUser &&
                         <Box sx={{ mx: 2 }}>
-                            <Tooltip title="Aprovar contas">
+                            <Tooltip title="Aprovar contas" disableInteractive>
                                 <IconButton sx={{ color: 'white' }} onClick={handleNotifications}>
                                     <Badge badgeContent={usersCount} color="error" max={99}>
                                         <HowToRegIcon />
@@ -113,7 +113,7 @@ const Header = () => {
                         </Box>
                     }
                     <Box sx={{ ml: 2 }}>
-                        <Tooltip title="Perfil">
+                        <Tooltip title="Perfil" disableInteractive>
                             <IconButton sx={{ color: 'white' }} onClick={handleMenu}>
                                 <Person />
                             </IconButton>
