@@ -11,12 +11,14 @@ const itemsStyle = {
     cursor: 'pointer',
     mx: 2,
     px: 2,
+    fontSize: '1.2rem',
+    borderRadius: '9px',
+    transition: 'background-color 0.3s ease',
     '&:hover': {
         bgcolor: '#718FE9'
     },
-    fontSize: '1.2rem',
-    borderRadius: '9px',
 };
+
 
 const Header = () => {
     const { enqueueSnackbar } = useSnackbar();
