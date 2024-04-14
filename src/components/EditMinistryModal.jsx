@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Box, Typography, TextField, IconButton, Grid } from '@mui/material';
+import { Modal, Box, Typography, TextField, IconButton, Grid, Tooltip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import { HexColorPicker } from 'react-colorful';
@@ -7,6 +7,7 @@ import { usePost } from '../hooks/usePost';
 import { usePut } from '../hooks/usePut';
 import { useSnackbar } from 'notistack';
 import { useFetch } from '../hooks/useFetch';
+import { useDelete } from '../hooks/useDelete';
 import RoundButton from './RoundButton';
 
 const boxStyle = {
@@ -18,6 +19,7 @@ const boxStyle = {
     maxWidth: '1500px',
     bgcolor: 'background.paper',
     boxShadow: 24,
+    borderRadius: 2,
     p: 3,
     display: 'flex',
     flexDirection: 'column',
@@ -28,6 +30,7 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
     const { data: dataActivities, fetch: fetchActivities } = useFetch(`/activities/ministry/${ministry?.id}`);
     const { loading, put } = usePut();
     const { post } = usePost();
+    const { deleteRequest } = useDelete();
     const { enqueueSnackbar } = useSnackbar();
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -108,7 +111,7 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
 
         try {
             const response = await post(`/activities/create?ministryId=${ministry?.id}`, payload);
-            
+
             if (response.status === 201) {
                 enqueueSnackbar('Atividade cadastrada com sucesso', { variant: 'success' });
                 fetchActivities();
@@ -120,6 +123,20 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
             enqueueSnackbar(error.response?.data?.message || 'Error geral - EditMinistryModal', { variant: 'error' });
         }
     };
+
+    const handleRemoveActivity = async (activity) => {
+        try {
+            const response = await deleteRequest(`/activities/${activity.id}`);
+
+            if (response.status === 204) {
+                fetchActivities();
+                enqueueSnackbar('Atividade removida com sucesso', { variant: 'success' });
+            }
+
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message || 'Error geral - EditMinistryModal', { variant: 'error' });
+        }
+    }
 
     const handleSave = async () => {
         await handleEditMinistry();
@@ -205,9 +222,11 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
                                         />
                                     </Grid>
                                     <Grid item xs={2}>
-                                        <IconButton onClick={handleCreateActivity}>
-                                            <AddIcon />
-                                        </IconButton>
+                                        <Tooltip title="Adicionar atividade" disableInteractive>
+                                            <IconButton onClick={handleCreateActivity}>
+                                                <AddIcon />
+                                            </IconButton>
+                                        </Tooltip>
                                     </Grid>
                                 </Grid>
                                 {activities.length > 0 ? (
@@ -232,7 +251,7 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
                                                 />
                                             </Grid>
                                             <Grid item xs={2}>
-                                                <IconButton>
+                                                <IconButton onClick={() => handleRemoveActivity(activity)}>
                                                     <CloseIcon />
                                                 </IconButton>
                                             </Grid>
