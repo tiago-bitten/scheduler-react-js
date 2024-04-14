@@ -15,12 +15,12 @@ const MinistryLine = ({ ministry, onMinistryNameClick, handleEdit, handleDelete 
                 {ministry.totalVolunteers}
             </TableCell>
             <TableCell align="right">
-                <Tooltip title="Editar">
+                <Tooltip title="Editar" disableInteractive>
                     <IconButton onClick={handleEdit}>
                         <Edit />
                     </IconButton>
                 </Tooltip>
-                <Tooltip title="Excluir">
+                <Tooltip title="Excluir" disableInteractive>
                     <IconButton onClick={handleDelete}>
                         <Delete />
                     </IconButton>

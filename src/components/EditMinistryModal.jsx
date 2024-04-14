@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, Typography, TextField, IconButton, Grid } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
 import { HexColorPicker } from 'react-colorful';
+import { usePost } from '../hooks/usePost';
 import { usePut } from '../hooks/usePut';
 import { useSnackbar } from 'notistack';
 import { useFetch } from '../hooks/useFetch';
@@ -13,7 +15,7 @@ const boxStyle = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '600px',
-    maxWidth: '900px',
+    maxWidth: '1500px',
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 3,
@@ -25,15 +27,22 @@ const boxStyle = {
 const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
     const { data: dataActivities, fetch: fetchActivities } = useFetch(`/activities/ministry/${ministry?.id}`);
     const { loading, put } = usePut();
+    const { post } = usePost();
     const { enqueueSnackbar } = useSnackbar();
-    const [name, setName] = useState(ministry?.name);
-    const [description, setDescription] = useState(ministry?.description);
-    const [color, setColor] = useState(ministry?.color);
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [color, setColor] = useState('');
     const [activities, setActivities] = useState([]);
+
+    const [newActivityName, setNewActivityName] = useState('');
+    const [newActivityTotalVolunteers, setNewActivityTotalVolunteers] = useState(0);
 
     useEffect(() => {
         if (open && ministry?.id) {
             fetchActivities();
+            setName(ministry.name);
+            setDescription(ministry.description);
+            setColor(ministry.color);
         }
     }, [open, ministry?.id]);
 
@@ -94,15 +103,31 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
         }
     };
 
+    const handleCreateActivity = async () => {
+        const payload = { name: newActivityName, totalVolunteers: newActivityTotalVolunteers };
+
+        try {
+            const response = await post(`/activities/create?ministryId=${ministry?.id}`, payload);
+            
+            if (response.status === 201) {
+                enqueueSnackbar('Atividade cadastrada com sucesso', { variant: 'success' });
+                fetchActivities();
+                setNewActivityName('');
+                setNewActivityTotalVolunteers(0);
+            }
+
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message || 'Error geral - EditMinistryModal', { variant: 'error' });
+        }
+    };
+
     const handleSave = async () => {
         await handleEditMinistry();
 
         for (const activity of activities) {
             await handleActivityEdit(activity);
         }
-
         enqueueSnackbar('Ministério editado com sucesso', { variant: 'success' });
-
         onClose();
     };
 
@@ -156,12 +181,39 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <Box display="flex" flexDirection="column" alignItems="center" sx={{ width: '100%' }}>
+                        <Box display="flex" flexDirection="column" alignItems="center" sx={{ width: '100%', overflow: 'auto', maxHeight: 350 }}>
                             <Grid item xs={12} md={10}>
+                                <Grid container spacing={2} alignItems="center">
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            label="Atividades"
+                                            variant="standard"
+                                            fullWidth
+                                            margin="normal"
+                                            onChange={(event) => setNewActivityName(event.target.value)}
+                                            value={newActivityName}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            label="Total de voluntários"
+                                            variant="standard"
+                                            fullWidth
+                                            margin="normal"
+                                            onChange={(event) => setNewActivityTotalVolunteers(event.target.value)}
+                                            value={newActivityTotalVolunteers === 0 ? '' : newActivityTotalVolunteers}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <IconButton onClick={handleCreateActivity}>
+                                            <AddIcon />
+                                        </IconButton>
+                                    </Grid>
+                                </Grid>
                                 {activities.length > 0 ? (
                                     activities.map((activity) => (
                                         <Grid container key={activity.id} spacing={2} alignItems="center">
-                                            <Grid item xs={8}>
+                                            <Grid item xs={6}>
                                                 <TextField
                                                     variant="filled"
                                                     value={activity.name}
@@ -178,6 +230,11 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
                                                     fullWidth
                                                     margin="normal"
                                                 />
+                                            </Grid>
+                                            <Grid item xs={2}>
+                                                <IconButton>
+                                                    <CloseIcon />
+                                                </IconButton>
                                             </Grid>
                                         </Grid>
                                     ))

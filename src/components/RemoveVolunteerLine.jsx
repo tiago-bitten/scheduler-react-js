@@ -15,7 +15,7 @@ const RemoveVolunteerLine = ({ volunteer, removeVolunteer }) => {
             <ListItemText
                 primary={volunteer.name + ' ' + volunteer.lastName}
             />
-            <Tooltip title="Remover">
+            <Tooltip title="Remover" disableInteractive>
                 <Box>
                     <IconButton onClick={removeVolunteer}>
                         <Close fontSize="medium" />

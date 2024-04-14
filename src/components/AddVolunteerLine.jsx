@@ -15,7 +15,7 @@ const AddVolunteerLine = ({ volunteer, addVolunteer }) => {
             <ListItemText
                 primary={volunteer.name + ' ' + volunteer.lastName}
             />
-            <Tooltip title="Adicionar">
+            <Tooltip title="Adicionar" disableInteractive>
                 <Box>
                     <IconButton onClick={addVolunteer}>
                         <DoneIcon fontSize="medium" />
