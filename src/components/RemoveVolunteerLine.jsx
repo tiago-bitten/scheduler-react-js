@@ -10,7 +10,7 @@ const RemoveVolunteerLine = ({ volunteer, removeVolunteer }) => {
             divider
         >
             <ListItemAvatar>
-                <Avatar src="https://thispersondoesnotexist.com/" alt={volunteer.name} />
+                <Avatar /*src="https://thispersondoesnotexist.com/"*/ alt={volunteer.name} />
             </ListItemAvatar>
             <ListItemText
                 primary={volunteer.name + ' ' + volunteer.lastName}

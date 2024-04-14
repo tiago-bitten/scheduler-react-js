@@ -22,6 +22,8 @@ import RemoveVolunteerLine from "./RemoveVolunteerLine";
 import AddVolunteerLine from "./AddVolunteerLine";
 import { useFetch } from "../hooks/useFetch";
 import { usePost } from "../hooks/usePost";
+import { usePut } from "../hooks/usePut";
+import { enqueueSnackbar } from "notistack";
 
 const boxStyle = {
     position: 'absolute',
@@ -41,6 +43,9 @@ const boxStyle = {
 const VolunteerMinistryModal = ({ open, handleClose, ministry, volunteers, changeAction, action, title, handleAssociateVolunteer, handleDisassociateVolunteer }) => {
     const [value, setValue] = React.useState(0);
 
+    const { post } = usePost();
+    const { put } = usePut();
+
     const associatedVolunteersFetch = useFetch(`volunteer-ministries/ministry/${ministry?.id}`);
     const notAssociatedVolunteersFetch = useFetch(`/volunteers/not-in-ministry/${ministry?.id}`);
 
@@ -50,6 +55,36 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry, volunteers, chang
             notAssociatedVolunteersFetch.fetch();
         }
     }, [open]);
+
+    const associateVolunteer = async (volunteer) => {
+        try {
+            const response = await post(`/volunteer-ministries/associate?volunteerId=${volunteer.id}&ministryId=${ministry.id}`);
+        
+            if (response.status === 204) {
+                associatedVolunteersFetch.fetch();
+                notAssociatedVolunteersFetch.fetch();
+                enqueueSnackbar('Voluntário vinculado com sucesso', { variant: 'success' });
+            }
+
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message || 'Erro ao vincular voluntário - VolunteerMinistryModal', { variant: 'error' });
+        }
+    }
+
+    const disassociateVolunteer = async (volunteer) => {
+        try {
+            const response = await put(`/volunteer-ministries/disassociate?volunteerId=${volunteer.id}&ministryId=${ministry.id}`);
+
+            if (response.status === 204) {
+                notAssociatedVolunteersFetch.fetch();
+                associatedVolunteersFetch.fetch();
+                enqueueSnackbar('Voluntário desvinculado com sucesso', { variant: 'success' });
+            }
+
+        } catch (error) {
+            enqueueSnackbar(error?.response.data?.message || 'Erro ao desvincular voluntário - VolunteerMinistryModal', { variant: 'error' })
+        }
+    }
 
     const handleTabChange = (event, newValue) => {
         setValue(newValue);
@@ -69,7 +104,7 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry, volunteers, chang
                             <TextField
                                 label="Buscar voluntário"
                                 variant="standard"
-                                width="100%"
+                                fullWidth
                             />
                         </Box>
                         <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, bgcolor: 'grey.200' }}>
@@ -79,12 +114,12 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry, volunteers, chang
                                         <RemoveVolunteerLine
                                             key={volunteer.id}
                                             volunteer={volunteer}
-                                            removeVolunteer={null}
+                                            removeVolunteer={() => disassociateVolunteer(volunteer)}
                                         />
                                     </ListItem>
                                 ))
                             ) : (
-                                <NotFoundItem entities="voluntários" />
+                                <NotFoundItem entities="voluntários com vinculo" />
                             )}
                         </List>
                     </TabPanel>
@@ -95,7 +130,7 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry, volunteers, chang
                             <TextField
                                 label="Buscar voluntário"
                                 variant="standard"
-                                width="100%"
+                                fullWidth
                             />
                         </Box>
                         <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, bgcolor: 'grey.200' }}>
@@ -105,12 +140,12 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry, volunteers, chang
                                         <AddVolunteerLine
                                             key={volunteer.id}
                                             volunteer={volunteer}
-                                            addVolunteer={null}
+                                            addVolunteer={() => associateVolunteer(volunteer)}
                                         />
                                     </ListItem>
                                 ))
                             ) : (
-                                <NotFoundItem entities="voluntários" />
+                                <NotFoundItem entities="voluntários sem vinculo" />
                             )}
                         </List>
                     </TabPanel>
