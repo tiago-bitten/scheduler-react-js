@@ -24,8 +24,11 @@ const CreateAccount = () => {
             leftCardComponent = <CreateAccountLeftCard
                 nextStep={nextStep}
                 setNextStep={setNextStep}
+                name={name}
                 setName={setName}
+                email={email}
                 setEmail={setEmail}
+                password={password}
                 setPassword={setPassword}
             />;
             rightCardComponent = <CreateAccountRightCardWait />;

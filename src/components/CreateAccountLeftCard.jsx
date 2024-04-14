@@ -2,8 +2,9 @@ import React from 'react';
 
 import { TextField, Box } from '@mui/material';
 import RoundButton from './RoundButton';
+import { enqueueSnackbar } from 'notistack';
 
-const CreateAccountLeftCard = ({ nextStep, setNextStep, setName, setEmail, setPassword }) => {
+const CreateAccountLeftCard = ({ nextStep, setNextStep, name, setName, email, setEmail, password, setPassword }) => {
 
     const handleNameChange = (event) => {
         setName(event.target.value);
@@ -17,7 +18,19 @@ const CreateAccountLeftCard = ({ nextStep, setNextStep, setName, setEmail, setPa
         setPassword(event.target.value);
     };
 
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
     const handleClick = () => {
+        if (!name || !email || !password) {
+            enqueueSnackbar('Preencha todos os campos', { variant: 'warning' });
+            return;
+        }
+
+        if (!emailRegex.test(email)) {
+            enqueueSnackbar('E-mail inválido', { variant: 'warning' });
+            return;
+        }
+
         setNextStep(nextStep + 1);
     };
 
@@ -28,7 +41,7 @@ const CreateAccountLeftCard = ({ nextStep, setNextStep, setName, setEmail, setPa
             </div>
             <Box sx={{ mb: 4, width: '70%' }}>
                 <TextField
-                    label="Nome"
+                    label="Nome*"
                     variant="standard"
                     size="small"
                     fullWidth
@@ -38,7 +51,7 @@ const CreateAccountLeftCard = ({ nextStep, setNextStep, setName, setEmail, setPa
             </Box>
             <Box sx={{ mb: 4, width: '70%' }}>
                 <TextField
-                    label="E-mail"
+                    label="E-mail*"
                     variant="standard"
                     size="small"
                     fullWidth
@@ -48,7 +61,7 @@ const CreateAccountLeftCard = ({ nextStep, setNextStep, setName, setEmail, setPa
             </Box>
             <Box sx={{ mb: 8, width: '70%' }}>
                 <TextField
-                    label="Senha"
+                    label="Senha*"
                     variant="standard"
                     size="small"
                     fullWidth
