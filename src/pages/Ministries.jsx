@@ -202,7 +202,7 @@ const Ministries = () => {
             <Header />
             <Box sx={{ mt: 4, mx: 6 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-                    <Box  sx={{ display: 'flex', gap: 2 }}>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
                         <TextField
                             label="Ministério"
                             variant="standard"
@@ -228,27 +228,29 @@ const Ministries = () => {
                     </Box>
                 </Box>
                 {data && data.ministries.length > 0 ? (
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell align="center" sx={{ width: '25%', pr: 10 }}>Nome</TableCell>
-                                <TableCell align="left">Descrição</TableCell>
-                                <TableCell align="right" sx={{ width: '25%', textAlign: 'right' }}>Voluntários</TableCell>
-                                <TableCell></TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {data.ministries.map((ministry) => (
-                                <MinistryLine
-                                    key={ministry.id}
-                                    ministry={ministry}
-                                    handleEdit={() => handleEditClick(ministry)}
-                                    handleDelete={() => handleDeteleClick(ministry)}
-                                    onMinistryNameClick={() => handleVolunteerMinistryModal(ministry.id)}
-                                />
-                            ))}
-                        </TableBody>
-                    </Table>
+                    <Box sx={{ bgcolor: '#F3F3F3', p: 2, mb: 2 }}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell align="center" sx={{ width: '25%', pr: 10 }}>Nome</TableCell>
+                                    <TableCell align="left">Descrição</TableCell>
+                                    <TableCell align="right" sx={{ width: '25%', textAlign: 'right' }}>Voluntários</TableCell>
+                                    <TableCell></TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {data.ministries.map((ministry) => (
+                                    <MinistryLine
+                                        key={ministry.id}
+                                        ministry={ministry}
+                                        handleEdit={() => handleEditClick(ministry)}
+                                        handleDelete={() => handleDeteleClick(ministry)}
+                                        onMinistryNameClick={() => handleVolunteerMinistryModal(ministry.id)}
+                                    />
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </Box>
                 ) : (
                     <NotFoundItem entities="ministérios" />
                 )}

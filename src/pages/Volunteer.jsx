@@ -111,6 +111,7 @@ const Volunteer = () => {
                             value={volunteerCompleteName}
                             onChange={handleVolunteerNameChange}
                             sx={{ width: '300px' }}
+                            autoComplete="off"
                         />
 
                         <TextField
@@ -120,6 +121,7 @@ const Volunteer = () => {
                             value={ministryName}
                             onChange={handleMinistryNameChange}
                             sx={{ width: '300px' }}
+                            autoComplete="off"
                         />
                     </Box>
                     <Box>
