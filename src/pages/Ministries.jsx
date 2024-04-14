@@ -182,6 +182,11 @@ const Ministries = () => {
         setOpenEditModal(true);
     }
 
+    const v2handleOpenAssociateModal = (ministry) => {
+        setSelectedMinistry(ministry);
+        setVolunteerMinistryModal(true);
+    }
+
     const handleDeteleClick = async (ministry) => {
         try {
             const response = await deleteRequest(`/ministries/delete/${ministry.id}`);
@@ -245,7 +250,7 @@ const Ministries = () => {
                                         ministry={ministry}
                                         handleEdit={() => handleEditClick(ministry)}
                                         handleDelete={() => handleDeteleClick(ministry)}
-                                        onMinistryNameClick={() => handleVolunteerMinistryModal(ministry.id)}
+                                        onMinistryNameClick={() => v2handleOpenAssociateModal(ministry)}
                                     />
                                 ))}
                             </TableBody>
@@ -263,6 +268,7 @@ const Ministries = () => {
             <VolunteerMinistryModal
                 open={openVolunteerMinistryModal}
                 handleClose={handleCloseVolunteerMinistryModal}
+                ministry={selectedMinistry}
                 volunteers={volunteers}
                 changeAction={handleAction}
                 action={action}

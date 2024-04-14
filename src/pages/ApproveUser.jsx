@@ -65,7 +65,7 @@ const ApproveUser = () => {
                         />
                     )) :
                         <Box sx={{ mt: 10 }}>
-                            <NotFoundItem entities="usuários" />
+                            <NotFoundItem entities="usuários para aprovar" />
                         </Box>
                     }
                 </div>

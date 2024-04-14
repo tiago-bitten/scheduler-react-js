@@ -1,5 +1,6 @@
 import React from 'react';
 import { Person, Notifications } from '@mui/icons-material';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography, Badge } from '@mui/material';
 import NacoesImg from '../assets/melhorada.png';
 import { useNavigate } from 'react-router-dom';
@@ -103,7 +104,7 @@ const Header = () => {
                             <Tooltip title="Aprovar contas">
                                 <IconButton sx={{ color: 'white' }} onClick={handleNotifications}>
                                     <Badge badgeContent={usersCount} color="error" max={99}>
-                                        <Notifications />
+                                        <HowToRegIcon />
                                     </Badge>
                                 </IconButton>
                             </Tooltip>
