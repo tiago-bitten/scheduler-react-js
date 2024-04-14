@@ -107,7 +107,7 @@ const AssociateVolunteerGroupModal = ({ open, onClose, group, fetchGroups }) => 
                                 <AddVolunteerLine
                                     key={volunteer.id}
                                     volunteer={volunteer}
-                                    addVolunter={() => handleAddVolunteer(volunteer.id)}
+                                    addVolunteer={() => handleAddVolunteer(volunteer.id)}
                                 />
                             ))
                         ) : (
