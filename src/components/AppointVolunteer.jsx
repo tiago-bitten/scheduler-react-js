@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Box, IconButton, Grid, Typography, TextField, List, ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import DoneIcon from '@mui/icons-material/Done';
+import GroupIcon from '@mui/icons-material/Group';
 import instance from "../config/axiosConfig";
 import NotFoundItem from "./NotFoundItem";
 import { useSnackbar } from "notistack";
@@ -11,6 +12,7 @@ import { usePost } from "../hooks/usePost";
 import { useFetch } from "../hooks/useFetch";
 import { useDebounce } from '../hooks/useDebouce';
 import IndicateActivity from "./IndicateActivity";
+import AppointGroupLine from "./AppointGroupLine";
 
 const style = {
     position: 'absolute',
@@ -28,14 +30,18 @@ const style = {
 const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments }) => {
     const { enqueueSnackbar } = useSnackbar();
     const [volunteerName, setVolunteerName] = useState('');
+    const [groupName, setGroupName] = useState('');
 
     const volunteersFetch = useFetch(`/volunteers/not-in-schedule/${schedule?.id}/ministry/${ministry?.id}?volunteerName=${volunteerName}`);
+    const groupsFetch = useFetch(`/groups/ministry/${ministry?.id}?groupName=${groupName}`)
     const { post } = usePost();
+
     const [volunteer, setVolunteer] = useState({});
 
     const [openIndicateActivity, setOpenIndicateActivity] = useState(false);
 
     const debouncedVolunteerName = useDebounce(volunteerName, 500);
+    const debouncedGroupName = useDebounce(volunteerName, 500);
 
     React.useEffect(() => {
         if (open) {
@@ -46,7 +52,15 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
 
     React.useEffect(() => {
         if (open) {
+            groupsFetch.fetch();
+        }
+        // eslint-disable-next-line
+    }, [open, debouncedGroupName]);
+
+    React.useEffect(() => {
+        if (open) {
             setVolunteerName('');
+            setGroupName('');
         }
     }, [open]);
 
@@ -57,7 +71,11 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
 
     const handleVolunteerNameChange = (event) => {
         setVolunteerName(event.target.value);
-    }
+    };
+
+    const handleGroupNameChange = (event) => {
+        setGroupName(event.target.value);
+    };
 
     return (
         <>
@@ -108,7 +126,16 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                                 sx={{ mb: 2 }}
                             />
                             <List sx={{ maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
-                                <NotFoundItem entities="grupos" />
+                                {groupsFetch.data?.groups?.length > 0 ? (
+                                    groupsFetch.data?.groups?.map(group => (
+                                        <AppointGroupLine
+                                            key={group.id}
+                                            group={group}
+                                            handleAppointment={handleAppointment}
+                                        />
+                                    ))) : (
+                                    <NotFoundItem entities="grupos" />
+                                )}
                             </List>
                         </Grid>
                     </Grid>
