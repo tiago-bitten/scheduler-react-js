@@ -11,7 +11,8 @@ import AppointVolunteerLine from "./AppointVolunteerLine";
 import { usePost } from "../hooks/usePost";
 import { useFetch } from "../hooks/useFetch";
 import { useDebounce } from '../hooks/useDebouce';
-import IndicateActivity from "./IndicateActivity";
+import AppointGroup from "./AppointGroup";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 const listItemStyle = {
     transition: 'opacity 0.3s ease-in-out',
@@ -22,20 +23,37 @@ const listItemStyle = {
 };;
 
 const AppointGroupLine = ({ group, handleAppointment }) => {
+    const [openAppointGroup, setOpenAppointGroup] = React.useState(false);
+
     return (
-        <Tooltip title="Agendar" disableInteractive>
-            <ListItem key={group.id} divider sx={listItemStyle}>
-                <ListItemAvatar>
-                    <Avatar>
-                        <GroupIcon />
-                    </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                    primary={group.name}
-                    secondary={group.description}
-                />
-            </ListItem>
-        </Tooltip>
+        <>
+            <Tooltip title="" disableInteractive>
+                <ListItem key={group.id} divider>
+                    <ListItemAvatar>
+                        <Avatar>
+                            <GroupIcon />
+                        </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                        primary={group.name}
+                        secondary={group.description}
+                    />
+                    <Tooltip title="Agendar" disableInteractive>
+                        <Box>
+                            <IconButton onClick={() => setOpenAppointGroup(true)}>
+                                <ArrowForwardIosIcon />
+                            </IconButton>
+                        </Box>
+                    </Tooltip>
+                </ListItem>
+            </Tooltip>
+            <AppointGroup
+                open={openAppointGroup}
+                onClose={() => setOpenAppointGroup(false)}
+                group={group}
+                fetchAppointments={null}
+            />
+        </>
     );
 }
 
