@@ -34,6 +34,7 @@ const boxStyle = {
     maxWidth: '1200px',
     bgcolor: 'background.paper',
     boxShadow: 24,
+    borderRadius: 2,
     p: 3,
     display: 'flex',
     flexDirection: 'column',
