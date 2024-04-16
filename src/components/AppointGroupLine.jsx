@@ -38,7 +38,7 @@ const AppointGroupLine = ({ group, handleAppointment }) => {
                         primary={group.name}
                         secondary={group.description}
                     />
-                    <Tooltip title="Agendar" disableInteractive>
+                    <Tooltip title="Visualizar" disableInteractive>
                         <Box>
                             <IconButton onClick={() => setOpenAppointGroup(true)}>
                                 <ArrowForwardIosIcon />
