@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, ListItem, ListItemAvatar, Avatar, ListItemText, Checkbox, Select, MenuItem, InputLabel } from "@mui/material";
+import { ListItem, ListItemAvatar, Avatar, ListItemText, Checkbox, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 
 const AppointGroupVolunteerItem = ({ volunteer, activities, checkedVolunteers, setCheckedVolunteers }) => {
     const isAvailable = volunteer.available;
@@ -21,15 +21,13 @@ const AppointGroupVolunteerItem = ({ volunteer, activities, checkedVolunteers, s
             />
             {isAvailable ? (
                 <>
-                    <Box sx={{ mr: 12 }}>
+                    <FormControl variant="standard" sx={{ minWidth: 120, marginRight: 3 }}>
+                        <InputLabel id="activity-select-label">Atividade</InputLabel>
                         <Select
                             labelId="activity-select-label"
                             id="activity-select"
-                            label="Atividade"
                             value={selectedActivity}
                             onChange={handleActivityChange}
-                            style={{ minWidth: 120 }}
-                            variant="standard"
                         >
                             {activities?.map((activity) => (
                                 <MenuItem key={activity.id} value={activity.id}>
@@ -37,7 +35,7 @@ const AppointGroupVolunteerItem = ({ volunteer, activities, checkedVolunteers, s
                                 </MenuItem>
                             ))}
                         </Select>
-                    </Box>
+                    </FormControl>
                     <Checkbox
                         checked={checkedVolunteers.includes(volunteer.id)}
                         onChange={() => setCheckedVolunteers(prev => {
