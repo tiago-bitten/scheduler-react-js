@@ -22,7 +22,7 @@ const listItemStyle = {
     },
 };;
 
-const AppointGroupLine = ({ group, handleAppointment }) => {
+const AppointGroupLine = ({ group, schedule, ministry, handleAppointment }) => {
     const [openAppointGroup, setOpenAppointGroup] = React.useState(false);
 
     return (
@@ -52,6 +52,8 @@ const AppointGroupLine = ({ group, handleAppointment }) => {
                 onClose={() => setOpenAppointGroup(false)}
                 group={group}
                 fetchAppointments={null}
+                schedule={schedule}
+                ministry={ministry}
             />
         </>
     );

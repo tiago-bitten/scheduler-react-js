@@ -131,6 +131,8 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                                             key={group.id}
                                             group={group}
                                             handleAppointment={handleAppointment}
+                                            schedule={schedule}
+                                            ministry={ministry}
                                         />
                                     ))) : (
                                     <NotFoundItem entities="grupos" />

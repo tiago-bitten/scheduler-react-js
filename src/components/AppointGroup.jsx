@@ -5,6 +5,7 @@ import AppointGroupVolunteerItem from "./AppointGroupVolunteerItem";
 import RoundButton from "./RoundButton";
 import { usePost } from "../hooks/usePost";
 import { useSnackbar } from "notistack";
+import { useFetch } from "../hooks/useFetch";
 
 const modalStyle = {
     position: 'absolute',
@@ -20,11 +21,16 @@ const modalStyle = {
 };
 
 const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointments }) => {
+    const activitiesFetch = useFetch(`/activities/ministry/${ministry?.id}`);
     const { post } = usePost();
     const { enqueueSnackbar } = useSnackbar();
     const [checkedVolunteers, setCheckedVolunteers] = React.useState([]);
 
-    
+    React.useEffect(() => {
+        if (open) {
+            activitiesFetch.fetch();
+        }
+    }, [open]);
 
     const handleGroupAppointment = async () => {
         const payload = {};
@@ -63,6 +69,7 @@ const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointme
                                 volunteer={volunteer}
                                 checkedVolunteers={checkedVolunteers}
                                 setCheckedVolunteers={setCheckedVolunteers}
+                                activities={activitiesFetch?.data?.activities}
                             />
                         </ListItem>
                     ))}
