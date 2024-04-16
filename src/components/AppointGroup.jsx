@@ -3,6 +3,8 @@ import { Modal, Box, Typography, ListItem, List } from "@mui/material";
 import CloseModal from "./CloseModal";
 import AppointGroupVolunteerItem from "./AppointGroupVolunteerItem";
 import RoundButton from "./RoundButton";
+import { usePost } from "../hooks/usePost";
+import { useSnackbar } from "notistack";
 
 const modalStyle = {
     position: 'absolute',
@@ -17,7 +19,31 @@ const modalStyle = {
     overflow: 'hidden',
 };
 
-const AppointGroup = ({ open, onClose, group, fetchAppointments }) => {
+const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointments }) => {
+    const { post } = usePost();
+    const { enqueueSnackbar } = useSnackbar();
+    const [checkedVolunteers, setCheckedVolunteers] = React.useState([]);
+
+    
+
+    const handleGroupAppointment = async () => {
+        const payload = {};
+
+        try {
+            const response = await post(`/appointments/appoint-group?scheduleId=${schedule?.id}&ministryId=${ministry?.id}`, payload);
+
+            if (response.status === 204) {
+                enqueueSnackbar("Grupo agendado com sucesso", { variant: "success" });
+                fetchAppointments();
+                onClose();
+            }
+
+        } catch (error) {
+            enqueueSnackbar(error.response?.data?.message || "Error geral - AppointGroup", { variant: "error" });
+            console.error(error);
+        }
+    }
+
     return (
         <Modal
             open={open}
@@ -33,7 +59,11 @@ const AppointGroup = ({ open, onClose, group, fetchAppointments }) => {
                             backgroundColor: !volunteer.available ? '#E0E0E0' : '',
                             opacity: !volunteer.available ? 0.7 : 1,
                         }}>
-                            <AppointGroupVolunteerItem volunteer={volunteer} />
+                            <AppointGroupVolunteerItem
+                                volunteer={volunteer}
+                                checkedVolunteers={checkedVolunteers}
+                                setCheckedVolunteers={setCheckedVolunteers}
+                            />
                         </ListItem>
                     ))}
                 </List>

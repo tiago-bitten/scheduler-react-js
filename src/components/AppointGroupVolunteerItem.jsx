@@ -1,7 +1,7 @@
 import React from "react";
 import { ListItemAvatar, Avatar, ListItemText, ListItem, Checkbox } from "@mui/material";
 
-const AppointGroupVolunteerItem = ({ volunteer }) => {
+const AppointGroupVolunteerItem = ({ volunteer, checkedVolunteers, setCheckedVolunteers }) => {
     const isAvailable = volunteer.available;
 
     return (

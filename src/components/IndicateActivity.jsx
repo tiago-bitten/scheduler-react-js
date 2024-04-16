@@ -1,6 +1,6 @@
 import React from "react";
 import { useSnackbar } from "notistack";
-import { Box, Typography, Modal, IconButton } from "@mui/material";
+import { Box, Typography, Modal, IconButton, Chip } from "@mui/material";
 import DoneIcon from '@mui/icons-material/Done';
 import { useFetch } from "../hooks/useFetch";
 import { usePost } from "../hooks/usePost";
@@ -53,17 +53,16 @@ const IndicateActivity = ({ open, onClose, volunteer, ministry, schedule, fetchA
             aria-describedby="modal-modal-description"
         >
             <Box sx={boxStyle}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
+                <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 4 }}>
                     Selecione uma atividade
                 </Typography>
                 {activitiesFetch?.activities.length === 0 && !loading && <Typography>Primeiro registre uma atividade antes de agentar o voluntario</Typography>}
                 {activitiesFetch?.activities.map((activity) => (
-                    <Box id={activity.id}>
-                        {activity.name}
-                        <IconButton onClick={() => handleIndicateActivity(activity)}>
-                            <DoneIcon />
-                        </IconButton>
-                    </Box>
+                    <Chip
+                        label={activity.name}
+                        onClick={() => handleIndicateActivity(activity)}
+                        sx={{ m: 1 }}
+                    />
                 ))}
             </Box>
         </Modal>

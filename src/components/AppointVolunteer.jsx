@@ -79,54 +79,78 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     };
 
     return (
-        <Modal open={open} onClose={onClose}>
-            <Box sx={style}>
-                <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
-                    <CloseIcon />
-                </IconButton>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sx={{ textAlign: 'center' }}>
-                        <Typography variant="h6" component="h2" gutterBottom>
-                            Agendar para {schedule?.title}
-                        </Typography>
+        <>
+            <Modal open={open} onClose={onClose}>
+                <Box sx={style}>
+                    <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
+                        <CloseIcon />
+                    </IconButton>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sx={{ textAlign: 'center' }}>
+                            <Typography variant="h6" component="h2" gutterBottom>
+                                Agendar para {schedule?.title}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                label="Buscar voluntários"
+                                variant="standard"
+                                size="small"
+                                fullWidth
+                                autoComplete="off"
+                                onChange={handleVolunteerNameChange}
+                                value={volunteerName}
+                                sx={{ mb: 2 }}
+                            />
+                            <List sx={{ minHeight: '400px', maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
+                                {volunteersFetch.data?.volunteers?.length > 0 ? (
+                                    volunteersFetch.data?.volunteers?.map(volunteer => (
+                                        <AppointVolunteerLine
+                                            key={volunteer.id}
+                                            volunteer={volunteer}
+                                            handleAppointment={handleAppointment}
+                                        />
+                                    ))) : (
+                                    <NotFoundItem entities="voluntários" />
+                                )}
+                            </List>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <TextField
+                                label="Buscar grupos"
+                                variant="standard"
+                                size="small"
+                                fullWidth
+                                autoComplete="off"
+                                sx={{ mb: 2 }}
+                            />
+                            <List sx={{ minHeight: '400px', maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
+                                {groupsFetch.data?.groups?.length > 0 ? (
+                                    groupsFetch.data?.groups?.map(group => (
+                                        <AppointGroupLine
+                                            key={group.id}
+                                            group={group}
+                                            handleAppointment={handleAppointment}
+                                        />
+                                    ))) : (
+                                    <NotFoundItem entities="grupos" />
+                                )}
+                            </List>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label="Buscar voluntários"
-                            variant="standard"
-                            size="small"
-                            fullWidth
-                            autoComplete="off"
-                            onChange={handleVolunteerNameChange}
-                            value={volunteerName}
-                            sx={{ mb: 2 }}
-                        />
-                        <List sx={{ minHeight: '400px', maxHeight: '400px', overflowY: 'auto', bgcolor: 'grey.200' }}>
-                            {volunteersFetch.data?.volunteers?.length > 0 ? volunteersFetch.data.volunteers.map(volunteer => (
-                                <AppointVolunteerLine key={volunteer.id} volunteer={volunteer} handleAppointment={() => {}} />
-                            )) : <NotFoundItem entities="voluntários" />}
-                        </List>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label="Buscar grupos"
-                            variant="standard"
-                            size="small"
-                            fullWidth
-                            autoComplete="off"
-                            onChange={handleGroupNameChange}
-                            value={groupName}
-                            sx={{ mb: 2 }}
-                        />
-                        <List sx={{ minHeight: '400px', maxHeight: '400px', overflowY: 'auto', bgcolor: 'grey.200' }}>
-                            {groupsFetch.data?.groups?.length > 0 ? groupsFetch.data.groups.map(group => (
-                                <AppointGroupLine key={group.id} group={group} handleAppointment={() => {}} />
-                            )) : <NotFoundItem entities="grupos" />}
-                        </List>
-                    </Grid>
-                </Grid>
-            </Box>
-        </Modal>
+                </Box>
+            </Modal>
+            <IndicateActivity
+                open={openIndicateActivity}
+                onClose={() => setOpenIndicateActivity(false)}
+                volunteer={volunteer}
+                ministry={ministry}
+                schedule={schedule}
+                fetchAppointments={fetchAppointments}
+                fetchVolunteers={volunteersFetch.fetch}
+                fetchGroups={groupsFetch.fetch}
+            />
+        </>
     );
 }
 
