@@ -25,6 +25,7 @@ import { usePost } from "../hooks/usePost";
 import { usePut } from "../hooks/usePut";
 import { enqueueSnackbar } from "notistack";
 import { useDebounce } from "../hooks/useDebouce";
+import VolunteerMinistryModalSkeleton from "./VolunteerMinistryModalSkeleton";
 
 const boxStyle = {
     position: 'absolute',
@@ -42,7 +43,7 @@ const boxStyle = {
     alignItems: 'center',
 };
 
-const VolunteerMinistryModal = ({ open, handleClose, ministry, volunteers, changeAction, action, title, handleAssociateVolunteer, handleDisassociateVolunteer }) => {
+const VolunteerMinistryModal = ({ open, handleClose, ministry }) => {
     const [value, setValue] = React.useState(0);
     const [associatedVolunteerName, setAssociatedVolunteerName] = React.useState('');
 
@@ -78,7 +79,7 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry, volunteers, chang
     const associateVolunteer = async (volunteer) => {
         try {
             const response = await post(`/volunteer-ministries/associate?volunteerId=${volunteer.id}&ministryId=${ministry.id}`);
-        
+
             if (response.status === 204) {
                 associatedVolunteersFetch.fetch();
                 notAssociatedVolunteersFetch.fetch();
@@ -128,19 +129,20 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry, volunteers, chang
                             />
                         </Box>
                         <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, bgcolor: 'grey.200' }}>
-                            {associatedVolunteersFetch.data && associatedVolunteersFetch.data?.volunteers.length > 0 ? (
-                                associatedVolunteersFetch.data?.volunteers.map(volunteer => (
-                                    <ListItem key={volunteer.id}>
-                                        <RemoveVolunteerLine
-                                            key={volunteer.id}
-                                            volunteer={volunteer}
-                                            removeVolunteer={() => disassociateVolunteer(volunteer)}
-                                        />
-                                    </ListItem>
-                                ))
-                            ) : (
-                                <NotFoundItem entities="voluntários com vinculo" />
-                            )}
+                            {associatedVolunteersFetch.loading ? <VolunteerMinistryModalSkeleton /> :
+                                associatedVolunteersFetch.data && associatedVolunteersFetch.data?.volunteers.length > 0 ? (
+                                    associatedVolunteersFetch.data?.volunteers.map(volunteer => (
+                                        <ListItem key={volunteer.id}>
+                                            <RemoveVolunteerLine
+                                                key={volunteer.id}
+                                                volunteer={volunteer}
+                                                removeVolunteer={() => disassociateVolunteer(volunteer)}
+                                            />
+                                        </ListItem>
+                                    ))
+                                ) : (
+                                    <NotFoundItem entities="voluntários com vinculo" />
+                                )}
                         </List>
                     </TabPanel>
                 </Box>
