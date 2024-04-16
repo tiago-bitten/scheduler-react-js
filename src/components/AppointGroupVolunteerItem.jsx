@@ -19,7 +19,7 @@ const AppointGroupVolunteerItem = ({ volunteer, activities, checkedVolunteers, s
                 primary={`${volunteer.name} ${volunteer.lastName}`}
                 secondary={!isAvailable ? volunteer.reason : ''}
             />
-            {isAvailable ? (
+            {isAvailable && (
                 <>
                     <FormControl variant="standard" sx={{ minWidth: 120, marginRight: 3 }}>
                         <InputLabel id="activity-select-label">Atividade</InputLabel>
@@ -37,18 +37,9 @@ const AppointGroupVolunteerItem = ({ volunteer, activities, checkedVolunteers, s
                         </Select>
                     </FormControl>
                     <Checkbox
-                        checked={checkedVolunteers.includes(volunteer.id)}
-                        onChange={() => setCheckedVolunteers(prev => {
-                            if (prev.includes(volunteer.id)) {
-                                return prev.filter(id => id !== volunteer.id);
-                            } else {
-                                return [...prev, volunteer.id];
-                            }
-                        })}
+                        defaultChecked
                     />
                 </>
-            ) : (
-                <Checkbox disabled />
             )}
         </ListItem>
     );

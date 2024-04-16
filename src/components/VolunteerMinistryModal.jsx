@@ -24,6 +24,7 @@ import { useFetch } from "../hooks/useFetch";
 import { usePost } from "../hooks/usePost";
 import { usePut } from "../hooks/usePut";
 import { enqueueSnackbar } from "notistack";
+import { useDebounce } from "../hooks/useDebouce";
 
 const boxStyle = {
     position: 'absolute',
@@ -43,11 +44,14 @@ const boxStyle = {
 
 const VolunteerMinistryModal = ({ open, handleClose, ministry, volunteers, changeAction, action, title, handleAssociateVolunteer, handleDisassociateVolunteer }) => {
     const [value, setValue] = React.useState(0);
+    const [associatedVolunteerName, setAssociatedVolunteerName] = React.useState('');
+
+    const debouncedAssociatedVolunteerName = useDebounce(associatedVolunteerName, 500);
 
     const { post } = usePost();
     const { put } = usePut();
 
-    const associatedVolunteersFetch = useFetch(`volunteer-ministries/ministry/${ministry?.id}`);
+    const associatedVolunteersFetch = useFetch(`volunteer-ministries/ministry/${ministry?.id}?volunteerName=${associatedVolunteerName}`);
     const notAssociatedVolunteersFetch = useFetch(`/volunteers/not-in-ministry/${ministry?.id}`);
 
     React.useEffect(() => {
@@ -56,6 +60,20 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry, volunteers, chang
             notAssociatedVolunteersFetch.fetch();
         }
     }, [open]);
+
+    React.useEffect(() => {
+        if (!open) {
+            setAssociatedVolunteerName('');
+        }
+    }, [open]);
+
+    React.useEffect(() => {
+        associatedVolunteersFetch.fetch();
+    }, [debouncedAssociatedVolunteerName])
+
+    const handleAssociatedVolunteerNameChange = (event) => {
+        setAssociatedVolunteerName(event.target.value);
+    }
 
     const associateVolunteer = async (volunteer) => {
         try {
@@ -106,6 +124,7 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry, volunteers, chang
                                 label="Buscar voluntário"
                                 variant="standard"
                                 fullWidth
+                                onChange={handleAssociatedVolunteerNameChange}
                             />
                         </Box>
                         <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, bgcolor: 'grey.200' }}>
