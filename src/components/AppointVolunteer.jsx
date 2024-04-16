@@ -33,7 +33,7 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     const [groupName, setGroupName] = useState('');
 
     const volunteersFetch = useFetch(`/volunteers/not-in-schedule/${schedule?.id}/ministry/${ministry?.id}?volunteerName=${volunteerName}`);
-    const groupsFetch = useFetch(`/groups/ministry/${ministry?.id}?groupName=${groupName}`)
+    const groupsFetch = useFetch(`/groups/ministry/${ministry?.id}/schedule/${schedule?.id}?groupName=${groupName}`)
     const { post } = usePost();
 
     const [volunteer, setVolunteer] = useState({});
@@ -149,6 +149,7 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                 schedule={schedule}
                 fetchAppointments={fetchAppointments}
                 fetchVolunteers={volunteersFetch.fetch}
+                fetchGroups={groupsFetch.fetch}
             />
         </>
     );

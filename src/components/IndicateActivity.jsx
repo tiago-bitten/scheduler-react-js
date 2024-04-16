@@ -18,7 +18,7 @@ const boxStyle = {
     textAlign: "center",
 };
 
-const IndicateActivity = ({ open, onClose, volunteer, ministry, schedule, fetchAppointments, fetchVolunteers }) => {
+const IndicateActivity = ({ open, onClose, volunteer, ministry, schedule, fetchAppointments, fetchVolunteers, fetchGroups }) => {
     const { enqueueSnackbar } = useSnackbar();
     const { data: activitiesFetch, fetch } = useFetch(`/activities/ministry/${ministry?.id}`);
     const { loading, post } = usePost();
@@ -36,6 +36,7 @@ const IndicateActivity = ({ open, onClose, volunteer, ministry, schedule, fetchA
                 enqueueSnackbar(`Voluntário ${volunteer.name} indicado para a atividade ${activity.name}`, { variant: "success" });
                 fetchAppointments();
                 fetchVolunteers();
+                fetchGroups();
                 onClose();
             }
         } catch (error) {

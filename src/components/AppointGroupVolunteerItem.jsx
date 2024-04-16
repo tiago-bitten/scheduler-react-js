@@ -2,6 +2,8 @@ import React from "react";
 import { ListItemAvatar, Avatar, ListItemText, ListItem, Checkbox } from "@mui/material";
 
 const AppointGroupVolunteerItem = ({ volunteer }) => {
+    const isAvailable = volunteer.available;
+
     return (
         <ListItem>
             <ListItemAvatar>
@@ -9,11 +11,9 @@ const AppointGroupVolunteerItem = ({ volunteer }) => {
             </ListItemAvatar>
             <ListItemText
                 primary={volunteer.name + ' ' + volunteer.lastName}
-                secondary={volunteer.accessKey}
+                secondary={!isAvailable ? volunteer.reason : ''}
             />
-            <div>
-                <Checkbox defaultChecked />
-            </div>
+            {isAvailable ? <Checkbox defaultChecked /> : <Checkbox disabled />}
         </ListItem>
     );
 };
