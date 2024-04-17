@@ -4,6 +4,7 @@ import instance from '../config/axiosConfig';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 
+import MinistriesSkeleton from '../components/MinistriesSkeleton';
 import { useDebounce } from '../hooks/useDebouce';
 import RoundButton from '../components/RoundButton';
 import MinistryLine from '../components/MinistryLine';
@@ -31,7 +32,7 @@ const Ministries = () => {
     const debouncedMinistryName = useDebounce(ministryName, 500);
     const debouncedVolunteerName = useDebounce(volunteerName, 500);
 
-    const { data, error, fetch: fetchMinistries } = useFetch(`/ministries?ministryName=${ministryName}&volunteerName=${volunteerName}`);
+    const { data, error, loading, fetch: fetchMinistries } = useFetch(`/ministries?ministryName=${ministryName}&volunteerName=${volunteerName}`);
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -119,33 +120,34 @@ const Ministries = () => {
 
                     </Box>
                 </Box>
-                {data && data.ministries.length > 0 ? (
-                    <Box sx={{ bgcolor: '#F3F3F3', p: 2, mb: 2 }}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell align="center" sx={{ width: '25%', pr: 10 }}>Nome</TableCell>
-                                    <TableCell align="left">Descrição</TableCell>
-                                    <TableCell align="right" sx={{ width: '25%', textAlign: 'right' }}>Voluntários</TableCell>
-                                    <TableCell></TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {data.ministries.map((ministry) => (
-                                    <MinistryLine
-                                        key={ministry.id}
-                                        ministry={ministry}
-                                        handleEdit={() => handleEditClick(ministry)}
-                                        handleDelete={() => handleDeteleClick(ministry)}
-                                        onMinistryNameClick={() => v2handleOpenAssociateModal(ministry)}
-                                    />
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </Box>
-                ) : (
-                    <NotFoundItem entities="ministérios" />
-                )}
+                {loading ? <MinistriesSkeleton /> :
+                    data && data.ministries.length > 0 ? (
+                        <Box sx={{ bgcolor: '#F3F3F3', p: 2, mb: 2 }}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell align="center" sx={{ width: '25%', pr: 10 }}>Nome</TableCell>
+                                        <TableCell align="left">Descrição</TableCell>
+                                        <TableCell align="right" sx={{ width: '25%', textAlign: 'right' }}>Voluntários</TableCell>
+                                        <TableCell></TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {data.ministries.map((ministry) => (
+                                        <MinistryLine
+                                            key={ministry.id}
+                                            ministry={ministry}
+                                            handleEdit={() => handleEditClick(ministry)}
+                                            handleDelete={() => handleDeteleClick(ministry)}
+                                            onMinistryNameClick={() => v2handleOpenAssociateModal(ministry)}
+                                        />
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </Box>
+                    ) : (
+                        <NotFoundItem entities="ministérios" />
+                    )}
             </Box>
             <CreateMinistryModal
                 open={open}

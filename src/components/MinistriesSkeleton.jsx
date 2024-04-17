@@ -19,14 +19,9 @@ const MinistriesSkeleton = () => {
             </div>
             <div className="bg-septenary p-4 mx-12 mt-12 animate-pulse">
                 {Array.from(new Array(5)).map((_, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 border-b border-gray-200">
+                    <div key={index} className="flex items-center gap-6 p-4 border-b border-gray-200">
                         <Skeleton variant="rectangular" width="30%" height={50} />
                         <Skeleton variant="text" width="30%" height={20} />
-                        <Skeleton variant="text" width="5%" height={20} />
-                        <div className="flex items-center">
-                            <Skeleton variant="circular" width={24} height={24} />
-                            <Skeleton variant="circular" width={24} height={24} />
-                        </div>
                     </div>
                 ))}
             </div>
