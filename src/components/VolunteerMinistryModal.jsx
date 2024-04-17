@@ -77,12 +77,20 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry }) => {
 
     const handleAssociatedVolunteerNameChange = (event) => {
         setAssociatedVolunteerName(event.target.value);
-        setIsTyping(true);
+        if (event.target.value.length !== 0) {
+            setIsTyping(true);
+        } else {
+            setIsTyping(false);
+        }
     }
 
     const handleNotAssociatedVolunteerNameChange = (event) => {
         setNotAssociatedVolunteerName(event.target.value);
-        setIsTyping(true);
+        if (event.target.value.length !== 0) {
+            setIsTyping(true);
+        } else {
+            setIsTyping(false);
+        }
     }
 
     const associateVolunteer = async (volunteer) => {
