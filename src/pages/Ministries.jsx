@@ -120,9 +120,9 @@ const Ministries = () => {
 
                     </Box>
                 </Box>
-                {loading ? <MinistriesSkeleton /> :
-                    data && data.ministries.length > 0 ? (
-                        <Box sx={{ bgcolor: '#F3F3F3', p: 2, mb: 2 }}>
+                <Box sx={{ bgcolor: '#F3F3F3', p: 2, mb: 2 }}>
+                    {loading ? <MinistriesSkeleton /> :
+                        data && data.ministries.length > 0 && !loading ? (
                             <Table>
                                 <TableHead>
                                     <TableRow>
@@ -144,10 +144,10 @@ const Ministries = () => {
                                     ))}
                                 </TableBody>
                             </Table>
-                        </Box>
-                    ) : (
-                        <NotFoundItem entities="ministérios" />
-                    )}
+                        ) : (
+                            <NotFoundItem entities="ministérios" />
+                        )}
+                </Box>
             </Box>
             <CreateMinistryModal
                 open={open}

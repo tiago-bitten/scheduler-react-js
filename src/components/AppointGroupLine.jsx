@@ -1,17 +1,6 @@
 import React from "react";
 import { Modal, Box, IconButton, Grid, Typography, Tooltip, TextField, List, ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
-import DoneIcon from '@mui/icons-material/Done';
 import GroupIcon from '@mui/icons-material/Group';
-import instance from "../config/axiosConfig";
-import NotFoundItem from "./NotFoundItem";
-import { useSnackbar } from "notistack";
-import moment from "moment";
-import AppointVolunteerLine from "./AppointVolunteerLine";
-import { usePost } from "../hooks/usePost";
-import { useFetch } from "../hooks/useFetch";
-import { useDebounce } from '../hooks/useDebouce';
-import AppointGroup from "./AppointGroup";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 const listItemStyle = {
@@ -22,9 +11,7 @@ const listItemStyle = {
     },
 };;
 
-const AppointGroupLine = ({ group, schedule, ministry, handleAppointment }) => {
-    const [openAppointGroup, setOpenAppointGroup] = React.useState(false);
-
+const AppointGroupLine = ({ group, seeGroup }) => {
     return (
         <>
             <Tooltip title="" disableInteractive>
@@ -40,21 +27,13 @@ const AppointGroupLine = ({ group, schedule, ministry, handleAppointment }) => {
                     />
                     <Tooltip title="Visualizar" disableInteractive>
                         <Box>
-                            <IconButton onClick={() => setOpenAppointGroup(true)}>
+                            <IconButton onClick={() => seeGroup(group)}>
                                 <ArrowForwardIosIcon />
                             </IconButton>
                         </Box>
                     </Tooltip>
                 </ListItem>
             </Tooltip>
-            <AppointGroup
-                open={openAppointGroup}
-                onClose={() => setOpenAppointGroup(false)}
-                group={group}
-                fetchAppointments={null}
-                schedule={schedule}
-                ministry={ministry}
-            />
         </>
     );
 }

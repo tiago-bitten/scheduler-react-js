@@ -68,7 +68,7 @@ const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointme
             <Box sx={modalStyle}>
                 <CloseModal onClose={onClose} />
                 <List sx={{ overflow: 'auto', maxHeight: 500 }}>
-                    {group.volunteers.map((volunteer, index) => (
+                    {group?.volunteers?.map((volunteer, index) => (
                         <ListItem key={index} divider sx={{
                             backgroundColor: !volunteer.available ? '#E0E0E0' : '',
                             opacity: !volunteer.available ? 0.7 : 1,

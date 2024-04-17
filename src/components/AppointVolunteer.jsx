@@ -10,6 +10,7 @@ import { useDebounce } from '../hooks/useDebouce';
 import IndicateActivity from "./IndicateActivity";
 import AppointGroupLine from "./AppointGroupLine";
 import VolunteerMinistryModalSkeleton from "./VolunteerMinistryModalSkeleton";
+import AppointGroup from "./AppointGroup";
 
 const style = {
     position: 'absolute',
@@ -25,6 +26,14 @@ const style = {
     overflow: 'hidden',
 };
 
+/**
+ *
+ * [
+ *      { volunteerId: 1, activityId: 1, checked: true }
+ * ] 
+ *
+ */
+
 const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments }) => {
     const { enqueueSnackbar } = useSnackbar();
     const [volunteerName, setVolunteerName] = useState('');
@@ -32,13 +41,17 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     const [isSearchingVolunteers, setIsSearchingVolunteers] = useState(false);
     const [isSearchingGroups, setIsSearchingGroups] = useState(false);
 
+    const [appointGroup, setAppointGroup] = useState([]);
+
     const volunteersFetch = useFetch(`/volunteers/not-in-schedule/${schedule?.id}/ministry/${ministry?.id}?volunteerName=${volunteerName}`);
     const groupsFetch = useFetch(`/groups/ministry/${ministry?.id}/schedule/${schedule?.id}?groupName=${groupName}`)
     const { post } = usePost();
 
     const [volunteer, setVolunteer] = useState({});
+    const [selectedGroup, setSelectedGroup] = useState({});
 
     const [openIndicateActivity, setOpenIndicateActivity] = useState(false);
+    const [openAppointGroup, setOpenAppointGroup] = useState(false);
 
     const debouncedVolunteerName = useDebounce(volunteerName, 500);
     const debouncedGroupName = useDebounce(groupName, 500);
@@ -80,6 +93,38 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
         setGroupName(event.target.value);
         setIsSearchingGroups(true);
     };
+
+    const handleSeeGroup = (group) => {
+        setSelectedGroup(group);
+        setOpenAppointGroup(true);
+    }
+
+    const handleSetVolunteerAppointGroup = (volunteerId) => {
+        // { volunteerId: 1, activityId: 1, checked: true }
+        setAppointGroup([...appointGroup, { volunteerId }]);
+    }
+
+    const handleSetActivityAppointGroup = (volunteerId, activityId) => {
+        const newAppointGroup = appointGroup.map(item => {
+            if (item.volunteerId === volunteerId) {
+                return { ...item, activityId };
+            }
+            return item;
+        });
+
+        setAppointGroup(newAppointGroup);
+    }
+
+    const handleSetCheckedAppointGroup = (volunteerId, checked) => {
+        const newAppointGroup = appointGroup.map(item => {
+            if (item.volunteerId === volunteerId) {
+                return { ...item, checked };
+            }
+            return item;
+        });
+
+        setAppointGroup(newAppointGroup);
+    }
 
     return (
         <>
@@ -139,9 +184,7 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                                                 <AppointGroupLine
                                                     key={group.id}
                                                     group={group}
-                                                    handleAppointment={handleAppointment}
-                                                    schedule={schedule}
-                                                    ministry={ministry}
+                                                    seeGroup={handleSeeGroup}
                                                 />
                                             </ListItem>
                                         ))) : (
@@ -161,6 +204,14 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                 fetchAppointments={fetchAppointments}
                 fetchVolunteers={volunteersFetch.fetch}
                 fetchGroups={groupsFetch.fetch}
+            />
+            <AppointGroup
+                open={openAppointGroup}
+                onClose={() => setOpenAppointGroup(false)}
+                group={selectedGroup}
+                schedule={schedule}
+                ministry={ministry}
+                fetchAppointments={fetchAppointments}
             />
         </>
     );
