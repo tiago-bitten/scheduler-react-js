@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Box, IconButton, Grid, Typography, TextField, List, ListItem, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import DoneIcon from '@mui/icons-material/Done';
-import GroupIcon from '@mui/icons-material/Group';
-import instance from "../config/axiosConfig";
 import NotFoundItem from "./NotFoundItem";
 import { useSnackbar } from "notistack";
-import moment from "moment";
 import AppointVolunteerLine from "./AppointVolunteerLine";
 import { usePost } from "../hooks/usePost";
 import { useFetch } from "../hooks/useFetch";
 import { useDebounce } from '../hooks/useDebouce';
 import IndicateActivity from "./IndicateActivity";
 import AppointGroupLine from "./AppointGroupLine";
+import VolunteerMinistryModalSkeleton from "./VolunteerMinistryModalSkeleton";
 
 const style = {
     position: 'absolute',
@@ -32,6 +29,7 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     const { enqueueSnackbar } = useSnackbar();
     const [volunteerName, setVolunteerName] = useState('');
     const [groupName, setGroupName] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
 
     const volunteersFetch = useFetch(`/volunteers/not-in-schedule/${schedule?.id}/ministry/${ministry?.id}?volunteerName=${volunteerName}`);
     const groupsFetch = useFetch(`/groups/ministry/${ministry?.id}/schedule/${schedule?.id}?groupName=${groupName}`)
@@ -47,6 +45,7 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     React.useEffect(() => {
         if (open) {
             volunteersFetch.fetch();
+            setIsTyping(false);
         }
         // eslint-disable-next-line
     }, [open, debouncedVolunteerName]);
@@ -72,6 +71,7 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
 
     const handleVolunteerNameChange = (event) => {
         setVolunteerName(event.target.value);
+        setIsTyping(true);
     };
 
     const handleGroupNameChange = (event) => {
@@ -102,17 +102,20 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                                 value={volunteerName}
                                 sx={{ mb: 2 }}
                             />
-                            <List sx={{ minHeight: '400px', maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
-                                {volunteersFetch.data?.volunteers?.length > 0 ? (
-                                    volunteersFetch.data?.volunteers?.map(volunteer => (
-                                        <AppointVolunteerLine
-                                            key={volunteer.id}
-                                            volunteer={volunteer}
-                                            handleAppointment={handleAppointment}
-                                        />
-                                    ))) : (
-                                    <NotFoundItem entities="voluntários" />
-                                )}
+                            <List sx={{ width: '100%', minHeight: '400px', maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
+                                {volunteersFetch?.loading || isTyping ? <VolunteerMinistryModalSkeleton /> :
+                                    volunteersFetch.data?.volunteers?.length > 0 ? (
+                                        volunteersFetch.data?.volunteers?.map(volunteer => (
+                                            <ListItem key={volunteer.id}>
+                                                <AppointVolunteerLine
+                                                    key={volunteer.id}
+                                                    volunteer={volunteer}
+                                                    handleAppointment={handleAppointment}
+                                                />
+                                            </ListItem>
+                                        ))) : (
+                                        <NotFoundItem entities="voluntários" />
+                                    )}
                             </List>
                         </Grid>
                         <Grid item xs={6}>
@@ -127,13 +130,15 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                             <List sx={{ minHeight: '400px', maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
                                 {groupsFetch.data?.groups?.length > 0 ? (
                                     groupsFetch.data?.groups?.map(group => (
-                                        <AppointGroupLine
-                                            key={group.id}
-                                            group={group}
-                                            handleAppointment={handleAppointment}
-                                            schedule={schedule}
-                                            ministry={ministry}
-                                        />
+                                        <ListItem key={group.id}>
+                                            <AppointGroupLine
+                                                key={group.id}
+                                                group={group}
+                                                handleAppointment={handleAppointment}
+                                                schedule={schedule}
+                                                ministry={ministry}
+                                            />
+                                        </ListItem>
                                     ))) : (
                                     <NotFoundItem entities="grupos" />
                                 )}

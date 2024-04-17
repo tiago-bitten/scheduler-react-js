@@ -49,7 +49,7 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry }) => {
     const { post } = usePost();
     const { put } = usePut();
 
-    const associatedVolunteersFetch = useFetch(`volunteer-ministries/ministry/${ministry?.id}?volunteerName=${associatedVolunteerName}`);
+    const associatedVolunteersFetch = useFetch(`/volunteer-ministries/ministry/${ministry?.id}?volunteerName=${associatedVolunteerName}`);
     const notAssociatedVolunteersFetch = useFetch(`/volunteers/not-in-ministry/${ministry?.id}?volunteerName=${notAssociatedVolunteerName}`);
 
     React.useEffect(() => {
@@ -140,7 +140,7 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry }) => {
                             />
                         </Box>
                         <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, minHeight: 400, bgcolor: 'grey.200' }}>
-                            {associatedVolunteersFetch.loading || isTyping ? <VolunteerMinistryModalSkeleton /> :
+                            {associatedVolunteersFetch?.loading || isTyping ? <VolunteerMinistryModalSkeleton /> :
                                 associatedVolunteersFetch.data && associatedVolunteersFetch.data?.volunteers.length > 0 ? (
                                     associatedVolunteersFetch.data?.volunteers.map(volunteer => (
                                         <ListItem key={volunteer.id}>
@@ -168,7 +168,7 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry }) => {
                             />
                         </Box>
                         <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, minHeight: 400, bgcolor: 'grey.200' }}>
-                            {notAssociatedVolunteersFetch.loading || isTyping ? <VolunteerMinistryModalSkeleton /> :
+                            {notAssociatedVolunteersFetch?.loading || isTyping ? <VolunteerMinistryModalSkeleton /> :
                                 notAssociatedVolunteersFetch.data && notAssociatedVolunteersFetch.data?.volunteers.length > 0 ? (
                                     notAssociatedVolunteersFetch.data?.volunteers.map(volunteer => (
                                         <ListItem key={volunteer.id}>
