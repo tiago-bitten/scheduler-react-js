@@ -20,6 +20,14 @@ const modalStyle = {
     overflow: 'hidden',
 };
 
+/**
+ *
+ * [
+ *      { volunteerId: 1, activityId: 1, checked: true }
+ * ] 
+ *
+ */
+
 const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointments }) => {
     const activitiesFetch = useFetch(`/activities/ministry/${ministry?.id}`);
     const { post } = usePost();

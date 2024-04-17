@@ -1,9 +1,11 @@
 import React from 'react';
-import { Modal, Box, Tabs, Tab } from '@mui/material';
+import { Modal, Box, Tabs, Tab, List, ListItem, TextField } from '@mui/material';
 import { TabPanel, a11yProps } from '../components/TabPanel';
 import AddVolunteerLine from './AddVolunteerLine';
 import RemoveVolunteerLine from './RemoveVolunteerLine';
+import CloseModal from '../components/CloseModal'
 import NotFoundItem from './NotFoundItem';
+import VolunteerMinistryModalSkeleton from '../components/VolunteerMinistryModalSkeleton';
 import { useFetch } from '../hooks/useFetch';
 import { useSnackbar } from 'notistack';
 import { usePost } from '../hooks/usePost';
@@ -18,6 +20,7 @@ const boxStyle = {
     maxWidth: '1200px',
     bgcolor: 'background.paper',
     boxShadow: 24,
+    borderRadius: 2,
     p: 3,
     display: 'flex',
     flexDirection: 'column',
@@ -83,38 +86,65 @@ const AssociateVolunteerGroupModal = ({ open, onClose, group, fetchGroups }) => 
     return (
         <Modal open={open} onClose={onClose}>
             <Box sx={boxStyle}>
+                <CloseModal onClose={onClose} />
                 <Tabs value={value} onChange={handleChange} aria-label="volunteers tabs">
                     <Tab label="Associados" {...a11yProps(0)} />
                     <Tab label="Não Associados" {...a11yProps(1)} />
                 </Tabs>
-                <TabPanel value={value} index={0}>
-                    {!associatedVolunteersFetch.loading && associatedVolunteersFetch.data?.volunteers?.length > 0 ? (
-                        associatedVolunteersFetch.data?.volunteers?.map(volunteer => (
-                            <RemoveVolunteerLine
-                                key={volunteer.id}
-                                volunteer={volunteer}
-                                removeVolunteer={() => handleRemoveVolunteer(volunteer.id)}
+                <Box sx={{ width: '100%' }} >
+                    <TabPanel value={value} index={0}>
+                        <Box sx={{ mb: 4 }}>
+                            <TextField
+                                label="Buscar voluntário"
+                                variant="standard"
+                                fullWidth
                             />
-                        ))
-                    ) : (
-                        <NotFoundItem entities="voluntários" />
-                    )}
-                </TabPanel>
-                <TabPanel value={value} index={1}>
-                    <Box sx={{ width: '100%', overflow: 'auto', maxHeight: 400 }}>
-                        {!notAssociatedVolunteersFetch.loading && notAssociatedVolunteersFetch.data?.volunteers?.length > 0 ? (
-                            notAssociatedVolunteersFetch.data?.volunteers?.map(volunteer => (
-                                <AddVolunteerLine
-                                    key={volunteer.id}
-                                    volunteer={volunteer}
-                                    addVolunteer={() => handleAddVolunteer(volunteer.id)}
-                                />
-                            ))
-                        ) : (
-                            <NotFoundItem entities="voluntários" />
-                        )}
-                    </Box>
-                </TabPanel>
+                        </Box>
+                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, minHeight: 400, bgcolor: 'grey.200' }}>
+                            {associatedVolunteersFetch.loading ? <VolunteerMinistryModalSkeleton /> :
+                                associatedVolunteersFetch.data?.volunteers?.length > 0 ? (
+                                    associatedVolunteersFetch.data?.volunteers?.map(volunteer => (
+                                        <ListItem key={volunteer.id}>
+                                            <RemoveVolunteerLine
+                                                key={volunteer.id}
+                                                volunteer={volunteer}
+                                                removeVolunteer={() => handleRemoveVolunteer(volunteer.id)}
+                                            />
+                                        </ListItem>
+                                    ))
+                                ) : (
+                                    <NotFoundItem entities="voluntários" />
+                                )}
+                        </List>
+                    </TabPanel>
+                </Box>
+                <Box sx={{ width: '100%' }} >
+                    <TabPanel value={value} index={1}>
+                        <Box sx={{ mb: 4 }}>
+                            <TextField
+                                label="Buscar voluntário"
+                                variant="standard"
+                                fullWidth
+                            />
+                        </Box>
+                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, minHeight: 400, bgcolor: 'grey.200' }}>
+                            {notAssociatedVolunteersFetch.loading ? <VolunteerMinistryModalSkeleton /> :
+                                notAssociatedVolunteersFetch.data?.volunteers?.length > 0 ? (
+                                    notAssociatedVolunteersFetch.data?.volunteers?.map(volunteer => (
+                                        <ListItem key={volunteer.id}>
+                                            <AddVolunteerLine
+                                                key={volunteer.id}
+                                                volunteer={volunteer}
+                                                addVolunteer={() => handleAddVolunteer(volunteer.id)}
+                                            />
+                                        </ListItem>
+                                    ))
+                                ) : (
+                                    <NotFoundItem entities="voluntários" />
+                                )}
+                        </List>
+                    </TabPanel>
+                </Box>
             </Box>
         </Modal>
     );

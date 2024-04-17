@@ -29,7 +29,8 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     const { enqueueSnackbar } = useSnackbar();
     const [volunteerName, setVolunteerName] = useState('');
     const [groupName, setGroupName] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
+    const [isSearchingVolunteers, setIsSearchingVolunteers] = useState(false);
+    const [isSearchingGroups, setIsSearchingGroups] = useState(false);
 
     const volunteersFetch = useFetch(`/volunteers/not-in-schedule/${schedule?.id}/ministry/${ministry?.id}?volunteerName=${volunteerName}`);
     const groupsFetch = useFetch(`/groups/ministry/${ministry?.id}/schedule/${schedule?.id}?groupName=${groupName}`)
@@ -40,12 +41,12 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     const [openIndicateActivity, setOpenIndicateActivity] = useState(false);
 
     const debouncedVolunteerName = useDebounce(volunteerName, 500);
-    const debouncedGroupName = useDebounce(volunteerName, 500);
+    const debouncedGroupName = useDebounce(groupName, 500);
 
     React.useEffect(() => {
         if (open) {
             volunteersFetch.fetch();
-            setIsTyping(false);
+            setIsSearchingVolunteers(false);
         }
         // eslint-disable-next-line
     }, [open, debouncedVolunteerName]);
@@ -53,6 +54,7 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     React.useEffect(() => {
         if (open) {
             groupsFetch.fetch();
+            setIsSearchingGroups(false);
         }
         // eslint-disable-next-line
     }, [open, debouncedGroupName]);
@@ -71,11 +73,12 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
 
     const handleVolunteerNameChange = (event) => {
         setVolunteerName(event.target.value);
-        setIsTyping(true);
+        setIsSearchingVolunteers(true);
     };
 
     const handleGroupNameChange = (event) => {
         setGroupName(event.target.value);
+        setIsSearchingGroups(true);
     };
 
     return (
@@ -103,7 +106,7 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                                 sx={{ mb: 2 }}
                             />
                             <List sx={{ width: '100%', minHeight: '400px', maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
-                                {volunteersFetch?.loading || isTyping ? <VolunteerMinistryModalSkeleton /> :
+                                {volunteersFetch?.loading || isSearchingVolunteers ? <VolunteerMinistryModalSkeleton /> :
                                     volunteersFetch.data?.volunteers?.length > 0 ? (
                                         volunteersFetch.data?.volunteers?.map(volunteer => (
                                             <ListItem key={volunteer.id}>
@@ -126,22 +129,24 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                                 fullWidth
                                 autoComplete="off"
                                 sx={{ mb: 2 }}
+                                onChange={handleGroupNameChange}
                             />
                             <List sx={{ minHeight: '400px', maxHeight: '400px', overflowY: 'auto', backgroundColor: 'grey.200' }}>
-                                {groupsFetch.data?.groups?.length > 0 ? (
-                                    groupsFetch.data?.groups?.map(group => (
-                                        <ListItem key={group.id}>
-                                            <AppointGroupLine
-                                                key={group.id}
-                                                group={group}
-                                                handleAppointment={handleAppointment}
-                                                schedule={schedule}
-                                                ministry={ministry}
-                                            />
-                                        </ListItem>
-                                    ))) : (
-                                    <NotFoundItem entities="grupos" />
-                                )}
+                                {groupsFetch?.loading || isSearchingGroups ? <VolunteerMinistryModalSkeleton /> :
+                                    groupsFetch.data?.groups?.length > 0 ? (
+                                        groupsFetch.data?.groups?.map(group => (
+                                            <ListItem key={group.id}>
+                                                <AppointGroupLine
+                                                    key={group.id}
+                                                    group={group}
+                                                    handleAppointment={handleAppointment}
+                                                    schedule={schedule}
+                                                    ministry={ministry}
+                                                />
+                                            </ListItem>
+                                        ))) : (
+                                        <NotFoundItem entities="grupos" />
+                                    )}
                             </List>
                         </Grid>
                     </Grid>
