@@ -7,14 +7,8 @@ import {
     List,
     ListItem,
     TextField,
-    IconButton,
-    ListItemText,
-    CircularProgress
 } from "@mui/material";
 
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import RoundButton from "./RoundButton";
 import NotFoundItem from "./NotFoundItem";
 import { TabPanel, a11yProps } from '../components/TabPanel';
 import CloseModal from "./CloseModal";
@@ -45,15 +39,18 @@ const boxStyle = {
 
 const VolunteerMinistryModal = ({ open, handleClose, ministry }) => {
     const [value, setValue] = React.useState(0);
+    const [isTyping, setIsTyping] = React.useState(false);
     const [associatedVolunteerName, setAssociatedVolunteerName] = React.useState('');
+    const [notAssociatedVolunteerName, setNotAssociatedVolunteerName] = React.useState('');
 
     const debouncedAssociatedVolunteerName = useDebounce(associatedVolunteerName, 500);
+    const debouncedNotAssociatedVolunteerName = useDebounce(notAssociatedVolunteerName, 500);
 
     const { post } = usePost();
     const { put } = usePut();
 
     const associatedVolunteersFetch = useFetch(`volunteer-ministries/ministry/${ministry?.id}?volunteerName=${associatedVolunteerName}`);
-    const notAssociatedVolunteersFetch = useFetch(`/volunteers/not-in-ministry/${ministry?.id}`);
+    const notAssociatedVolunteersFetch = useFetch(`/volunteers/not-in-ministry/${ministry?.id}?volunteerName=${notAssociatedVolunteerName}`);
 
     React.useEffect(() => {
         if (open) {
@@ -70,10 +67,22 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry }) => {
 
     React.useEffect(() => {
         associatedVolunteersFetch.fetch();
+        setIsTyping(false);
     }, [debouncedAssociatedVolunteerName])
+
+    React.useEffect(() => {
+        notAssociatedVolunteersFetch.fetch();
+        setIsTyping(false);
+    }, [debouncedNotAssociatedVolunteerName])
 
     const handleAssociatedVolunteerNameChange = (event) => {
         setAssociatedVolunteerName(event.target.value);
+        setIsTyping(true);
+    }
+
+    const handleNotAssociatedVolunteerNameChange = (event) => {
+        setNotAssociatedVolunteerName(event.target.value);
+        setIsTyping(true);
     }
 
     const associateVolunteer = async (volunteer) => {
@@ -108,6 +117,8 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry }) => {
 
     const handleTabChange = (event, newValue) => {
         setValue(newValue);
+        setAssociatedVolunteerName('');
+        setNotAssociatedVolunteerName('');
     }
 
     return (
@@ -128,8 +139,8 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry }) => {
                                 onChange={handleAssociatedVolunteerNameChange}
                             />
                         </Box>
-                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, bgcolor: 'grey.200' }}>
-                            {associatedVolunteersFetch.loading ? <VolunteerMinistryModalSkeleton /> :
+                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, minHeight: 400, bgcolor: 'grey.200' }}>
+                            {associatedVolunteersFetch.loading || isTyping ? <VolunteerMinistryModalSkeleton /> :
                                 associatedVolunteersFetch.data && associatedVolunteersFetch.data?.volunteers.length > 0 ? (
                                     associatedVolunteersFetch.data?.volunteers.map(volunteer => (
                                         <ListItem key={volunteer.id}>
@@ -153,22 +164,24 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry }) => {
                                 label="Buscar voluntário"
                                 variant="standard"
                                 fullWidth
+                                onChange={handleNotAssociatedVolunteerNameChange}
                             />
                         </Box>
-                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, bgcolor: 'grey.200' }}>
-                            {notAssociatedVolunteersFetch.data && notAssociatedVolunteersFetch.data?.volunteers.length > 0 ? (
-                                notAssociatedVolunteersFetch.data?.volunteers.map(volunteer => (
-                                    <ListItem key={volunteer.id}>
-                                        <AddVolunteerLine
-                                            key={volunteer.id}
-                                            volunteer={volunteer}
-                                            addVolunteer={() => associateVolunteer(volunteer)}
-                                        />
-                                    </ListItem>
-                                ))
-                            ) : (
-                                <NotFoundItem entities="voluntários sem vinculo" />
-                            )}
+                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, minHeight: 400, bgcolor: 'grey.200' }}>
+                            {notAssociatedVolunteersFetch.loading || isTyping ? <VolunteerMinistryModalSkeleton /> :
+                                notAssociatedVolunteersFetch.data && notAssociatedVolunteersFetch.data?.volunteers.length > 0 ? (
+                                    notAssociatedVolunteersFetch.data?.volunteers.map(volunteer => (
+                                        <ListItem key={volunteer.id}>
+                                            <AddVolunteerLine
+                                                key={volunteer.id}
+                                                volunteer={volunteer}
+                                                addVolunteer={() => associateVolunteer(volunteer)}
+                                            />
+                                        </ListItem>
+                                    ))
+                                ) : (
+                                    <NotFoundItem entities="voluntários sem vinculo" />
+                                )}
                         </List>
                     </TabPanel>
                 </Box>
