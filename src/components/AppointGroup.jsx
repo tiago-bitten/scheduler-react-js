@@ -50,19 +50,27 @@ const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointme
     };
 
     const handleGroupAppointment = async () => {
+        const checkedVolunteers = appointGroup.filter(item => item.checked);
+
+        if (checkedVolunteers.length === 0) {
+            enqueueSnackbar("Selecione pelo menos um voluntário", { variant: "warning" });
+            return;
+        }
+
         const groupAppointment = appointGroup.filter(item => item.checked && item.activityId).map(item => ({
             volunteerId: item.volunteerId,
             activityId: item.activityId
         }));
 
-        console.log(groupAppointment);
+        console.log(groupAppointment)
 
-        const payload = {
-            groupAppointment
-        };
+        if (groupAppointment.length === 0) {
+            enqueueSnackbar("Selecione pelo menos uma atividade para cada voluntário", { variant: "warning" });
+            return;
+        }
 
         try {
-            const response = await post(`/appointments/appoint-group?scheduleId=${schedule?.id}&ministryId=${ministry?.id}`, payload);
+            const response = await post(`/appointments/appoint-group?scheduleId=${schedule?.id}&ministryId=${ministry?.id}`, groupAppointment);
 
             if (response.status === 204) {
                 enqueueSnackbar("Grupo agendado com sucesso", { variant: "success" });
