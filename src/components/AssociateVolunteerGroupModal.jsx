@@ -100,7 +100,7 @@ const AssociateVolunteerGroupModal = ({ open, onClose, group, fetchGroups }) => 
                                 fullWidth
                             />
                         </Box>
-                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, minHeight: 400, bgcolor: 'grey.200' }}>
+                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 370, minHeight: 370, bgcolor: 'grey.200' }}>
                             {associatedVolunteersFetch.loading ? <VolunteerMinistryModalSkeleton /> :
                                 associatedVolunteersFetch.data?.volunteers?.length > 0 ? (
                                     associatedVolunteersFetch.data?.volunteers?.map(volunteer => (
@@ -127,7 +127,7 @@ const AssociateVolunteerGroupModal = ({ open, onClose, group, fetchGroups }) => 
                                 fullWidth
                             />
                         </Box>
-                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, minHeight: 400, bgcolor: 'grey.200' }}>
+                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 370, minHeight: 370, bgcolor: 'grey.200' }}>
                             {notAssociatedVolunteersFetch.loading ? <VolunteerMinistryModalSkeleton /> :
                                 notAssociatedVolunteersFetch.data?.volunteers?.length > 0 ? (
                                     notAssociatedVolunteersFetch.data?.volunteers?.map(volunteer => (
