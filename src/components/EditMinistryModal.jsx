@@ -155,7 +155,7 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={{ ...boxStyle, overflow: 'auto', maxHeight: '80vh', width: '80vw', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+            <Box sx={{ ...boxStyle, width: '80vw', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
                 <IconButton
                     aria-label="close"
                     onClick={onClose}
@@ -181,16 +181,16 @@ const EditMinistryModal = ({ open, onClose, ministry, fetchMinistries }) => {
                                 variant="filled"
                                 value={name}
                                 onChange={(event) => setName(event.target.value)}
-                                fullWidth
                                 margin="normal"
+                                sx={{ width: '70%' }}
                             />
                             <TextField
                                 label="Descrição"
                                 variant="filled"
                                 value={description}
                                 onChange={(event) => setDescription(event.target.value)}
-                                fullWidth
                                 margin="normal"
+                                sx={{ width: '70%' }}
                             />
                             <Box sx={{ mt: '15px' }}>
                                 <HexColorPicker color={color} onChange={setColor} />
