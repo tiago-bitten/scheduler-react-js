@@ -178,6 +178,7 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                 schedule={schedule}
                 ministry={ministry}
                 fetchAppointments={fetchAppointments}
+                fetchGroups={groupsFetch.fetch}
                 appointGroup={appointGroup}
                 setAppointGroup={setAppointGroup}
             />

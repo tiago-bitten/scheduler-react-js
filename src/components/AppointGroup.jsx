@@ -20,7 +20,7 @@ const modalStyle = {
     overflow: 'hidden',
 };
 
-const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointments, appointGroup, setAppointGroup }) => {
+const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointments, fetchGroups, appointGroup, setAppointGroup }) => {
     const activitiesFetch = useFetch(`/activities/ministry/${ministry?.id}`);
     const { post } = usePost();
     const { enqueueSnackbar } = useSnackbar();
@@ -57,7 +57,7 @@ const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointme
             return;
         }
 
-        const groupAppointment = appointGroup.filter(item => item.checked && item.activityId).map(item => ({
+        const groupAppointment = checkedVolunteers.filter(item => item.activityId).map(item => ({
             volunteerId: item.volunteerId,
             activityId: item.activityId
         }));
@@ -75,6 +75,7 @@ const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointme
             if (response.status === 204) {
                 enqueueSnackbar("Grupo agendado com sucesso", { variant: "success" });
                 fetchAppointments();
+                fetchGroups();
                 onClose();
             }
 
