@@ -96,6 +96,8 @@ const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointme
                                 setCheckedVolunteers={setCheckedVolunteers}
                                 activities={activitiesFetch?.data?.activities}
                                 onActivitySelect={handleActivitySelect}
+                                appointGroup={appointGroup}
+                                setAppointGroup={setAppointGroup}
                             />
                         </ListItem>
                     ))}
