@@ -20,15 +20,7 @@ const modalStyle = {
     overflow: 'hidden',
 };
 
-/**
- *
- * [
- *      { volunteerId: 1, activityId: 1, checked: true }
- * ] 
- *
- */
-
-const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointments, appointGroup, setAppointGroup, handleSetVolunteerAppointGroup, handleSetActivityAppointGroup, handleSetCheckedAppointGroup }) => {
+const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointments, appointGroup, setAppointGroup }) => {
     const activitiesFetch = useFetch(`/activities/ministry/${ministry?.id}`);
     const { post } = usePost();
     const { enqueueSnackbar } = useSnackbar();
@@ -58,7 +50,16 @@ const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointme
     };
 
     const handleGroupAppointment = async () => {
-        const payload = {};
+        const groupAppointment = appointGroup.filter(item => item.checked && item.activityId).map(item => ({
+            volunteerId: item.volunteerId,
+            activityId: item.activityId
+        }));
+
+        console.log(groupAppointment);
+
+        const payload = {
+            groupAppointment
+        };
 
         try {
             const response = await post(`/appointments/appoint-group?scheduleId=${schedule?.id}&ministryId=${ministry?.id}`, payload);
@@ -104,7 +105,7 @@ const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointme
                 </List>
 
                 <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                    <RoundButton value="Agendar" onClick={() => console.log(appointGroup)} />
+                    <RoundButton value="Agendar" onClick={() => handleGroupAppointment()} />
                 </Box>
             </Box>
         </Modal>

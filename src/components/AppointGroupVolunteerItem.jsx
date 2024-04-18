@@ -6,24 +6,33 @@ const AppointGroupVolunteerItem = ({ volunteer, activities, appointGroup, setApp
     const [selectedActivity, setSelectedActivity] = useState('');
     const [isChecked, setIsChecked] = useState(false);
 
-    // Configura o estado inicial do checkbox baseado na propriedade `checked` no objeto appointGroup.
     useEffect(() => {
         const appointment = appointGroup.find(item => item.volunteerId === volunteer.id);
-        setIsChecked(appointment ? appointment.checked : false);
+        if (appointment) {
+            setIsChecked(appointment.checked);
+            setSelectedActivity(appointment.checked && appointment.activityId ? appointment.activityId : '');
+        } else {
+            setIsChecked(false);
+            setSelectedActivity('');
+        }
     }, [appointGroup, volunteer.id]);
 
     const handleActivityChange = (event) => {
         const activityId = event.target.value;
         setSelectedActivity(activityId);
-        updateAppointGroup(volunteer.id, 'activityId', activityId);
+        updateAppointGroup(volunteer.id, 'activityId', activityId || '');
     };
 
     const handleCheckboxChange = (event) => {
-        setIsChecked(event.target.checked);
-        updateAppointGroup(volunteer.id, 'checked', event.target.checked);
+        const checked = event.target.checked;
+        setIsChecked(checked);
+        if (!checked) {
+            setSelectedActivity(''); 
+            updateAppointGroup(volunteer.id, 'activityId', '');  
+        }
+        updateAppointGroup(volunteer.id, 'checked', checked);
     };
 
-    // Função para atualizar appointGroup
     const updateAppointGroup = (volunteerId, key, value) => {
         const updatedAppointGroup = appointGroup.map(item => {
             if (item.volunteerId === volunteerId) {
@@ -52,6 +61,7 @@ const AppointGroupVolunteerItem = ({ volunteer, activities, appointGroup, setApp
                             id={`activity-select-${volunteer.id}`}
                             value={selectedActivity}
                             onChange={handleActivityChange}
+                            disabled={!isChecked}
                         >
                             {activities?.map((activity) => (
                                 <MenuItem key={activity.id} value={activity.id}>

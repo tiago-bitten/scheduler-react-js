@@ -92,34 +92,6 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
         setOpenAppointGroup(true);
     }
 
-    const handleSetVolunteerAppointGroup = (volunteerId) => {
-        // { volunteerId: 1, activityId: 1, checked: true }
-        setAppointGroup([...appointGroup, { volunteerId }]);
-        console.log("quero mostrar a lista presente: " + appointGroup);
-        console.log("id: " + volunteerId);
-    }
-
-    const handleSetActivityAppointGroup = (volunteerId, activityId) => {
-        const updatedAppointGroup = appointGroup.map(item => {
-            if (item.volunteerId === volunteerId) {
-                return { ...item, activityId };
-            }
-            return item;
-        });
-        setAppointGroup(updatedAppointGroup);
-    };
-
-    const handleSetCheckedAppointGroup = (volunteerId, checked) => {
-        const updatedAppointGroup = appointGroup.map(item => {
-            if (item.volunteerId === volunteerId) {
-                return { ...item, checked };
-            }
-            return item;
-        });
-        setAppointGroup(updatedAppointGroup);
-    };
-
-
     return (
         <>
             <Modal open={open} onClose={onClose}>
@@ -206,9 +178,6 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                 schedule={schedule}
                 ministry={ministry}
                 fetchAppointments={fetchAppointments}
-                handleSetVolunterAppointGroup={handleSetVolunteerAppointGroup}
-                handleSetActivityAppointGroup={handleSetActivityAppointGroup}
-                handleSetCheckedAppointGroup={handleSetCheckedAppointGroup}
                 appointGroup={appointGroup}
                 setAppointGroup={setAppointGroup}
             />
