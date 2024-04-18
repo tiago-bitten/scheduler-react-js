@@ -147,7 +147,7 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry }) => {
                                 onChange={handleAssociatedVolunteerNameChange}
                             />
                         </Box>
-                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, minHeight: 400, bgcolor: 'grey.200' }}>
+                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 370, minHeight: 370, bgcolor: 'grey.200' }}>
                             {associatedVolunteersFetch?.loading || isTyping ? <VolunteerMinistryModalSkeleton /> :
                                 associatedVolunteersFetch.data && associatedVolunteersFetch.data?.volunteers.length > 0 ? (
                                     associatedVolunteersFetch.data?.volunteers.map(volunteer => (
@@ -175,7 +175,7 @@ const VolunteerMinistryModal = ({ open, handleClose, ministry }) => {
                                 onChange={handleNotAssociatedVolunteerNameChange}
                             />
                         </Box>
-                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 400, minHeight: 400, bgcolor: 'grey.200' }}>
+                        <List sx={{ width: '100%', overflow: 'auto', maxHeight: 370, minHeight: 370, bgcolor: 'grey.200' }}>
                             {notAssociatedVolunteersFetch?.loading || isTyping ? <VolunteerMinistryModalSkeleton /> :
                                 notAssociatedVolunteersFetch.data && notAssociatedVolunteersFetch.data?.volunteers.length > 0 ? (
                                     notAssociatedVolunteersFetch.data?.volunteers.map(volunteer => (
