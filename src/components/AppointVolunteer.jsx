@@ -26,14 +26,6 @@ const style = {
     overflow: 'hidden',
 };
 
-/**
- *
- * [
- *      { volunteerId: 1, activityId: 1, checked: true }
- * ] 
- *
- */
-
 const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments }) => {
     const { enqueueSnackbar } = useSnackbar();
     const [volunteerName, setVolunteerName] = useState('');
@@ -41,6 +33,7 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     const [isSearchingVolunteers, setIsSearchingVolunteers] = useState(false);
     const [isSearchingGroups, setIsSearchingGroups] = useState(false);
 
+    // { volunteerId: 1, activityId: 1, checked: true }
     const [appointGroup, setAppointGroup] = useState([]);
 
     const volunteersFetch = useFetch(`/volunteers/not-in-schedule/${schedule?.id}/ministry/${ministry?.id}?volunteerName=${volunteerName}`);
@@ -102,29 +95,30 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
     const handleSetVolunteerAppointGroup = (volunteerId) => {
         // { volunteerId: 1, activityId: 1, checked: true }
         setAppointGroup([...appointGroup, { volunteerId }]);
+        console.log("quero mostrar a lista presente: " + appointGroup);
+        console.log("id: " + volunteerId);
     }
 
     const handleSetActivityAppointGroup = (volunteerId, activityId) => {
-        const newAppointGroup = appointGroup.map(item => {
+        const updatedAppointGroup = appointGroup.map(item => {
             if (item.volunteerId === volunteerId) {
                 return { ...item, activityId };
             }
             return item;
         });
-
-        setAppointGroup(newAppointGroup);
-    }
+        setAppointGroup(updatedAppointGroup);
+    };
 
     const handleSetCheckedAppointGroup = (volunteerId, checked) => {
-        const newAppointGroup = appointGroup.map(item => {
+        const updatedAppointGroup = appointGroup.map(item => {
             if (item.volunteerId === volunteerId) {
                 return { ...item, checked };
             }
             return item;
         });
+        setAppointGroup(updatedAppointGroup);
+    };
 
-        setAppointGroup(newAppointGroup);
-    }
 
     return (
         <>
@@ -212,6 +206,11 @@ const AppointVolunteer = ({ open, onClose, ministry, schedule, fetchAppointments
                 schedule={schedule}
                 ministry={ministry}
                 fetchAppointments={fetchAppointments}
+                handleSetVolunteerAppointGroup={handleSetVolunteerAppointGroup}
+                handleSetActivityAppointGroup={handleSetActivityAppointGroup}
+                handleSetCheckedAppointGroup={handleSetCheckedAppointGroup}
+                appointGroup={appointGroup}
+                setAppointGroup={setAppointGroup}
             />
         </>
     );

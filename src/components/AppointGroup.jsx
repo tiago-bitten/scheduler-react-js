@@ -28,7 +28,7 @@ const modalStyle = {
  *
  */
 
-const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointments }) => {
+const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointments, appointGroup, setAppointGroup, handleSetVolunteerAppointGroup, handleSetActivityAppointGroup, handleSetCheckedAppointGroup }) => {
     const activitiesFetch = useFetch(`/activities/ministry/${ministry?.id}`);
     const { post } = usePost();
     const { enqueueSnackbar } = useSnackbar();
@@ -37,8 +37,25 @@ const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointme
     React.useEffect(() => {
         if (open) {
             activitiesFetch.fetch();
+            const initialAppointGroup = group?.volunteers.map(volunteer => ({
+                volunteerId: volunteer.id,
+                activityId: null,
+                checked: volunteer.available
+            }));
+            setAppointGroup(initialAppointGroup || []);
+        } else {
+            setAppointGroup([]);
         }
-    }, [open]);
+    }, [open, group]);
+
+    const handleActivitySelect = (volunteerId, activityId) => {
+        setAppointGroup(prev => prev.map(item => {
+            if (item.volunteerId === volunteerId) {
+                return { ...item, activityId: activityId };
+            }
+            return item;
+        }));
+    };
 
     const handleGroupAppointment = async () => {
         const payload = {};
@@ -78,13 +95,14 @@ const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointme
                                 checkedVolunteers={checkedVolunteers}
                                 setCheckedVolunteers={setCheckedVolunteers}
                                 activities={activitiesFetch?.data?.activities}
+                                onActivitySelect={handleActivitySelect}
                             />
                         </ListItem>
                     ))}
                 </List>
 
                 <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                    <RoundButton value="Agendar" />
+                    <RoundButton value="Agendar" onClick={() => console.log(appointGroup)} />
                 </Box>
             </Box>
         </Modal>

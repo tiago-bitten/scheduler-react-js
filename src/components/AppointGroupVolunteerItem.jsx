@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { ListItem, ListItemAvatar, Avatar, ListItemText, Checkbox, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 
-const AppointGroupVolunteerItem = ({ volunteer, activities, checkedVolunteers, setCheckedVolunteers }) => {
+const AppointGroupVolunteerItem = ({ volunteer, activities, checkedVolunteers, setCheckedVolunteers, onActivitySelect }) => {
     const isAvailable = volunteer.available;
     const [selectedActivity, setSelectedActivity] = useState('');
 
     const handleActivityChange = (event) => {
-        setSelectedActivity(event.target.value);
-        // Aqui você pode também querer fazer algo mais com a atividade selecionada, como atualizar o estado no componente pai
+        const activityId = event.target.value;
+        setSelectedActivity(activityId);
+        onActivitySelect(volunteer.id, activityId);
     };
 
     return (
@@ -37,7 +38,14 @@ const AppointGroupVolunteerItem = ({ volunteer, activities, checkedVolunteers, s
                         </Select>
                     </FormControl>
                     <Checkbox
-                        defaultChecked
+                        checked={checkedVolunteers.includes(volunteer.id)}
+                        onChange={() => setCheckedVolunteers(prev => {
+                            if (prev.includes(volunteer.id)) {
+                                return prev.filter(id => id !== volunteer.id);
+                            } else {
+                                return [...prev, volunteer.id];
+                            }
+                        })}
                     />
                 </>
             )}
