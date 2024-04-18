@@ -15,6 +15,7 @@ const modalStyle = {
     maxWidth: '600px',
     bgcolor: 'background.paper',
     boxShadow: 24,
+    borderRadius: 2,
     p: 4,
     overflow: 'hidden'
 };
@@ -67,7 +68,7 @@ const GeneratedScaleModal = ({ open, onClose, scale, schedule, fetchAppointments
                 <Typography variant="body1" component="p" sx={{ mb: 2 }}>
                     Total: {currentScale?.length}
                 </Typography>
-                <Box sx={{ overflow: 'auto', maxHeight: 500 }}>
+                <Box sx={{ overflow: 'auto', maxHeight: 370 }}>
                     {currentScale?.map(({ volunteer, ministry, activity }) => (
                         <GeneratedScaleLine
                             key={volunteer.id}

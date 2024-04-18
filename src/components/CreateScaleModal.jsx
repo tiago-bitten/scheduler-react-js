@@ -17,6 +17,7 @@ const modalStyle = {
     maxWidth: '700px',
     bgcolor: 'background.paper',
     boxShadow: 24,
+    borderRadius: 2,
     p: 4,
     overflow: 'hidden'
 };
