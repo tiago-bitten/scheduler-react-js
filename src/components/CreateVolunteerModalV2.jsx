@@ -1,10 +1,10 @@
-ear
-import React from "react";
-import { usePost } from "../hooks/usePost";
-import { useSnackbar } from "notistack";
-import { Modal, Box, TextField } from "@mui/material";
-import RoundButton from "./RoundButton";
-import CloseModal from "./CloseModal";
+import React from 'react';
+import { useFormik } from 'formik';
+import { Modal, Box, TextField, Typography } from '@mui/material';
+import RoundButton from './RoundButton';
+import CloseModal from './CloseModal';
+import { usePost } from '../hooks/usePost';
+import { useSnackbar } from 'notistack';
 
 const boxStyle = {
     position: 'absolute',
@@ -19,112 +19,103 @@ const boxStyle = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-}
+};
 
 const CreateVolunteerModalV2 = ({ open, onClose, fetchVolunteers }) => {
-    const [name, setName] = React.useState('');
-    const [lastName, setLastName] = React.useState('');
-    const [cpf, setCpf] = React.useState('');
-    const [phone, setPhone] = React.useState('');
-    const [birthDate, setBirthDate] = React.useState('');
-
     const postVolunteer = usePost();
     const { enqueueSnackbar } = useSnackbar();
 
-    const handleCleanFields = () => {
-        setName('');
-        setLastName('');
-        setCpf('');
-        setPhone('');
-        setBirthDate('');
-    };
-
     React.useEffect(() => {
         if (!open) {
-            handleCleanFields();
+            formik.resetForm();
         }
     }, [open]);
 
-    const handleCreateVolunteer = async () => {
-        if (name === '') {
-            enqueueSnackbar("Nome é obrigatório", { variant: 'warning' });
-            return;
-        }
-
-        console.log(name, lastName, cpf, phone, birthDate)
-
-        const payload = {
-            name,
-            lastName,
-            cpf,
-            phone,
-            birthDate
-        };
-
-        try {
-            const response = await postVolunteer.post(`/volunteers/create`, payload)
-
-            if (response.status === 201) {
-                fetchVolunteers();
-                onClose();
-                console.log(response.data);
+    const formik = useFormik({
+        initialValues: {
+            name: '',
+            lastName: '',
+            cpf: '',
+            phone: '',
+            birthDate: ''
+        },
+        validate: values => {
+            const errors = {};
+            if (!values.name) {
+                errors.name = 'Nome é obrigatório';
             }
-
-        } catch (error) {
-            console.log(error)
-            enqueueSnackbar(error.response?.data?.message || "Erro geral", { variant: 'error' });
-        }
-    };
+            return errors;
+        },
+        onSubmit: async (values) => {
+            try {
+                const response = await postVolunteer.post('/volunteers/create', values);
+                if (response.status === 201) {
+                    fetchVolunteers();
+                    onClose();
+                    enqueueSnackbar('Voluntário cadastrado com sucesso!', { variant: 'success' });
+                }
+            } catch (error) {
+                enqueueSnackbar(error.response?.data?.message || 'Erro geral', { variant: 'error' });
+            }
+        },
+    });
 
     return (
         <Modal open={open} onClose={onClose}>
-            <Box sx={boxStyle}>
+            <Box sx={boxStyle} component="form" onSubmit={formik.handleSubmit}>
+                <Typography variant="h5" align="center" sx={{ color: '#454545' }}>Cadastrar voluntário</Typography>
                 <CloseModal onClose={onClose} />
                 <TextField
-                    label="Nome"
+                    label="Nome*"
                     variant="standard"
                     size="small"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    name="name"
+                    value={formik.values.name}
+                    onChange={formik.handleChange}
+                    error={formik.touched.name && Boolean(formik.errors.name)}
+                    helperText={formik.touched.name && formik.errors.name}
                     sx={{ mb: 4 }}
                 />
                 <TextField
                     label="Sobrenome"
                     variant="standard"
                     size="small"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    name="lastName"
+                    value={formik.values.lastName}
+                    onChange={formik.handleChange}
                     sx={{ mb: 4 }}
                 />
                 <TextField
                     label="CPF"
                     variant="standard"
                     size="small"
-                    value={cpf}
-                    onChange={(e) => setCpf(e.target.value)}
+                    name="cpf"
+                    value={formik.values.cpf}
+                    onChange={formik.handleChange}
                     sx={{ mb: 4 }}
                 />
                 <TextField
                     label="Telefone"
                     variant="standard"
                     size="small"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    name="phone"
+                    value={formik.values.phone}
+                    onChange={formik.handleChange}
                     sx={{ mb: 4 }}
                 />
                 <TextField
                     label="Data de nascimento"
                     variant="standard"
                     size="small"
-                    value={birthDate}
-                    onChange={(e) => setBirthDate(e.target.value)}
+                    name="birthDate"
+                    value={formik.values.birthDate}
+                    onChange={formik.handleChange}
                     sx={{ mb: 2 }}
                     type="date"
                     InputLabelProps={{ shrink: true }}
-
                 />
                 <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                    <RoundButton value="CADASTRAR" onClick={handleCreateVolunteer} />
+                    <RoundButton value="CADASTRAR" type="submit" />
                 </Box>
             </Box>
         </Modal>
