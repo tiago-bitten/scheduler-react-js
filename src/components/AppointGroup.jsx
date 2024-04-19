@@ -70,7 +70,7 @@ const AppointGroup = ({ open, onClose, group, schedule, ministry, fetchAppointme
         }
 
         try {
-            const response = await post(`/appointments/appoint-group?scheduleId=${schedule?.id}&ministryId=${ministry?.id}`, groupAppointment);
+            const response = await post(`/appointments/appoint-group?scheduleId=${schedule?.id}&ministryId=${ministry?.id}&groupId=${group?.id}`, groupAppointment);
 
             if (response.status === 204) {
                 enqueueSnackbar("Grupo agendado com sucesso", { variant: "success" });
