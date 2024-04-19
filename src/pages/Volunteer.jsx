@@ -9,6 +9,7 @@ import { Switch, TextField, Tooltip, IconButton, Typography, Grid, Box, Containe
 import ConfirmModal from '../components/ConfirmModal';
 import { useDebounce } from '../hooks/useDebouce';
 import Pagination from '@mui/material/Pagination';
+import CreateVolunteerModalV2 from '../components/CreateVolunteerModalV2';
 
 import { useSnackbar } from 'notistack';
 
@@ -181,11 +182,10 @@ const Volunteer = () => {
                         />
                     </>
                 )}
-                <CreateVolunteerModal
+                <CreateVolunteerModalV2
                     open={open}
-                    setOpen={setOpen}
-                    handleClose={handleClose}
-                    fetch={fetch}
+                    onClose={handleClose}
+                    fetchVolunteers={fetch}
                 />
                 <ConfirmModal
                     open={confirmModalOpen}
