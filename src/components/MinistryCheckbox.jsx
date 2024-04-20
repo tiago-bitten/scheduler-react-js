@@ -13,9 +13,9 @@ const MinistryCheckbox = ({ ministry, checked, onChange }) => {
                 />
             }
             label={ministry.name}
-            key={ministry.id}
         />
     );
 };
+
 
 export default MinistryCheckbox;

@@ -26,6 +26,8 @@ const CreateVolunteerModalV2 = ({ open, onClose, fetchVolunteers }) => {
     const postVolunteer = usePost();
     const { enqueueSnackbar } = useSnackbar();
 
+    const [createdVolunteer, setCreatedVolunteer] = React.useState({});
+
     const [openAssociateMinistry, setOpenAssociateMinistry] = React.useState(false);
 
     React.useEffect(() => {
@@ -57,6 +59,7 @@ const CreateVolunteerModalV2 = ({ open, onClose, fetchVolunteers }) => {
                     onClose();
                     enqueueSnackbar('Voluntário cadastrado com sucesso!', { variant: 'success' });
                     setOpenAssociateMinistry(true);
+                    setCreatedVolunteer(response.data.volunteer);
                 }
             } catch (error) {
                 enqueueSnackbar(error.response?.data?.message || 'Erro geral', { variant: 'error' });
@@ -132,6 +135,8 @@ const CreateVolunteerModalV2 = ({ open, onClose, fetchVolunteers }) => {
             <VolunteerAssociateMinistryModal
                 open={openAssociateMinistry}
                 onClose={() => setOpenAssociateMinistry(false)}
+                volunteer={createdVolunteer}
+                fetchVolunteers={fetchVolunteers}
             />
         </>
     );

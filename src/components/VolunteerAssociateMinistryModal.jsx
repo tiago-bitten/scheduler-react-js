@@ -40,17 +40,24 @@ const VolunteerAssociateMinistryModal = ({ open, onClose, volunteer, fetchVolunt
             onClose={onClose}
         >
             <Box sx={boxStyle}>
-                <Typography variant='h4'>Associar voluntário a um ministério</Typography>
+                <Typography variant='h4' gutterBottom>Associar voluntário a um ministério</Typography>
 
                 {userMinistriesFetch.loading && <Typography>Carregando...</Typography>}
                 {userMinistriesFetch.error && <Typography>Erro ao carregar ministérios</Typography>}
-                {userMinistriesFetch.data && (
-                    <Box sx={{ overflow: 'auto', maxHeight: 200, minHeight: 200 }}>
-                        {!userMinistriesFetch.loading && userMinistriesFetch.data?.ministries?.map((ministry) => (
+                {!userMinistriesFetch.loading && userMinistriesFetch.data && (
+                    <Box sx={{
+                        overflowY: 'auto', 
+                        maxHeight: '200px', 
+                        minHeight: '200px', 
+                        bgcolor: 'grey.100', 
+                        p: 2,
+                        gap: 1 
+                    }}>
+                        {userMinistriesFetch.data.ministries.map((ministry) => (
                             <MinistryCheckbox
                                 key={ministry.id}
                                 ministry={ministry}
-                                checked={volunteer.ministries.includes(ministry.id)} // Assumindo que `volunteer.ministries` contém IDs de ministérios
+                                checked={true}
                                 onChange={handleCheckboxChange(ministry.id)}
                             />
                         ))}
