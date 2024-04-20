@@ -33,7 +33,6 @@ const MinistryBox = ({ name, color, onClick }) => {
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
             onClick={onClick}
-        // Adiciona isso para garantir que o estado resete caso o mouse saia do botão enquanto pressionado
         >
             <Typography variant="body1" color="white">
                 {name}

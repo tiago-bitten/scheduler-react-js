@@ -5,6 +5,7 @@ import RoundButton from './RoundButton';
 import CloseModal from './CloseModal';
 import { usePost } from '../hooks/usePost';
 import { useSnackbar } from 'notistack';
+import VolunteerAssociateMinistryModal from './VolunteerAssociateMinistryModal';
 
 const boxStyle = {
     position: 'absolute',
@@ -24,6 +25,8 @@ const boxStyle = {
 const CreateVolunteerModalV2 = ({ open, onClose, fetchVolunteers }) => {
     const postVolunteer = usePost();
     const { enqueueSnackbar } = useSnackbar();
+
+    const [openAssociateMinistry, setOpenAssociateMinistry] = React.useState(false);
 
     React.useEffect(() => {
         if (!open) {
@@ -53,6 +56,7 @@ const CreateVolunteerModalV2 = ({ open, onClose, fetchVolunteers }) => {
                     fetchVolunteers();
                     onClose();
                     enqueueSnackbar('Voluntário cadastrado com sucesso!', { variant: 'success' });
+                    setOpenAssociateMinistry(true);
                 }
             } catch (error) {
                 enqueueSnackbar(error.response?.data?.message || 'Erro geral', { variant: 'error' });
@@ -61,64 +65,75 @@ const CreateVolunteerModalV2 = ({ open, onClose, fetchVolunteers }) => {
     });
 
     return (
-        <Modal open={open} onClose={onClose}>
-            <Box sx={boxStyle} component="form" onSubmit={formik.handleSubmit}>
-                <Typography variant="h5" align="center" sx={{ color: '#454545' }}>Cadastrar voluntário</Typography>
-                <CloseModal onClose={onClose} />
-                <TextField
-                    label="Nome*"
-                    variant="standard"
-                    size="small"
-                    name="name"
-                    value={formik.values.name}
-                    onChange={formik.handleChange}
-                    error={formik.touched.name && Boolean(formik.errors.name)}
-                    helperText={formik.touched.name && formik.errors.name}
-                    sx={{ mb: 4 }}
-                />
-                <TextField
-                    label="Sobrenome"
-                    variant="standard"
-                    size="small"
-                    name="lastName"
-                    value={formik.values.lastName}
-                    onChange={formik.handleChange}
-                    sx={{ mb: 4 }}
-                />
-                <TextField
-                    label="CPF"
-                    variant="standard"
-                    size="small"
-                    name="cpf"
-                    value={formik.values.cpf}
-                    onChange={formik.handleChange}
-                    sx={{ mb: 4 }}
-                />
-                <TextField
-                    label="Telefone"
-                    variant="standard"
-                    size="small"
-                    name="phone"
-                    value={formik.values.phone}
-                    onChange={formik.handleChange}
-                    sx={{ mb: 4 }}
-                />
-                <TextField
-                    label="Data de nascimento"
-                    variant="standard"
-                    size="small"
-                    name="birthDate"
-                    value={formik.values.birthDate}
-                    onChange={formik.handleChange}
-                    sx={{ mb: 2 }}
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                />
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                    <RoundButton value="CADASTRAR" type="submit" />
+        <>
+            <Modal open={open} onClose={onClose}>
+                <Box sx={boxStyle} component="form" onSubmit={formik.handleSubmit}>
+                    <Typography variant="h5" align="center" sx={{ color: '#454545', mb: 2 }}>Cadastrar voluntário</Typography>
+                    <CloseModal onClose={onClose} />
+                    <TextField
+                        label="Nome*"
+                        variant="standard"
+                        size="small"
+                        name="name"
+                        value={formik.values.name}
+                        onChange={formik.handleChange}
+                        error={formik.touched.name && Boolean(formik.errors.name)}
+                        helperText={formik.touched.name && formik.errors.name}
+                        sx={{ mb: 4 }}
+                        autoComplete="off"
+                    />
+                    <TextField
+                        label="Sobrenome"
+                        variant="standard"
+                        size="small"
+                        name="lastName"
+                        value={formik.values.lastName}
+                        onChange={formik.handleChange}
+                        sx={{ mb: 4 }}
+                        autoComplete="off"
+                    />
+                    <TextField
+                        label="CPF"
+                        variant="standard"
+                        size="small"
+                        name="cpf"
+                        value={formik.values.cpf}
+                        onChange={formik.handleChange}
+                        sx={{ mb: 4 }}
+                        autoComplete="off"
+                    />
+                    <TextField
+                        label="Telefone"
+                        variant="standard"
+                        size="small"
+                        name="phone"
+                        value={formik.values.phone}
+                        onChange={formik.handleChange}
+                        sx={{ mb: 4 }}
+                        autoComplete="off"
+                    />
+                    <TextField
+                        label="Data de nascimento"
+                        variant="standard"
+                        size="small"
+                        name="birthDate"
+                        value={formik.values.birthDate}
+                        onChange={formik.handleChange}
+                        sx={{ mb: 2 }}
+                        type="date"
+                        InputLabelProps={{ shrink: true }}
+                        autoComplete="off"
+                    />
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                        <RoundButton value="CADASTRAR" type="submit" />
+                    </Box>
                 </Box>
-            </Box>
-        </Modal>
+            </Modal>
+            <VolunteerAssociateMinistryModal
+                open={openAssociateMinistry}
+                onClose={() => setOpenAssociateMinistry(false)}
+            />
+        </>
     );
 };
 

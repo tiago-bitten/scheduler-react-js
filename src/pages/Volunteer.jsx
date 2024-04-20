@@ -173,13 +173,6 @@ const Volunteer = () => {
                                 />
                             ))}
                         </Box>
-                        <Pagination
-                            count={Math.ceil(data?.totalElements / size)}
-                            page={page + 1}
-                            onChange={(event, newPage) => setPage(newPage - 1)}
-                            color="primary"
-                            sx={{ display: 'flex', justifyContent: 'flex-end' }}
-                        />
                     </>
                 )}
                 <CreateVolunteerModalV2
