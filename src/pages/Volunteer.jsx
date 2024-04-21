@@ -16,6 +16,7 @@ import { useSnackbar } from 'notistack';
 import VolunteerBox from '../components/VolunteerBox';
 import CreateVolunteerModal from '../components/CreateVolunteerModal';
 import VolunteerListSkeleton from '../components/VolunteerListSkeleton';
+import EditVolunteerModal from '../components/EditVolunteerModal';
 
 const Volunteer = () => {
     const { enqueueSnackbar } = useSnackbar();
@@ -34,6 +35,8 @@ const Volunteer = () => {
 
     const { data, error, loading, fetch } = useFetch(`/volunteers?volunteerName=${volunteerCompleteName.split(" ")[0]}&volunteerLastName=${volunteerCompleteName.split(" ")[1]}&ministryName=${ministryName}&isLinkedToAnyMinistry=${isLinkedToAnyMinistry}&page=${page}&size=${size}`);
     const [open, setOpen] = React.useState(false);
+    const [openEditVolunteerModal, setOpenEditVolunteerModal] = React.useState(false);
+    const [selectedEditVolunteer, setSelectedEditVolunteer] = React.useState({});
 
     React.useEffect(() => {
         document.title = 'Voluntários';
@@ -81,6 +84,11 @@ const Volunteer = () => {
     const handleDeleteClick = (volunteer) => {
         setSelectedVolunteer(volunteer);
         setConfirmModalOpen(true);
+    }
+
+    const handleEditClick = (volunteer) => {
+        setSelectedEditVolunteer(volunteer);
+        setOpenEditVolunteerModal(true);
     }
 
     const handleDeleteConfirm = async (id) => {
@@ -170,6 +178,7 @@ const Volunteer = () => {
                                     volunteer={volunteer}
                                     ministries={volunteer.ministries}
                                     handleDeleteClick={() => handleDeleteClick(volunteer)}
+                                    handleEditClick={() => handleEditClick(volunteer)}
                                 />
                             ))}
                         </Box>
@@ -180,6 +189,13 @@ const Volunteer = () => {
                     onClose={handleClose}
                     fetchVolunteers={fetch}
                 />
+                <EditVolunteerModal
+                    open={openEditVolunteerModal}
+                    onClose={() => setOpenEditVolunteerModal(false)}
+                    volunteer={selectedEditVolunteer}
+                    fetchVolunteers={fetch}
+                />
+
                 <ConfirmModal
                     open={confirmModalOpen}
                     onClose={() => setConfirmModalOpen(false)}

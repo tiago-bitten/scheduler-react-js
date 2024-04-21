@@ -46,6 +46,11 @@ const VolunteerAssociateMinistryModal = ({ open, onClose, volunteer, fetchVolunt
 
     const handleAssociate = async () => {
         try {
+            if (selectedMinistries.length === 0) {
+                enqueueSnackbar('Selecione ao menos um ministério', { variant: 'warning' });
+                return;
+            }
+
             const ministriesPromisses = selectedMinistries.map(async (ministry) => {
                 await postVolunteer.post(`/volunteer-ministries/associate?volunteerId=${volunteer?.id}&ministryId=${ministry.id}`)
             });

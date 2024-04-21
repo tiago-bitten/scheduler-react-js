@@ -4,7 +4,7 @@ import { Edit, Delete } from '@mui/icons-material';
 import ConfirmModal from './ConfirmModal';
 import Avatar from '@mui/material/Avatar';
 
-const VolunteerBox = ({ volunteer, ministries, handleDeleteClick }) => {
+const VolunteerBox = ({ volunteer, ministries, handleDeleteClick, handleEditClick }) => {
     const avatarBorderClass = ministries.length > 0 ? { border: 2, borderColor: '#4169E1' } : { border: 2, borderColor: '#454545' };
 
     return (
@@ -21,7 +21,7 @@ const VolunteerBox = ({ volunteer, ministries, handleDeleteClick }) => {
                 </div>
                 <div className="flex items-center">
                     <Tooltip title="Editar" disableInteractive>
-                        <IconButton>
+                        <IconButton onClick={handleEditClick}>
                             <Edit className="cursor-pointer mx-2" />
                         </IconButton>
                     </Tooltip>
