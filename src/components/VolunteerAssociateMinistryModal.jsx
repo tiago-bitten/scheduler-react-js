@@ -2,14 +2,16 @@ import React from 'react';
 import { Box, Modal, Typography } from '@mui/material';
 import { useFetch } from '../hooks/useFetch';
 import { useSnackbar } from 'notistack';
-import MinistryCheckbox from './MinistryCheckbox';
+import CheckboxMinistry from './CheckboxMinistry';
+import RoundBotton from './RoundButton';
+import { usePost } from '../hooks/usePost';
 
 const boxStyle = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 450,
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 6,
@@ -22,6 +24,9 @@ const boxStyle = {
 const VolunteerAssociateMinistryModal = ({ open, onClose, volunteer, fetchVolunteers }) => {
     const { enqueueSnackbar } = useSnackbar();
     const userMinistriesFetch = useFetch(`/users/ministries`);
+    const postVolunteer = usePost();
+
+    const [selectedMinistries, setSelectedMinistries] = React.useState([]);
 
     React.useEffect(() => {
         if (open) {
@@ -29,10 +34,34 @@ const VolunteerAssociateMinistryModal = ({ open, onClose, volunteer, fetchVolunt
         }
     }, [open]);
 
-    const handleCheckboxChange = (ministryId) => (event) => {
-        console.log(`Ministry ID: ${ministryId}, Checked: ${event.target.checked}`);
-        fetchVolunteers();
-    };
+    const handleToggle = (ministry) => {
+        setSelectedMinistries((prevSelected) => {
+            const isAlreadySelected = prevSelected.some((m) => m.id === ministry.id);
+            if (isAlreadySelected) {
+                return prevSelected.filter((m) => m.id !== ministry.id);
+            }
+            return [...prevSelected, ministry];
+        });
+    }
+
+    const handleAssociate = async () => {
+        try {
+            const ministriesPromisses = selectedMinistries.map(async (ministry) => {
+                await postVolunteer.post(`/volunteer-ministries/associate?volunteerId=${volunteer?.id}&ministryId=${ministry.id}`)
+            });
+
+            await Promise.all(ministriesPromisses);
+            fetchVolunteers();
+            enqueueSnackbar('Voluntário associado com sucesso', { variant: 'success' });
+            onClose();
+
+        } catch (error) {
+            enqueueSnackbar(error.response.data.message || "Erro geral - VolunteerAssociateMinistryModal", { variant: 'error' });
+  
+        } finally {
+            setSelectedMinistries([]);
+        }
+    }
 
     return (
         <Modal
@@ -40,29 +69,24 @@ const VolunteerAssociateMinistryModal = ({ open, onClose, volunteer, fetchVolunt
             onClose={onClose}
         >
             <Box sx={boxStyle}>
-                <Typography variant='h4' gutterBottom>Associar voluntário a um ministério</Typography>
+                <Typography variant='h6' textAlign="center" gutterBottom sx={{ mb: 4, color: '#454545' }}>Associar voluntário a um ministério</Typography>
 
-                {userMinistriesFetch.loading && <Typography>Carregando...</Typography>}
-                {userMinistriesFetch.error && <Typography>Erro ao carregar ministérios</Typography>}
                 {!userMinistriesFetch.loading && userMinistriesFetch.data && (
-                    <Box sx={{
-                        overflowY: 'auto', 
-                        maxHeight: '200px', 
-                        minHeight: '200px', 
-                        bgcolor: 'grey.100', 
-                        p: 2,
-                        gap: 1 
-                    }}>
+                    <Box sx={{ maxHeight: 350, overflowY: 'auto', mb: 6, backgroundColor: '#F3F3F3' }}>
                         {userMinistriesFetch.data.ministries.map((ministry) => (
-                            <MinistryCheckbox
+                            <CheckboxMinistry
                                 key={ministry.id}
                                 ministry={ministry}
-                                checked={true}
-                                onChange={handleCheckboxChange(ministry.id)}
+                                checked={selectedMinistries.some(m => m.id === ministry.id)}
+                                onToggle={() => handleToggle(ministry)}
                             />
                         ))}
                     </Box>
                 )}
+
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <RoundBotton value="ASSOCIAR" onClick={handleAssociate} />
+                </Box>
             </Box>
         </Modal>
     );
