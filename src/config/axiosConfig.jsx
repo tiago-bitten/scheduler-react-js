@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-    baseURL: 'http://localhost:8090/api/v1'
+    baseURL: 'https://scheduler-java-api.up.railway.app/api/v1'
 });
 
 export default instance;
