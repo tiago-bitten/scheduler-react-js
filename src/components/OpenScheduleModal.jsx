@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { useSnackbar } from 'notistack';
 import RoundButton from './RoundButton';
 import { Modal, Box, TextField, Grid, Typography, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { usePost } from '../hooks/usePost';
-import { useFormik } from 'formik/dist';
 
 import * as yup from 'yup';
 
@@ -37,66 +36,84 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
     const { post } = usePost();
     const { enqueueSnackbar } = useSnackbar();
 
-    const formik = useFormik({
-        initialValues: {
-            name: '',
-            description: '',
-            startDate: selectedDate ? moment(selectedDate)?.format('YYYY-MM-DD') : '',
-            startTime: selectedDate ? moment(selectedDate)?.format('HH:mm') : '',
-            duration: 60,
-        },
-        validationSchema,
-        onSubmit: async (values) => {
-            try {
-                const { name, description, startDate, startTime, duration } = values;
-                const startDateTime = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
-                const endDateTime = startDateTime?.clone()?.add(duration, 'minutes');
-
-                const payload = {
-                    name,
-                    description,
-                    startDate: startDateTime?.toISOString(),
-                    endDate: endDateTime?.toISOString(),
-                };
-
-                const response = await post('/schedules/open', payload);
-                if (response.status === 204) {
-                    enqueueSnackbar('Agenda aberta com sucesso', { variant: 'success' });
-                    handleClose();
-                    fetchSchedules();
-                }
-
-            } catch (error) {
-                if (error.response?.status === 422) {
-                    enqueueSnackbar(error.response?.data?.message, { variant: 'warning' });
-                }
-            }
-        },
+    const [formData, setFormData] = useState({
+        name: '',
+        description: '',
+        startDate: selectedDate ? moment(selectedDate).format('YYYY-MM-DD') : '',
+        startTime: selectedDate ? moment(selectedDate).format('HH:mm') : '',
+        duration: 60,
     });
+    const [formErrors, setFormErrors] = useState({});
 
-    React.useEffect(() => {
+    const validateForm = async () => {
+        try {
+            await validationSchema.validate(formData, { abortEarly: false });
+            setFormErrors({});
+            return true;
+        } catch (err) {
+            const errors = err.inner.reduce((acc, current) => {
+                acc[current.path] = current.message;
+                return acc;
+            }, {});
+            setFormErrors(errors);
+            return false;
+        }
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const isValid = await validateForm();
+        if (!isValid) return;
+
+        const { name, description, startDate, startTime, duration } = formData;
+        const startDateTime = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
+        const endDateTime = startDateTime.clone().add(duration, 'minutes');
+
+        const payload = {
+            name,
+            description,
+            startDate: startDateTime.toISOString(),
+            endDate: endDateTime.toISOString(),
+        };
+
+        try {
+            const response = await post('/schedules/open', payload);
+            if (response.status === 204) {
+                enqueueSnackbar('Agenda aberta com sucesso', { variant: 'success' });
+                handleClose();
+                fetchSchedules();
+            }
+        } catch (error) {
+            if (error.response?.status === 422) {
+                enqueueSnackbar(error.response?.data?.message, { variant: 'warning' });
+            }
+        }
+    };
+
+    useEffect(() => {
         if (open && selectedDate) {
-            formik.setValues(prevValues => ({
-                ...prevValues,
+            setFormData({
+                ...formData,
                 startDate: moment(selectedDate).format('YYYY-MM-DD'),
                 startTime: moment(selectedDate).format('HH:mm'),
-            }));
+            });
         }
-
         // eslint-disable-next-line
-    }, [open, selectedDate, formik.setValues]);
+    }, [open, selectedDate]);
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
 
     function handleClose() {
-        formik.resetForm({
-            values: {
-                name: '',
-                description: '',
-                startDate: '',
-                startTime: '',
-                duration: 60,
-            },
-        })
-
+        setFormData({
+            name: '',
+            description: '',
+            startDate: '',
+            startTime: '',
+            duration: 60,
+        });
         onClose();
     }
 
@@ -109,7 +126,7 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                 <Typography variant="h6" component="h2" sx={{ mb: 2, textAlign: 'center' }}>
                     Abrir Agenda
                 </Typography>
-                <form onSubmit={formik.handleSubmit}>
+                <form onSubmit={handleSubmit}>
                     <Grid container spacing={2} justifyContent="center">
                         <Grid item xs={12}>
                             <TextField
@@ -117,9 +134,11 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                                 variant="standard"
                                 required
                                 autoComplete="off"
-                                {...formik.getFieldProps('name')}
-                                error={formik.touched.name && Boolean(formik.errors.name)}
-                                helperText={formik.touched.name && formik.errors.name}
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                error={!!formErrors.name}
+                                helperText={formErrors.name}
                                 sx={textFieldStyle}
                             />
                         </Grid>
@@ -127,7 +146,9 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                             <TextField
                                 label="Descrição"
                                 variant="standard"
-                                {...formik.getFieldProps('description')}
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
                                 sx={textFieldStyle}
                             />
                         </Grid>
@@ -137,9 +158,11 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                                 type="date"
                                 required
                                 autoComplete="off"
-                                {...formik.getFieldProps('startDate')}
-                                error={formik.touched.startDate && Boolean(formik.errors.startDate)}
-                                helperText={formik.touched.startDate && formik.errors.startDate}
+                                name="startDate"
+                                value={formData.startDate}
+                                onChange={handleChange}
+                                error={!!formErrors.startDate}
+                                helperText={formErrors.startDate}
                                 InputLabelProps={{ shrink: true }}
                                 variant="standard"
                                 sx={textFieldStyle}
@@ -151,9 +174,11 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                                 type="time"
                                 required
                                 autoComplete="off"
-                                {...formik.getFieldProps('startTime')}
-                                error={formik.touched.startTime && Boolean(formik.errors.startTime)}
-                                helperText={formik.touched.startTime && formik.errors.startTime}
+                                name="startTime"
+                                value={formData.startTime}
+                                onChange={handleChange}
+                                error={!!formErrors.startTime}
+                                helperText={formErrors.startTime}
                                 InputLabelProps={{ shrink: true }}
                                 variant="standard"
                                 sx={textFieldStyle}
@@ -165,9 +190,11 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
                                 type="number"
                                 required
                                 autoComplete="off"
-                                {...formik.getFieldProps('duration')}
-                                error={formik.touched.duration && Boolean(formik.errors.duration)}
-                                helperText={formik.touched.duration && formik.errors.duration}
+                                name="duration"
+                                value={formData.duration}
+                                onChange={handleChange}
+                                error={!!formErrors.duration}
+                                helperText={formErrors.duration}
                                 variant="standard"
                                 sx={textFieldStyle}
                             />
