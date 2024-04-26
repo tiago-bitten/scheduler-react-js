@@ -41,8 +41,8 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
         initialValues: {
             name: '',
             description: '',
-            startDate: selectedDate ? moment(selectedDate).format('YYYY-MM-DD') : '',
-            startTime: selectedDate ? moment(selectedDate).format('HH:mm') : '',
+            startDate: selectedDate ? moment(selectedDate)?.format('YYYY-MM-DD') : '',
+            startTime: selectedDate ? moment(selectedDate)?.format('HH:mm') : '',
             duration: 60,
         },
         validationSchema,
@@ -50,13 +50,13 @@ const OpenScheduleModal = ({ open, onClose, selectedDate, fetchSchedules }) => {
             try {
                 const { name, description, startDate, startTime, duration } = values;
                 const startDateTime = moment(`${startDate} ${startTime}`, 'YYYY-MM-DD HH:mm');
-                const endDateTime = startDateTime.clone().add(duration, 'minutes');
+                const endDateTime = startDateTime?.clone()?.add(duration, 'minutes');
 
                 const payload = {
                     name,
                     description,
-                    startDate: startDateTime.toISOString(),
-                    endDate: endDateTime.toISOString(),
+                    startDate: startDateTime?.toISOString(),
+                    endDate: endDateTime?.toISOString(),
                 };
 
                 const response = await post('/schedules/open', payload);
