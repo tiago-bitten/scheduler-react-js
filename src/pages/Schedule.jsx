@@ -27,7 +27,7 @@ const Schedule = () => {
 
     React.useEffect(() => {
         fetch();
-    }, [fetch, month, year]);
+    }, [month, year]);
 
     React.useEffect(() => {
         if (data) {
