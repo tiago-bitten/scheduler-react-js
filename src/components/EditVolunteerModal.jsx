@@ -125,6 +125,9 @@ const EditVolunteerModal = ({ open, onClose, volunteer, fetchVolunteers }) => {
                             fullWidth
                             margin="normal"
                             value={volunteer?.birthDate}
+                            type="date"
+                            InputLabelProps={{ shrink: true }}
+                            autoComplete="off"
                         />
                     </TabPanel>
                 </Box>
