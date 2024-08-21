@@ -90,28 +90,30 @@ const Group = () => {
                     </Grid>
                 </Grid>
             </Box>
-            <Box sx={{
-                backgroundColor: '#F3F3F3',
-                padding: 4,
-                marginX: 6,
-                marginTop: 4,
-            }}>
-                {loading && <GroupListSkeleton />}
-                {!loading && data?.groups.length === 0 ? (
-                    <NotFoundItem />
+            <>
+                {!loading && data?.groups?.length === 0 ? (
+                    <Box sx={{ mt: 6 }}>
+                        <NotFoundItem entities="grupos" />
+                    </Box>
                 ) : (
-                    data?.groups.map((group) => (
-                        <GroupLine
-                            key={group.id}
-                            group={group}
-                            handleDeleteClick={handleDeleteClick}
-                            handleAssociateVolunteer={handleAssociateVolunteer}
-                        />
-                    ))
+                    <Box sx={{
+                        backgroundColor: '#F3F3F3',
+                        padding: 4,
+                        marginX: 6,
+                        marginTop: 4,
+                    }}>
+                        {loading && <GroupListSkeleton />}
+                        {data?.groups?.map((group) => (
+                            <GroupLine
+                                key={group.id}
+                                group={group}
+                                handleDeleteClick={() => handleDeleteClick(group)}
+                                handleAssociateVolunteer={() => handleAssociateVolunteer(group)}
+                            />
+                        ))}
+                    </Box>
                 )}
-
-            </Box>
-
+            </>
             <CreateGroupModal
                 open={openCreateGroupModal}
                 onClose={() => setOpenCreateGroupModal(false)}
