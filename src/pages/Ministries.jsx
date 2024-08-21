@@ -15,6 +15,7 @@ import EditMinistryModal from '../components/EditMinistryModal';
 import { Box, Table, TableHead, TableRow, TableCell, TableBody, TextField } from '@mui/material';
 import { useFetch } from '../hooks/useFetch';
 import { useDelete } from '../hooks/useDelete';
+import ConfirmModal from '../components/ConfirmModal';
 
 import Header from '../components/Header';
 
@@ -25,6 +26,7 @@ const Ministries = () => {
     const [openEditModal, setOpenEditModal] = React.useState(false);
     const [volunteers, setVolunteers] = React.useState([]);
     const [selectedMinistry, setSelectedMinistry] = React.useState({});
+    const [openConfirmDeleteModal, setOpenConfirmDeleteModal] = React.useState(false);
 
     const [ministryName, setMinistryName] = React.useState('');
     const [volunteerName, setVolunteerName] = React.useState('');
@@ -75,7 +77,12 @@ const Ministries = () => {
         setVolunteerMinistryModal(true);
     }
 
-    const handleDeteleClick = async (ministry) => {
+    const handleDeleteClick = (ministry) => {
+        setSelectedMinistry(ministry);
+        setOpenConfirmDeleteModal(true);
+    }
+
+    const handleDeleteConfirm = async (ministry) => {
         try {
             const response = await deleteRequest(`/ministries/delete/${ministry.id}`);
 
@@ -87,6 +94,8 @@ const Ministries = () => {
         } catch (error) {
             enqueueSnackbar(error.response?.data?.message, { variant: "error" });
             console.error(error);
+        } finally {
+            setOpenConfirmDeleteModal(false);
         }
     }
 
@@ -138,7 +147,7 @@ const Ministries = () => {
                                             key={ministry.id}
                                             ministry={ministry}
                                             handleEdit={() => handleEditClick(ministry)}
-                                            handleDelete={() => handleDeteleClick(ministry)}
+                                            handleDelete={() => handleDeleteClick(ministry)}
                                             onMinistryNameClick={() => v2handleOpenAssociateModal(ministry)}
                                         />
                                     ))}
@@ -164,6 +173,13 @@ const Ministries = () => {
                 onClose={() => setOpenEditModal(false)}
                 ministry={selectedMinistry}
                 fetchMinistries={fetchMinistries}
+            />
+            <ConfirmModal
+                open={openConfirmDeleteModal}
+                onClose={() => setOpenConfirmDeleteModal(false)}
+                title="Remover ministério"
+                content="Deseja realmente remover este ministério? Esta ação não poderá ser desfeita."
+                action={() => handleDeleteConfirm(selectedMinistry)}
             />
         </>
     );

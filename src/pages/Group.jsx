@@ -11,6 +11,7 @@ import AssociateVolunteerGroupModal from '../components/AssociateVolunteerGroupM
 import { useSnackbar } from 'notistack';
 import ConfirmModal from '../components/ConfirmModal';
 import { useDebounce } from '../hooks/useDebouce';
+import GroupListSkeleton from '../components/GroupListSkeleton';
 
 const Group = () => {
     const { deleteRequest } = useDelete();
@@ -89,25 +90,28 @@ const Group = () => {
                     </Grid>
                 </Grid>
             </Box>
-            {!loading && data && data.groups.length > 0 ? (
-                <Box sx={{
-                    backgroundColor: '#F3F3F3',
-                    padding: 4,
-                    marginX: 6,
-                    marginTop: 4,
-                }}>
-                    {data.groups.map(group => (
+            <Box sx={{
+                backgroundColor: '#F3F3F3',
+                padding: 4,
+                marginX: 6,
+                marginTop: 4,
+            }}>
+                {loading && <GroupListSkeleton />}
+                {!loading && data?.groups.length === 0 ? (
+                    <NotFoundItem />
+                ) : (
+                    data?.groups.map((group) => (
                         <GroupLine
                             key={group.id}
                             group={group}
-                            handleAssociateVolunteer={() => handleAssociateVolunteer(group)}
-                            handleDeleteClick={() => handleDeleteClick(group)}
+                            handleDeleteClick={handleDeleteClick}
+                            handleAssociateVolunteer={handleAssociateVolunteer}
                         />
-                    ))}
-                </Box>
-            ) : (
-                <NotFoundItem entities="grupos" />
-            )}
+                    ))
+                )}
+
+            </Box>
+
             <CreateGroupModal
                 open={openCreateGroupModal}
                 onClose={() => setOpenCreateGroupModal(false)}
